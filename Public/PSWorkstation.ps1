@@ -9,7 +9,9 @@ function Start-WinDocumentationWorkstation {
     $Data1 = Get-WmiObject win32_bios -ComputerName $ComputerName| select Status, Version, PrimaryBIOS, Manufacturer, ReleaseDate, SerialNumber
     $Data2 = Get-WmiObject win32_DiskDrive -ComputerName $ComputerName | Select Index, Model, Caption, SerialNumber, Description, MediaType, FirmwareRevision, Partitions, @{Expression = {$_.Size / 1Gb -as [int]}; Label = "Total Size(GB)"}, PNPDeviceID
     $Data3 = get-WmiObject win32_networkadapter -ComputerName $ComputerName | Select Name, Manufacturer, Description , AdapterType, Speed, MACAddress, NetConnectionID, PNPDeviceID
+    $Data3 = $Data3 | Select Name, Manufacturer, Speed, AdapterType, MACAddress
     $Data4 = Get-WmiObject win32_startupCommand -ComputerName $ComputerName | select Name, Location, Command, User, caption
+    $Data4 = $Data4 | Select Name, Command, User, Caption
     $Data5 = Get-WmiObject win32_logicalDisk -ComputerName $ComputerName | select DeviceID, VolumeName, @{Expression = {$_.Size / 1Gb -as [int]}; Label = "Total Size(GB)"}, @{Expression = {$_.Freespace / 1Gb -as [int]}; Label = "Free Size (GB)"}
     $Data6 = get-WmiObject win32_operatingsystem -ComputerName $ComputerName | select Caption, Organization, InstallDate, OSArchitecture, Version, SerialNumber, BootDevice, WindowsDirectory, CountryCode
     $Data7 = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation | select Model, Manufacturer, Logo, SupportPhone, SupportURL, SupportHours
