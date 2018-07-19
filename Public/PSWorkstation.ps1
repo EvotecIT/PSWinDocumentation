@@ -5,17 +5,15 @@ function Start-WinDocumentationWorkstation {
         [switch] $OpenDocument
     )
 
-    $Data0 = Get-WmiObject win32_computersystem -ComputerName $ComputerName|select PSComputerName, Name, Manufacturer , Domain, Model , Systemtype, PrimaryOwnerName, PCSystemType, PartOfDomain, CurrentTimeZone, BootupState
-    $Data1 = Get-WmiObject win32_bios -ComputerName $ComputerName| select Status, Version, PrimaryBIOS, Manufacturer, ReleaseDate, SerialNumber
-    $Data2 = Get-WmiObject win32_DiskDrive -ComputerName $ComputerName | Select Index, Model, Caption, SerialNumber, Description, MediaType, FirmwareRevision, Partitions, @{Expression = {$_.Size / 1Gb -as [int]}; Label = "Total Size(GB)"}, PNPDeviceID
-    $Data3 = get-WmiObject win32_networkadapter -ComputerName $ComputerName | Select Name, Manufacturer, Description , AdapterType, Speed, MACAddress, NetConnectionID, PNPDeviceID
-    $Data3 = $Data3 | Select Name, Manufacturer, Speed, AdapterType, MACAddress
-    $Data4 = Get-WmiObject win32_startupCommand -ComputerName $ComputerName | select Name, Location, Command, User, caption
-    $Data4 = $Data4 | Select Name, Command, User, Caption
-    $Data5 = Get-WmiObject win32_logicalDisk -ComputerName $ComputerName | select DeviceID, VolumeName, @{Expression = {$_.Size / 1Gb -as [int]}; Label = "Total Size(GB)"}, @{Expression = {$_.Freespace / 1Gb -as [int]}; Label = "Free Size (GB)"}
-    $Data6 = get-WmiObject win32_operatingsystem -ComputerName $ComputerName | select Caption, Organization, InstallDate, OSArchitecture, Version, SerialNumber, BootDevice, WindowsDirectory, CountryCode
-    $Data7 = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation | select Model, Manufacturer, Logo, SupportPhone, SupportURL, SupportHours
-    $Data8 = get-culture | select KeyboardLayoutId, DisplayName, @{Expression = {$_.ThreeLetterWindowsLanguageName}; Label = "Windows Language"}
+    $Data0 = Get-ComputerData -ComputerName $ComputerName
+    $Data1 = Get-ComputerBios -ComputerName $ComputerName
+    $Data2 = Get-ComputerDisk -ComputerName $ComputerName
+    $Data3 = Get-ComputerNetwork -ComputerName $ComputerName
+    $Data4 = Get-ComputerStartup -ComputerName $ComputerName
+    $Data5 = Get-ComputerDiskLogical -ComputerName $ComputerName
+    $Data6 = Get-ComputerOperatingSystem -ComputerName $ComputerName
+    $Data7 = Get-ComputerOemInformation -ComputerName $ComputerName
+    $Data8 = Get-ComputerCulture -ComputerName $ComputerName
 
     $WordDocument = New-WordDocument $FilePath
 
@@ -31,14 +29,14 @@ function Start-WinDocumentationWorkstation {
     Add-WordText -WordDocument $WordDocument -Text 'Disk Drive information' -FontSize 10 -HeadingType Heading1
     Add-WordTable -WordDocument $WordDocument -DataTable $Data2 -Design ColorfulGrid -AutoFit Window
 
+    Add-WordText -WordDocument $WordDocument -Text 'Disk Information' -FontSize 10 -HeadingType Heading1
+    Add-WordTable -WordDocument $WordDocument -DataTable $Data5 -Design ColorfulGrid -AutoFit Window
+
     Add-WordText -WordDocument $WordDocument -Text 'Netork Adaptor Information' -FontSize 10 -HeadingType Heading1
     Add-WordTable -WordDocument $WordDocument -DataTable $Data3 -Design ColorfulGrid -AutoFit Window -MaximumColumns 10
 
     Add-WordText -WordDocument $WordDocument -Text 'Startup  Software Information' -FontSize 10 -HeadingType Heading1
     Add-WordTable -WordDocument $WordDocument -DataTable $Data4 -Design ColorfulGrid -AutoFit Window
-
-    Add-WordText -WordDocument $WordDocument -Text 'Disk Information' -FontSize 10 -HeadingType Heading1
-    Add-WordTable -WordDocument $WordDocument -DataTable $Data5 -Design ColorfulGrid -AutoFit Window
 
     Add-WordText -WordDocument $WordDocument -Text 'OS Information' -FontSize 10 -HeadingType Heading1
     Add-WordTable -WordDocument $WordDocument -DataTable $Data6 -Design ColorfulGrid -AutoFit Window
