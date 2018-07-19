@@ -87,7 +87,7 @@
     # ModuleList = @()
 
     # List of all files packaged with this module
-    FileList          = 'PSWinDocumentation.psm1', 'PSWinDocumentation.psd1'
+    #FileList          = 'PSWinDocumentation.psm1', 'PSWinDocumentation.psd1'
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
     PrivateData       = @{
@@ -114,7 +114,7 @@
     } # End of PrivateData hashtable
 
     # HelpInfo URI of this module
-    HelpInfoURI       = 'https://github.com/EvotecIT/PSWinDocumentation'
+    #HelpInfoURI       = 'https://github.com/EvotecIT/PSWinDocumentation'
 
     # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
     # DefaultCommandPrefix = ''
