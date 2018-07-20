@@ -15,6 +15,8 @@ function Start-WinDocumentationWorkstation {
     $Data7 = Get-ComputerOemInformation -ComputerName $ComputerName
     $Data8 = Get-ComputerCulture -ComputerName $ComputerName
     $Data9 = Get-ComputerServices -ComputerName $ComputerName
+    $Data10 = Get-ComputerApplications -ComputerName $ComputerName
+
 
     $WordDocument = New-WordDocument $FilePath
 
@@ -52,6 +54,9 @@ function Start-WinDocumentationWorkstation {
 
     Add-WordText -WordDocument $WordDocument -Text 'Services Information' -FontSize 10 -HeadingType Heading1
     Add-WordTable -WordDocument $WordDocument -DataTable $Data9 -Design ColorfulGrid -AutoFit Window
+
+    Add-WordText -WordDocument $WordDocument -Text 'Installed Applications' -FontSize 10 -HeadingType Heading1
+    Add-WordTable -WordDocument $WordDocument -DataTable $Data10 -Design ColorfulGrid -AutoFit Window
 
     Save-WordDocument -WordDocument $WordDocument -Language 'en-US'
     if ($OpenDocument) { Invoke-Item $FilePath }

@@ -58,9 +58,13 @@ function Get-ComputerOemInformation {
     param(
         $ComputerName = $Env:COMPUTERNAME
     )
-
-    $Data7 = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation | select Model, Manufacturer, Logo, SupportPhone, SupportURL, SupportHours
-    return $Data7
+    $ScriptBlock = { Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation | select Model, Manufacturer, Logo, SupportPhone, SupportURL, SupportHours }
+    if ($ComputerName -eq $Env:COMPUTERNAME) {
+        $Data = Invoke-Command -ScriptBlock $ScriptBlock
+    } else {
+        $Data = Invoke-Command -ComputerName $ComputerName -ScriptBlock $ScriptBlock
+    }
+    return $Data
 }
 function Get-ComputerCulture {
     param(
@@ -82,4 +86,53 @@ function Get-ComputerServices {
     )
     $Services = Get-Service -ComputerName $ComputerName | select Name, Displayname, Status
     return $Services
+}
+function Get-ComputerApplications {
+    param(
+        $ComputerName = $Env:COMPUTERNAME
+    )
+    $ScriptBlock = {
+        $objapp1 = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*
+        $objapp2 = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*
+
+        $app1 = $objapp1 | Select-Object Displayname, Displayversion , Publisher, Installdate, @{Expression = { 'x64' }; Label = "WindowsType"}
+        $app2 = $objapp2 | Select-Object Displayname, Displayversion , Publisher, Installdate, @{Expression = { 'x86' }; Label = "WindowsType"} | where { -NOT (([string]$_.displayname).contains("Security Update for Microsoft") -or ([string]$_.displayname).contains("Update for Microsoft"))}
+        $app = $app1 + $app2 #| Sort-Object -Unique
+        return $app | Where { $_.Displayname -ne $null } | Sort-Object DisplayName
+    }
+    if ($ComputerName -eq $Env:COMPUTERNAME) {
+        $Data = Invoke-Command -ScriptBlock $ScriptBlock
+    } else {
+        $Data = Invoke-Command -ComputerName $ComputerName -ScriptBlock $ScriptBlock
+    }
+    return $Data
+
+}
+
+function Get-ComputerWindowsFeatures {
+    param(
+        $ComputerName = $Env:COMPUTERNAME
+    )
+
+    $Data = Get-WmiObject Win32_OptionalFeature -ComputerName $vComputerName | select Caption , Installstate
+    return $Data
+}
+
+function Get-ComputerWindowsUpdates {
+    param(
+        $ComputerName = $Env:COMPUTERNAME
+    )
+
+    $Data = Get-hotfix -ComputerName $vComputerName | select Description , HotFixId , InstalledBy, InstalledOn, Caption
+    return $Data
+}
+
+
+
+function Get-ComputerMissingDrivers {
+    param(
+        $ComputerName = $Env:COMPUTERNAME
+    )
+    $Data = Get-WmiObject Win32_PNPEntity -ComputerName $ComputerName | where {$_.Configmanagererrorcode -ne 0} | Select Caption, ConfigmanagererrorCode, Description, DeviceId, HardwareId, PNPDeviceID
+    return $Data
 }
