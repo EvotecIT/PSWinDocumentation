@@ -4,7 +4,7 @@ function Get-DomainPasswordPolicies {
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
         $ActiveDirectorySnapshot
     )
-    $Paragraph = Add-WordParagraph -WordDocument $WordDocument -Paragraph $Paragraph -InsertWhere AfterSelf
+    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains password policies'
     $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.DefaultPassWordPoLicy -AutoFit Window -DoNotAddTitle -Design TableGrid
     $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
@@ -59,7 +59,7 @@ function Get-ForestFeatures {
         $ActiveDirectorySnapshot
     )
 
-    $Paragraph = Add-WordParagraph -WordDocument $WordDocument -Paragraph $Paragraph -InsertWhere AfterSelf
+    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains Forest Features'
     $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.OptionalFeatures -AutoFit Window -DoNotAddTitle -Design TableGrid
     $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
@@ -74,12 +74,13 @@ function Get-ForestFSMORoles {
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
         $ActiveDirectorySnapshot
     )
-    $Paragraph = Add-WordParagraph -WordDocument $WordDocument -Paragraph $Paragraph -InsertWhere AfterSelf
+    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains FSMO servers'
     $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.FSMO -AutoFit Window -DoNotAddTitle -Design TableGrid
     $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
     $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
     $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text 'FSMO Roles' -Alignment center -Color Black -AppendToExistingParagraph
+
     return $Table
 }
 

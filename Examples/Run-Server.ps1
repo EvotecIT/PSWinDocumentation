@@ -32,18 +32,20 @@ function Start-WinDocumentationServer {
     # Leaving empty for now
     $SectionGeneralInformation = $WordDocument | Add-WordTocItem -Text 'General Information' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
     ### 3rd section - Forest Summary
-    $SectionForestSummary = $WordDocument | Add-WordTocItem -Text 'General Information - Forest Summary' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
+    $SectionForestSummary = $WordDocument | Add-WordTocItem -Text 'General Information - Forest Summary' -ListLevel 1 -ListItemType Numbered -HeadingType Heading1
     $SectionForestSummary = $WordDocument | Get-ForestSummary -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot
     $SectionForestSummary = $WordDocument | Get-ForestFeatures -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot
     $SectionForestSummary = $WordDocument | Get-ForestFSMORoles -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot
+
+
     ### Section 4 - Domain Summary
-    $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text 'General Information - Domain Summary' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
+    $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text 'General Information - Domain Summary' -ListLevel 2 -ListItemType Numbered -HeadingType Heading1
     $SectionDomainSummary = $WordDocument | Get-DomainSummary -Paragraph $SectionDomainSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot
     ### Section 5 - UPN Summary
-    $SectionDomainUPNs = $WordDocument | Add-WordTocItem -Text 'General Information - UPN Summary' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
+    $SectionDomainUPNs = $WordDocument | Add-WordTocItem -Text 'General Information - UPN Summary' -ListLevel 2 -ListItemType Numbered -HeadingType Heading1
     $SectionDomainUPNs = $WordDocument | Get-DomainUPNSuffixes -Paragraph $SectionDomainUPNs -ActiveDirectorySnapshot $ActiveDirectorySnapshot
     ### Section 6 - Password Policies
-    $SectionPasswordPolicies = $WordDocument | Add-WordTocItem -Text 'General Information - Password Policies' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
+    $SectionPasswordPolicies = $WordDocument | Add-WordTocItem -Text 'General Information - Password Policies' -ListLevel 2 -ListItemType Numbered -HeadingType Heading1
     $SectionPasswordPolicies = $WordDocument | Get-DomainPasswordPolicies -Paragraph $SectionPasswordPolicies -ActiveDirectorySnapshot $ActiveDirectorySnapshot
 
     Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true
