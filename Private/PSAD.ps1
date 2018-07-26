@@ -1,6 +1,8 @@
 #Import-Module ActiveDirectory
 function Get-ActiveDirectoryCleanData {
-    param()
+    param(
+        $Domain
+    )
     $ADSnapshot = @{}
     <# RootDSE
                 configurationNamingContext
@@ -26,33 +28,34 @@ function Get-ActiveDirectoryCleanData {
                 supportedLDAPVersion
                 supportedSASLMechanisms
     #>
-    $ADSnapshot.RootDSE = $(Get-ADRootDSE)
-    $ADSnapshot.ForestInformation = $(Get-ADForest)
-    $ADSnapshot.DomainInformation = $(Get-ADDomain)
-    $ADSnapshot.DomainControllers = $(Get-ADDomainController -Filter * )
-    $ADSnapshot.DomainTrusts = (Get-ADTrust -Filter * )
-    $ADSnapshot.DefaultPassWordPoLicy = $(Get-ADDefaultDomainPasswordPolicy)
-    $ADSnapshot.AuthenticationPolicies = $(Get-ADAuthenticationPolicy -LDAPFilter '(name=AuthenticationPolicy*)')
-    $ADSnapshot.AuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Filter 'Name -like "*AuthenticationPolicySilo*"')
-    $ADSnapshot.CentralAccessPolicies = $(Get-ADCentralAccessPolicy -Filter * )
-    $ADSnapshot.CentralAccessRules = $(Get-ADCentralAccessRule -Filter * )
-    $ADSnapshot.ClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Filter * )
-    $ADSnapshot.ClaimTypes = $(Get-ADClaimType -Filter * )
+    $ADSnapshot.RootDSE = $(Get-ADRootDSE -Server $Domain)
+    $ADSnapshot.ForestInformation = $(Get-ADForest -Server $Domain)
+    $ADSnapshot.DomainInformation = $(Get-ADDomain -Server $Domain)
+    $ADSnapshot.DomainControllers = $(Get-ADDomainController -Server $Domain -Filter * )
+    $ADSnapshot.DomainTrusts = (Get-ADTrust -Server $Domain -Filter * )
+    $ADSnapshot.DefaultPassWordPoLicy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
+    $ADSnapshot.AuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
+    $ADSnapshot.AuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Server $Domain -Filter 'Name -like "*AuthenticationPolicySilo*"')
+    $ADSnapshot.CentralAccessPolicies = $(Get-ADCentralAccessPolicy -Server $Domain -Filter * )
+    $ADSnapshot.CentralAccessRules = $(Get-ADCentralAccessRule -Server $Domain -Filter * )
+    $ADSnapshot.ClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Server $Domain -Filter * )
+    $ADSnapshot.ClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
     $ADSnapshot.DomainAdministrators = $( Get-ADGroup -Identity $('{0}-512' -f (Get-ADDomain).domainSID) | Get-ADGroupMember -Recursive)
-    $ADSnapshot.OrganizationalUnits = $(Get-ADOrganizationalUnit -Filter * )
-    $ADSnapshot.OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
-    $ADSnapshot.Sites = $(Get-ADReplicationSite -Filter * )
-    $ADSnapshot.Subnets = $(Get-ADReplicationSubnet -Filter * )
-    $ADSnapshot.SiteLinks = $(Get-ADReplicationSiteLink -Filter * )
+    $ADSnapshot.OrganizationalUnits = $(Get-ADOrganizationalUnit -Server $Domain -Filter * )
+    $ADSnapshot.OptionalFeatures = $(Get-ADOptionalFeature -Server $Domain -Filter * )
+    $ADSnapshot.Sites = $(Get-ADReplicationSite -Server $Domain -Filter * )
+    $ADSnapshot.Subnets = $(Get-ADReplicationSubnet -Server $Domain -Filter * )
+    $ADSnapshot.SiteLinks = $(Get-ADReplicationSiteLink -Server $Domain -Filter * )
     $ADSnapshot.LDAPDNS = $(Resolve-DnsName -Name "_ldap._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
     $ADSnapshot.KerberosDNS = $(Resolve-DnsName -Name "_kerberos._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
-    $ADSnapshot.GroupPolicies = $(Get-GPO -All) # DisplayName, Owner, DomainName, CreationTime, ModificationTime, GpoStatus, WmiFilter, Description # Id, UserVersion, ComputerVersion
+    $ADSnapshot.GroupPolicies = $(Get-GPO -Domain $Domain -All) # DisplayName, Owner, DomainName, CreationTime, ModificationTime, GpoStatus, WmiFilter, Description # Id, UserVersion, ComputerVersion
     return $ADSnapshot
 }
 
 function Get-ActiveDirectoryProcessedData {
-    $ADSnapshot = Get-ActiveDirectoryCleanData
-
+    param (
+        $ADSnapshot
+    )
     $DisplayAD = @{}
     $DisplayAD.RootDSE = $ADSnapshot.RootDSE
     $DisplayAD.DomainInformation = $ADSnapshot.DomainInformation
@@ -63,14 +66,22 @@ function Get-ActiveDirectoryProcessedData {
         'RID Master'            = $ADSnapshot.DomainInformation.RIDMaster
         'Infrastructure Master' = $ADSnapshot.DomainInformation.InfrastructureMaster
     }
-    $DisplayAD.GroupPolicies = [ordered] @{
-        'Display Name'      = $ADSnapshot.GroupPolicies.DisplayName
-        'Creation Time'     = $ADSnapshot.GroupPolicies.CreationTime
-        'Modification Time' = $ADSnapshot.GroupPolicies.ModificationTime
-        'Gpo Status'        = $ADSnapshot.GroupPolicies.GPOStatus
-        'Wmi Filter'        = $ADSnapshot.GroupPolicies.WmiFilter
-        'Description'       = $ADSnapshot.GroupPolicies.Description
+
+    $GroupPolicies = @()
+    foreach ($gpo in $ADSnapshot.GroupPolicies) {
+
+        $GroupPolicy = [ordered] @{
+            'Display Name'      = $gpo.DisplayName
+            'Creation Time'     = $gpo.CreationTime
+            'Modification Time' = $gpo.ModificationTime
+            'Gpo Status'        = $gpo.GPOStatus
+            'Wmi Filter'        = $gpo.WmiFilter
+            'Description'       = $gpo.Description
+        }
+        $GroupPolicies += $GroupPolicy
     }
+    $DisplayAD.GroupPolicies = $GroupPolicies
+    $DisplayAD.GroupPoliciesTable = $GroupPolicies.ForEach( {[PSCustomObject]$_}) | Format-Table -AutoSize
     $DisplayAD.ForestInformation = [ordered] @{
         'Name'                    = $ADSnapshot.ForestInformation.Name
         'Root Domain'             = $ADSnapshot.ForestInformation.RootDomain
@@ -104,20 +115,47 @@ function Get-ActiveDirectoryProcessedData {
     $DisplayAD.UPNSuffixes = $UPNSuffixList
 
 
+    $DisplayAD.DefaultPassWordPoLicy = @{
+        'Complexity Enabled'            = $ADSnapshot.DefaultPassWordPoLicy.ComplexityEnabled
+        'Distinguishe dName'            = $ADSnapshot.DefaultPassWordPoLicy.DistinguishedName
+        'Lockout Duration'              = $ADSnapshot.DefaultPassWordPoLicy.LockoutDuration
+        'Lockout Observation Window'    = $ADSnapshot.DefaultPassWordPoLicy.LockoutObservationWindow
+        'Lockout Threshold'             = $ADSnapshot.DefaultPassWordPoLicy.LockoutThreshold
+        'Max Password Age'              = $ADSnapshot.DefaultPassWordPoLicy.MaxPasswordAge
+        'Min Password Age'              = $ADSnapshot.DefaultPassWordPoLicy.MinPasswordAge
+        'Min Password Length'           = $ADSnapshot.DefaultPassWordPoLicy.MinPasswordAge
+        'Password History Count'        = $ADSnapshot.DefaultPassWordPoLicy.PasswordHistoryCount
+        'Reversible Encryption Enabled' = $ADSnapshot.DefaultPassWordPoLicy.ReversibleEncryptionEnabled
+    }
+
     return $DisplayAD
 }
-<#
-$ADSnapshot = Get-ActiveDirectoryCleanData
-$AD = Get-ActiveDirectoryProcessedData
 
-$ADSnapshot.DomainInformation
+$Domains = (Get-ADForest).Domains
+foreach ($Domain in $Domains) {
+    $ADSnapshot = Get-ActiveDirectoryCleanData -Domain $Domain
+    $AD = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
+    #$AD.DefaultPassWordPoLicy
+    # $AD.GroupPolicies | ft -a
+    $AD.GroupPoliciesTable | ft -a
+    #$ADSnapshot.GroupPolicies
+}
 
-$ADSnapshot.RootDSE
-
-$ADSnapshot.ForestInformation
-#>
 
 
+#$ADSnapshot.DomainInformation
+
+#$ADSnapshot.RootDSE
+
+#$ADSnapshot.ForestInformation
+
+#$ADSnapshot.DefaultPassWordPoLicy
+#Get-ADDefaultDomainPasswordPolicy -Server 'ad.evotec.xyz'
+#Get-ADDefaultDomainPasswordPolicy -Server 'ad.evotec.pl'
+
+
+#Get-ADDomain -Server 'ad.evotec.xyz'
+#Et-AdDomain -Server 'ad.evotec.pl'
 #( + $ADSnapshot.ForestInformation.UPNSuffixes) -join ', '
 
 #foreach ($Element in $($ADSnapshot.OptionalFeatures).PSObject.Propet) {
