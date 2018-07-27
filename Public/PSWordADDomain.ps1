@@ -1,4 +1,5 @@
 function Get-DomainPasswordPolicies {
+    [CmdletBinding()]
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
@@ -14,7 +15,25 @@ function Get-DomainPasswordPolicies {
     return $Table
 }
 
+function Get-DomainGroupPolicies {
+    [CmdletBinding()]
+    param(
+        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
+        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
+        $ActiveDirectorySnapshot,
+        $Domain
+    )
+    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
+    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text "Following table contains group policies for $Domain"
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.GroupPoliciesTable -AutoFit Window -DoNotAddTitle -Design TableGrid
+    $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
+    $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
+    $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text "Group Policies for $Domain" -Alignment center -Color Black -AppendToExistingParagraph
+    return $Table
+}
+
 function Get-DomainSummary {
+    [CmdletBinding()]
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
@@ -24,7 +43,7 @@ function Get-DomainSummary {
 
     $ForestName = $($ActiveDirectorySnapshot.ForestInformation.Name)
     $ForestNameDN = $($ActiveDirectorySnapshot.RootDSE.defaultNamingContext)
-    $DomainNetBios = $ActiveDirectorySnapshot.DomainInformation.NetBIOS
+    $DomainNetBios = $ActiveDirectorySnapshot.DomainInformation.NetBIOSName
     $DomainName = $ActiveDirectorySnapshot.DomainInformation.DNSRoot
     $DomainDistinguishedName = $ActiveDirectorySnapshot.DomainInformation.DistinguishedName
 
@@ -44,6 +63,7 @@ function Get-DomainSummary {
 
 
 function Get-DocumentScope {
+    [CmdletBinding()]
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,

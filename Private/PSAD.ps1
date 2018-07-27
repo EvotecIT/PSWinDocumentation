@@ -90,9 +90,9 @@ function Get-ActiveDirectoryProcessedData {
     $DisplayAD.UPNSuffixes = $UPNSuffixList
 
 
-    $DisplayAD.DefaultPassWordPoLicy = @{
+    $DisplayAD.DefaultPassWordPoLicy = [ordered] @{
         'Complexity Enabled'            = $ADSnapshot.DefaultPassWordPoLicy.ComplexityEnabled
-        'Distinguishe dName'            = $ADSnapshot.DefaultPassWordPoLicy.DistinguishedName
+        #'Distinguished Name'            = $ADSnapshot.DefaultPassWordPoLicy.DistinguishedName
         'Lockout Duration'              = $ADSnapshot.DefaultPassWordPoLicy.LockoutDuration
         'Lockout Observation Window'    = $ADSnapshot.DefaultPassWordPoLicy.LockoutObservationWindow
         'Lockout Threshold'             = $ADSnapshot.DefaultPassWordPoLicy.LockoutThreshold
@@ -113,17 +113,18 @@ foreach ($Domain in $Domains) {
     $AD = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
     #$AD.DefaultPassWordPoLicy
     # $AD.GroupPolicies | ft -a
-    #$AD.GroupPoliciesTable | ft -a
-    #$ADSnapshot.GroupPolicies
+    $AD.GroupPoliciesTable | ft -a
+    # $AD.GroupPolicies
 }
 
-Get-ADRootDSE -Server 'ad.evotec.xyz'
-Write-Color 'Next' -Color Red
-Get-AdRootDSe -Server 'ad.evotec.pl'
-Write-Color 'Next' -Color Red
-Get-AdForest -Server 'ad.evotec.xyz'
-Write-Color 'Next' -Color Red
-Get-AdForest -Server 'ad.evotec.pl'
+#Get-ADRootDSE -Server 'ad.evotec.xyz'
+#Write-Color 'Next' -Color Red
+#Get-AdRootDSe -Server 'ad.evotec.pl'
+#Write-Color 'Next' -Color Red
+#Get-AdForest -Server 'ad.evotec.xyz'
+#Write-Color 'Next' -Color Red
+#Get-AdForest -Server 'ad.evotec.pl'
+
 
 #$ADSnapshot.DomainInformation
 

@@ -38,9 +38,9 @@ function Start-WinDocumentationServer {
     $SectionForestSummary = $WordDocument | Add-WordTocItem -Text 'General Information - Forest Summary' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
     $SectionForestSummary = $WordDocument | Get-ForestSummary -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformationTable
     #$SectionForestSummary = $WordDocument | Get-ForestFeatures -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot
-    #$SectionForestSummary = $WordDocument | Get-ForestFSMORoles -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot
+    $SectionForestSummary = $WordDocument | Get-ForestFSMORoles -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformationTable
 
-    ### Section 5 - UPN Summary
+    ### Section - UPN Summary
     # $SectionDomainUPNs = $WordDocument | Add-WordTocItem -Text 'General Information - Forest UPN Summary' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
     $SectionForestSummary = $WordDocument | Add-WordParagraph
     $SectionForestSummary = $WordDocument | Get-ForestUPNSuffixes -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformationTable -CompanyName $CompanyName
@@ -50,18 +50,22 @@ function Start-WinDocumentationServer {
     foreach ($Domain in $ForestInformation.Domains) {
         $ADSnapshot = Get-ActiveDirectoryCleanData -Domain $Domain
         $ActiveDirectorySnapshot = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
+
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain $Domain" -ListLevel 1 -ListItemType Numbered -HeadingType Heading1
-        ### Section 4 - Domain Summary
+        ### Section - Domain Summary
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain Summary" -ListLevel 2 -ListItemType Numbered -HeadingType Heading2
         $SectionDomainSummary = $WordDocument | Get-DomainSummary -Paragraph $SectionDomainSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot -Domain $Domain
-
-        ### Section 6 - Password Policies
+        ### Section - Password Policies
         $SectionPasswordPolicies = $WordDocument | Add-WordTocItem -Text 'General Information - Password Policies' -ListLevel 2 -ListItemType Numbered -HeadingType Heading2
         $SectionPasswordPolicies = $WordDocument | Get-DomainPasswordPolicies -Paragraph $SectionPasswordPolicies -ActiveDirectorySnapshot $ActiveDirectorySnapshot -Domain $Domain
+
+        ### Section - Password Policies
+        $SectionPasswordPolicies = $WordDocument | Add-WordTocItem -Text 'General Information - Group Policies' -ListLevel 2 -ListItemType Numbered -HeadingType Heading2
+        $SectionPasswordPolicies = $WordDocument | Get-DomainGroupPolicies -Paragraph $SectionPasswordPolicies -ActiveDirectorySnapshot $ActiveDirectorySnapshot -Domain $Domain -Verbose
     }
     Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true
     if ($OpenDocument) { Invoke-Item $FilePath }
 }
 
 Clear-Host
-Start-WinDocumentationServer -ComputerName 'AD1' -FilePathTemplate $FilePathTemplate -FilePath $FilePath -OpenDocument
+Start-WinDocumentationServer -ComputerName 'AD1' -FilePathTemplate $FilePathTemplate -FilePath $FilePath #-OpenDocument
