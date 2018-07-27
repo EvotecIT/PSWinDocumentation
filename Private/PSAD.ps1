@@ -1,33 +1,8 @@
-#Import-Module ActiveDirectory
 function Get-ActiveDirectoryCleanData {
     param(
         $Domain
     )
     $ADSnapshot = @{}
-    <# RootDSE
-                configurationNamingContext
-                currentTime
-                defaultNamingContext
-                dnsHostName
-                domainControllerFunctionality
-                domainFunctionality
-                dsServiceName
-                forestFunctionality
-                highestCommittedUSN
-                isGlobalCatalogReady
-                isSynchronized
-                ldapServiceName
-                namingContexts
-                rootDomainNamingContext
-                schemaNamingContext
-                serverName
-                subschemaSubentry
-                supportedCapabilities
-                supportedControl
-                supportedLDAPPolicies
-                supportedLDAPVersion
-                supportedSASLMechanisms
-    #>
     $ADSnapshot.RootDSE = $(Get-ADRootDSE -Server $Domain)
     $ADSnapshot.ForestInformation = $(Get-ADForest -Server $Domain)
     $ADSnapshot.DomainInformation = $(Get-ADDomain -Server $Domain)
@@ -130,6 +105,7 @@ function Get-ActiveDirectoryProcessedData {
 
     return $DisplayAD
 }
+Clear-Host
 
 $Domains = (Get-ADForest).Domains
 foreach ($Domain in $Domains) {
@@ -137,11 +113,17 @@ foreach ($Domain in $Domains) {
     $AD = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
     #$AD.DefaultPassWordPoLicy
     # $AD.GroupPolicies | ft -a
-    $AD.GroupPoliciesTable | ft -a
+    #$AD.GroupPoliciesTable | ft -a
     #$ADSnapshot.GroupPolicies
 }
 
-
+Get-ADRootDSE -Server 'ad.evotec.xyz'
+Write-Color 'Next' -Color Red
+Get-AdRootDSe -Server 'ad.evotec.pl'
+Write-Color 'Next' -Color Red
+Get-AdForest -Server 'ad.evotec.xyz'
+Write-Color 'Next' -Color Red
+Get-AdForest -Server 'ad.evotec.pl'
 
 #$ADSnapshot.DomainInformation
 
