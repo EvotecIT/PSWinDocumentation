@@ -8,7 +8,7 @@ function Get-DomainPasswordPolicies {
     )
     $Paragraph = Add-WordParagraph -WordDocument $WordDocument
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains password policies'
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.DefaultPassWordPoLicy -AutoFit Window -DoNotAddTitle -Design TableGrid
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.DefaultPassWordPoLicy -AutoFit Window -DoNotAddTitle -Design ColorfulGridAccent5
     $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
     $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
     $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text "Default Password Policy for $Domain" -Alignment center -Color Black -AppendToExistingParagraph
@@ -23,12 +23,15 @@ function Get-DomainGroupPolicies {
         $ActiveDirectorySnapshot,
         $Domain
     )
+    $test = $ActiveDirectorySnapshot.GroupPoliciesTable | Select *
+
     $Paragraph = Add-WordParagraph -WordDocument $WordDocument
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text "Following table contains group policies for $Domain"
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.GroupPoliciesTable -AutoFit Window -DoNotAddTitle -Design TableGrid
-    $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
-    $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
-    $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text "Group Policies for $Domain" -Alignment center -Color Black -AppendToExistingParagraph
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $test -AutoFit Window -Design ColorfulGridAccent5 -Verbose
+    # $Table
+    #$Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
+    #$TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
+    #$TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text "Group Policies for $Domain" -Alignment center -Color Black -AppendToExistingParagraph
     return $Table
 }
 

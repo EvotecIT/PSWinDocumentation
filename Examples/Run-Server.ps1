@@ -1,4 +1,4 @@
-Import-Module PSWInDocumentation -Force
+Import-Module PSWInDocumentation #-Force
 Import-Module PSWriteWord # -Force
 Import-Module ActiveDirectory
 
@@ -68,4 +68,4 @@ function Start-WinDocumentationServer {
 }
 
 Clear-Host
-Start-WinDocumentationServer -ComputerName 'AD1' -FilePathTemplate $FilePathTemplate -FilePath $FilePath #-OpenDocument
+Start-WinDocumentationServer -ComputerName 'AD1' -FilePathTemplate $FilePathTemplate -FilePath $FilePath -OpenDocument

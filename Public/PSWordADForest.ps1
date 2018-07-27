@@ -38,7 +38,7 @@ function Get-ForestFeatures {
 
     $Paragraph = Add-WordParagraph -WordDocument $WordDocument
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains Forest Features'
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.OptionalFeatures -AutoFit Window -DoNotAddTitle -Design TableGrid
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.OptionalFeatures -AutoFit Window -DoNotAddTitle -Design ColorfulGridAccent5
     $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
     $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
     $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text 'Forest Features' -Alignment center -Color Black -AppendToExistingParagraph
@@ -54,7 +54,7 @@ function Get-ForestFSMORoles {
     )
     $Paragraph = Add-WordParagraph -WordDocument $WordDocument
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains FSMO servers'
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.FSMO -AutoFit Window -DoNotAddTitle -Design TableGrid
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.FSMO -AutoFit Window -DoNotAddTitle -Design ColorfulGridAccent5
     $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
     $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
     $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text 'FSMO Roles' -Alignment center -Color Black -AppendToExistingParagraph
@@ -74,7 +74,7 @@ function Get-ForestSummary {
 
     $ForestSummaryText = "Active Directory at $CompanyName has a forest name $ForestName. Following table contains forest summary with important information:"
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $ForestSummaryText
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.ForestInformation -AutoFit Window -DoNotAddTitle  -Design TableGrid
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.ForestInformation -AutoFit Window -DoNotAddTitle  -Design ColorfulGridAccent5
     $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
     $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
     $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text 'Forest Summary' -Alignment center -Color Black -Append

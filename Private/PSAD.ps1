@@ -56,7 +56,7 @@ function Get-ActiveDirectoryProcessedData {
         $GroupPolicies += $GroupPolicy
     }
     $DisplayAD.GroupPolicies = $GroupPolicies
-    $DisplayAD.GroupPoliciesTable = $GroupPolicies.ForEach( {[PSCustomObject]$_}) | Format-Table -AutoSize
+    $DisplayAD.GroupPoliciesTable = $GroupPolicies.ForEach( {[PSCustomObject]$_})
     $DisplayAD.ForestInformation = [ordered] @{
         'Name'                    = $ADSnapshot.ForestInformation.Name
         'Root Domain'             = $ADSnapshot.ForestInformation.RootDomain
