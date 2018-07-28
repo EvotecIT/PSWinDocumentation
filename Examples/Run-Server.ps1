@@ -20,8 +20,7 @@ function Start-WinDocumentationServer {
         $WordDocument = New-WordDocument -FilePath $FilePath
     }
 
-    $ForestInformation = Get-WinADForest
-    $ForestInformationTable = Get-WinADForestInformation -ForestInformation $ForestInformation
+    $ForestInformation = Get-WinADForestInformation -ForestInformation $ForestInformation
 
     $Toc = Add-WordToc -WordDocument $WordDocument -Title 'Table of content' -Switches C, A -RightTabPos 15 -HeaderStyle Heading1
 
@@ -34,11 +33,37 @@ function Start-WinDocumentationServer {
     $WordDocument | Add-WordSection -PageBreak
     ### 3rd section - Forest Summary
     $SectionForestSummary = $WordDocument | Add-WordTocItem -Text 'General Information - Forest Summary' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
-    $SectionForestSummary = $WordDocument | Get-ForestSummary -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformationTable
-    $SectionForestSummary = $WordDocument | Get-ForestFSMORoles -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformationTable
+    $SectionForestSummary = $WordDocument | Get-ForestSummary -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformation
 
     $WordDocument | New-WordBuildingBlock `
-        -TableData $ForestInformationTable.OptionalFeatures `
+        -TocEnable $True `
+        -TocText 'General Information - Forest Summary' `
+        -TocListLevel 0 `
+        -TocListItemType Numbered `
+        -TocHeadingType Heading1 `
+        -TableData $ForestInformation.ForestInformation `
+        -TableDesign ColorfulGridAccent5 `
+        -TableTitleMerge $True `
+        -TableTitleText "Forest Summary" `
+        -Text  "Active Directory at $CompanyName has a forest name $($ForestInformation.ForestName). Following table contains forest summary with important information:" -verbose
+
+    $WordDocument | New-WordBuildingBlock `
+        -TableData $ForestInformation.FSMO `
+        -TableDesign ColorfulGridAccent5 `
+        -TableTitleMerge $true `
+        -TableTitleText 'FSMO Roles' `
+        -Text 'Following table contains FSMO servers'
+
+    $WordDocument | New-WordBuildingBlock `
+        -TableData $ForestInformation.FSMO `
+        -TableDesign ColorfulGridAccent5 `
+        -TableTitleMerge $true `
+        -TableTitleText 'FSMO Roles' `
+        -Text 'Following table contains FSMO servers'
+
+
+    $WordDocument | New-WordBuildingBlock `
+        -TableData $ForestInformation.OptionalFeatures `
         -TableDesign ColorfulGridAccent5 `
         -TableTitleMerge $true `
         -TableTitleText 'Optional Features' `
@@ -47,9 +72,9 @@ function Start-WinDocumentationServer {
 
     ### Section - UPN Summary
     $SectionForestSummary = $WordDocument | Add-WordParagraph
-    $SectionForestSummary = $WordDocument | Get-ForestUPNSuffixes -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformationTable -CompanyName $CompanyName
+    $SectionForestSummary = $WordDocument | Get-ForestUPNSuffixes -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformation -CompanyName $CompanyName
     $SectionForestSummary = $WordDocument | Add-WordParagraph
-    $SectionForestSummary = $WordDocument | Get-ForestSPNSuffixes -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformationTable -CompanyName $CompanyName
+    $SectionForestSummary = $WordDocument | Get-ForestSPNSuffixes -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformation -CompanyName $CompanyName
 
     foreach ($Domain in $ForestInformation.Domains) {
         $WordDocument | Add-WordSection -PageBreak
@@ -98,4 +123,4 @@ function Start-WinDocumentationServer {
 }
 
 Clear-Host
-Start-WinDocumentationServer -ComputerName 'AD1' -FilePathTemplate $FilePathTemplate -FilePath $FilePath -OpenDocument
+Start-WinDocumentationServer -ComputerName 'AD1' -FilePathTemplate $FilePathTemplate -FilePath $FilePath #-OpenDocument

@@ -4,10 +4,17 @@ function Get-WinADForest {
 }
 
 function Get-WinADForestInformation {
-    param (
-        $ForestInformation
-    )
     $Data = @{}
+    $ForestInformation = $(Get-ADForest)
+    $Data.RootDSE = $(Get-ADRootDSE -Properties *)
+
+    $UPNSuffixList = @()
+    $UPNSuffixList += $ForestInformation.RootDomain + ' (Primary/Default UPN)'
+    $UPNSuffixList += $ForestInformation.UPNSuffixes
+
+    $Data.ForestName = $ForestInformation.Name
+    $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
+    $Data.Domains = $ForestInformation.Domains
     $Data.ForestInformation = [ordered] @{
         'Name'                    = $ForestInformation.Name
         'Root Domain'             = $ForestInformation.RootDomain
@@ -17,9 +24,6 @@ function Get-WinADForestInformation {
         'Domains'                 = ($ForestInformation.Domains) -join ", "
         'Sites'                   = ($ForestInformation.Sites) -join ", "
     }
-    $UPNSuffixList = @()
-    $UPNSuffixList += $ForestInformation.RootDomain + ' (Primary/Default UPN)'
-    $UPNSuffixList += $ForestInformation.UPNSuffixes
     $Data.UPNSuffixes = $UPNSuffixList
     $Data.GlobalCatalogs = $ForestInformation.GlobalCatalogs
     $Data.SPNSuffixes = $ForestInformation.SPNSuffixes

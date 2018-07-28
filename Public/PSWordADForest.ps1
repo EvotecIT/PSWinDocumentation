@@ -21,45 +21,15 @@ function Get-ForestSPNSuffixes {
         $ActiveDirectorySnapshot,
         $Domain
     )
-    $Text = "Following SPN suffixes were created:"
-    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text
-    $List = Add-WordList -WordDocument $WordDocument -ListType Bulleted -Paragraph $Paragraph -ListData $ActiveDirectorySnapshot.SPNSuffixes #-Verbose
+    if ((Get-ObjectCount $ActiveDirectorySnapshot.SPNSuffixes) -gt 0) {
+        $Text = "Following SPN suffixes were created in this forest:"
+        $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text
+        $List = Add-WordList -WordDocument $WordDocument -ListType Bulleted -Paragraph $Paragraph -ListData $ActiveDirectorySnapshot.SPNSuffixes #-Verbose
+    } else {
+        $Text = "No SPN suffixes were created in this forest."
+        $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text
+    }
     return $List
-}
-
-
-function Get-ForestFeatures {
-    param(
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
-        $ActiveDirectorySnapshot,
-        $Domain
-    )
-
-    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
-    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains Forest Features'
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.OptionalFeatures -AutoFit Window -DoNotAddTitle -Design ColorfulGridAccent5
-    $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
-    $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
-    $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text 'Forest Features' -Alignment center -Color Black -AppendToExistingParagraph
-    return $Table
-}
-
-function Get-ForestFSMORoles {
-    param(
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
-        $ActiveDirectorySnapshot,
-        $Domain
-    )
-    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
-    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains FSMO servers'
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.FSMO -AutoFit Window -DoNotAddTitle -Design ColorfulGridAccent5
-    $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
-    $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
-    $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text 'FSMO Roles' -Alignment center -Color Black -AppendToExistingParagraph
-
-    return $Table
 }
 
 function Get-ForestSummary {
