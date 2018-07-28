@@ -23,11 +23,10 @@ function Get-DomainGroupPolicies {
         $ActiveDirectorySnapshot,
         $Domain
     )
-    $test = $ActiveDirectorySnapshot.GroupPoliciesTable | Select *
 
     $Paragraph = Add-WordParagraph -WordDocument $WordDocument
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text "Following table contains group policies for $Domain"
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $test -AutoFit Window -Design ColorfulGridAccent5 -Verbose
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.GroupPoliciesTable -AutoFit Window -Design ColorfulGridAccent5 #-Verbose
     # $Table
     #$Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
     #$TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
@@ -77,4 +76,23 @@ function Get-DocumentScope {
     #$Section1 = Add-WordParagraph -WordDocument $WordDocument -Paragraph $Section1 -AfterSelf -Supress $false
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text -Alignment both
     return $Paragraph
+}
+
+function Get-WordDomainPriviligeMembers {
+    [CmdletBinding()]
+    param(
+        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
+        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
+        $ActiveDirectorySnapshot,
+        $Domain
+    )
+
+    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
+    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text "Following table contains priviliged group members for $Domain"
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.PriviligedGroupMembers -AutoFit Window -Design ColorfulGridAccent5 #-Verbose
+    # $Table
+    #$Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
+    #$TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
+    #$TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text "Group Policies for $Domain" -Alignment center -Color Black -AppendToExistingParagraph
+    return $Table
 }

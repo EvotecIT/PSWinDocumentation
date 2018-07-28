@@ -102,6 +102,7 @@ function Get-ActiveDirectoryProcessedData {
         'Password History Count'        = $ADSnapshot.DefaultPassWordPoLicy.PasswordHistoryCount
         'Reversible Encryption Enabled' = $ADSnapshot.DefaultPassWordPoLicy.ReversibleEncryptionEnabled
     }
+    $DisplayAD.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $DisplayAD.DomainInformation.DNSRoot -DomainSID $DisplayAD.DomainInformation.DomainSid
 
     return $DisplayAD
 }
