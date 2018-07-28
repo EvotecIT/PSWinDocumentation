@@ -1,39 +1,3 @@
-function Get-DomainPasswordPolicies {
-    [CmdletBinding()]
-    param(
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
-        $ActiveDirectorySnapshot,
-        $Domain
-    )
-    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
-    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text 'Following table contains password policies'
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.DefaultPassWordPoLicy -AutoFit Window -DoNotAddTitle -Design ColorfulGridAccent5
-    $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
-    $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
-    $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text "Default Password Policy for $Domain" -Alignment center -Color Black -AppendToExistingParagraph
-    return $Table
-}
-
-function Get-DomainGroupPolicies {
-    [CmdletBinding()]
-    param(
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
-        $ActiveDirectorySnapshot,
-        $Domain
-    )
-
-    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
-    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text "Following table contains group policies for $Domain"
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.GroupPoliciesTable -AutoFit Window -Design ColorfulGridAccent5 #-Verbose
-    # $Table
-    #$Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
-    #$TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
-    #$TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text "Group Policies for $Domain" -Alignment center -Color Black -AppendToExistingParagraph
-    return $Table
-}
-
 function Get-DomainSummary {
     [CmdletBinding()]
     param(
@@ -78,21 +42,38 @@ function Get-DocumentScope {
     return $Paragraph
 }
 
-function Get-WordDomainPriviligeMembers {
+function New-WordBuildingBlock {
     [CmdletBinding()]
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
-        $ActiveDirectorySnapshot,
-        $Domain
-    )
+        [bool] $TocEnable,
+        [string] $TocText,
+        [int] $TocListLevel,
+        $TocListItemType,
+        $TocHeadingType,
 
+        [string] $Text,
+
+        [Object] $TableData,
+        $TableDesign,
+        [bool] $TableTitleMerge = $false,
+        [string] $TableTitleText,
+        $TableTitleAlignment = 'center',
+        $TableTitleColor = 'Black'
+    )
+    if ($TocEnable) {
+        $Paragraph = $WordDocument | Add-WordTocItem -Text $TocText -ListLevel $TocListLevel -ListItemType $TocListItemType -HeadingType $TocHeadingType
+    }
     $Paragraph = Add-WordParagraph -WordDocument $WordDocument
-    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text "Following table contains priviliged group members for $Domain"
-    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $ActiveDirectorySnapshot.PriviligedGroupMembers -AutoFit Window -Design ColorfulGridAccent5 #-Verbose
-    # $Table
-    #$Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
-    #$TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
-    #$TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text "Group Policies for $Domain" -Alignment center -Color Black -AppendToExistingParagraph
-    return $Table
+    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text
+    $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $TableData -AutoFit Window -Design $TableDesign -DoNotAddTitle:$TableTitleMerge
+
+    if ($TableTitleMerge) {
+        $Table = Set-WordTableRowMergeCells -Table $Table -RowNr 0 -ColumnNrStart 0 -ColumnNrEnd 1
+        if ($TableTitleText -ne $null) {
+            $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
+            $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text $TableTitleText -Alignment $TableTitleAlignment -Color $TableTitleColor -AppendToExistingParagraph
+        }
+    }
 }

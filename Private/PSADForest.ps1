@@ -27,5 +27,30 @@ function Get-WinADForestInformation {
         'Domain Naming Master' = $ForestInformation.DomainNamingMaster
         'Schema Master'        = $ForestInformation.SchemaMaster
     }
+    $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
+    $Data.OptionalFeatures = [ordered] @{
+        'Recycle Bin Enabled'                          = ''
+        #'Recycle Bin Scopes' = ''
+        'Privileged Access Management Feature Enabled' = ''
+        #'Privileged Access Management Feature Scopes' ''
+    }
+    ### Fix Optional Features
+    foreach ($Feature in $OptionalFeatures) {
+        if ($Feature.Name -eq 'Recycle Bin Feature') {
+            if ("$($Feature.EnabledScopes)" -eq '') {
+                $Data.OptionalFeatures.'Recycle Bin Enabled' = $False
+            } else {
+                $Data.OptionalFeatures.'Recycle Bin Enabled' = $True
+            }
+        }
+        if ($Feature.Name -eq 'Privileged Access Management Feature') {
+            if ("$($Feature.EnabledScopes)" -eq '') {
+                $Data.OptionalFeatures.'Privileged Access Management Feature Enabled' = $False
+            } else {
+                $Data.OptionalFeatures.'Privileged Access Management Feature Enabled' = $True
+            }
+        }
+    }
+    ### Fix optional features
     return $Data
 }

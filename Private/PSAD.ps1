@@ -17,7 +17,7 @@ function Get-ActiveDirectoryCleanData {
     $ADSnapshot.ClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
     $ADSnapshot.DomainAdministrators = $( Get-ADGroup -Identity $('{0}-512' -f (Get-ADDomain).domainSID) | Get-ADGroupMember -Recursive)
     $ADSnapshot.OrganizationalUnits = $(Get-ADOrganizationalUnit -Server $Domain -Filter * )
-    $ADSnapshot.OptionalFeatures = $(Get-ADOptionalFeature -Server $Domain -Filter * )
+
     $ADSnapshot.Sites = $(Get-ADReplicationSite -Server $Domain -Filter * )
     $ADSnapshot.Subnets = $(Get-ADReplicationSubnet -Server $Domain -Filter * )
     $ADSnapshot.SiteLinks = $(Get-ADReplicationSiteLink -Server $Domain -Filter * )
@@ -66,24 +66,6 @@ function Get-ActiveDirectoryProcessedData {
         'Domains'                 = ($ADSnapshot.ForestInformation.Domains) -join ", "
         'Sites'                   = ($ADSnapshot.ForestInformation.Sites) -join ", "
     }
-    $DisplayAD.OptionalFeatures = [ordered] @{
-        'Recycle Bin Enabled'                          = ''
-        #'Recycle Bin Scopes' = ''
-        'Privileged Access Management Feature Enabled' = ''
-        #'Privileged Access Management Feature Scopes' ''
-    }
-    ### Fix Optional Features
-    foreach ($Feature in $ADSnapshot.OptionalFeatures) {
-        if ($Feature.Name -eq 'Recycle Bin Feature') {
-            if ("$($Feature.EnabledScopes)" -eq '') { $DisplayAD.OptionalFeatures.'Recycle Bin Enabled' = $False }
-            else { $DisplayAD.OptionalFeatures.'Recycle Bin Enabled' = $True }
-        }
-        if ($Feature.Name -eq 'Privileged Access Management Feature') {
-            if ("$($Feature.EnabledScopes)" -eq '') { $DisplayAD.OptionalFeatures.'Privileged Access Management Feature Enabled' = $False }
-            else { $DisplayAD.OptionalFeatures.'Privileged Access Management Feature Enabled' = $True }
-        }
-    }
-    ### Fix optional features
     $UPNSuffixList = @()
     $UPNSuffixList += $ADSnapshot.ForestInformation.RootDomain + ' (Primary/Default UPN)'
     $UPNSuffixList += $ADSnapshot.ForestInformation.UPNSuffixes
