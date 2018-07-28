@@ -105,17 +105,6 @@ function Get-ActiveDirectoryProcessedData {
 
     return $DisplayAD
 }
-Clear-Host
-
-$Domains = (Get-ADForest).Domains
-foreach ($Domain in $Domains) {
-    $ADSnapshot = Get-ActiveDirectoryCleanData -Domain $Domain
-    $AD = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
-    #$AD.DefaultPassWordPoLicy
-    # $AD.GroupPolicies | ft -a
-    $AD.GroupPoliciesTable | ft -a
-    # $AD.GroupPolicies
-}
 
 #Get-ADRootDSE -Server 'ad.evotec.xyz'
 #Write-Color 'Next' -Color Red
