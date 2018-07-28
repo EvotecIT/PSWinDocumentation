@@ -46,14 +46,14 @@ function New-WordBuildingBlock {
     [CmdletBinding()]
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
+       # [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
         [bool] $TocEnable,
         [string] $TocText,
         [int] $TocListLevel,
         $TocListItemType,
         $TocHeadingType,
 
-        $Breaks = 0,
+        $EmptyParagraphs = 0,
         [string] $Text,
 
         [Object] $TableData,
@@ -64,14 +64,14 @@ function New-WordBuildingBlock {
         $TableTitleColor = 'Black'
     )
     if ($TocEnable) {
-        $Paragraph = $WordDocument | Add-WordTocItem -Text $TocText -ListLevel $TocListLevel -ListItemType $TocListItemType -HeadingType $TocHeadingType
+        $TOC = $WordDocument | Add-WordTocItem -Text $TocText -ListLevel $TocListLevel -ListItemType $TocListItemType -HeadingType $TocHeadingType
     }
-    #  $i = 0
-    #  While ($i -lt $Breaks) {
-    #     Write-Verbose 'New-Test - $Breaks'
-    $Paragraph = Add-WordParagraph -WordDocument $WordDocument
-    #      $i++
-    # }
+    $i = 0
+    While ($i -lt $EmptyParagraphs) {
+        Write-Verbose 'New-Test - $Breaks'
+        $Paragraph = Add-WordParagraph -WordDocument $WordDocument
+        $i++
+    }
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text
     $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $TableData -AutoFit Window -Design $TableDesign -DoNotAddTitle:$TableTitleMerge
 

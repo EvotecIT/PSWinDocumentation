@@ -4,10 +4,11 @@ Import-Module ActiveDirectory
 
 $Forest = Get-WinADForest
 foreach ($Domain in $Forest.Domains) {
-    $ADDomain = Get-ActiveDirectoryCleanData -Domain $Domain
-    Get-PrivilegedGroupsMembers -Domain $ADDomain.DomainInformation.DNSRoot $ADDomain.DomainInformation.DomainSid -Verbose | ft -a
+    # $ADDomain = Get-ActiveDirectoryCleanData -Domain $Domain
+    # Get-PrivilegedGroupsMembers -Domain $ADDomain.DomainInformation.DNSRoot $ADDomain.DomainInformation.DomainSid -Verbose | ft -a
 }
-
+$Forest = Get-WinADForestInformation
+$Forest.GlobalCatalogs
 # $ADSnapshot = Get-ActiveDirectoryCleanData -Domain $Domain
 #$AD = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
 

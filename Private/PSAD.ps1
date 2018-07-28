@@ -35,8 +35,8 @@ function Get-ActiveDirectoryProcessedData {
     $DisplayAD.RootDSE = $ADSnapshot.RootDSE
     $DisplayAD.DomainInformation = $ADSnapshot.DomainInformation
     $DisplayAD.FSMO = [ordered] @{
-        'Domain Naming Master'  = $ADSnapshot.ForestInformation.DomainNamingMaster
-        'Schema Master'         = $ADSnapshot.ForestInformation.SchemaMaster
+        #'Domain Naming Master'  = $ADSnapshot.ForestInformation.DomainNamingMaster
+        #'Schema Master'         = $ADSnapshot.ForestInformation.SchemaMaster
         'PDC Emulator'          = $ADSnapshot.DomainInformation.PDCEmulator
         'RID Master'            = $ADSnapshot.DomainInformation.RIDMaster
         'Infrastructure Master' = $ADSnapshot.DomainInformation.InfrastructureMaster
@@ -47,11 +47,11 @@ function Get-ActiveDirectoryProcessedData {
 
         $GroupPolicy = [ordered] @{
             'Display Name'      = $gpo.DisplayName
+            'Gpo Status'        = $gpo.GPOStatus
             'Creation Time'     = $gpo.CreationTime
             'Modification Time' = $gpo.ModificationTime
-            'Gpo Status'        = $gpo.GPOStatus
-            'Wmi Filter'        = $gpo.WmiFilter
             'Description'       = $gpo.Description
+            'Wmi Filter'        = $gpo.WmiFilter
         }
         $GroupPolicies += $GroupPolicy
     }

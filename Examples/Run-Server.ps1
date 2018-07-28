@@ -31,10 +31,8 @@ function Start-WinDocumentationServer {
     $SectionScope = $WordDocument | Get-DocumentScope -Paragraph $SectionScope -CompanyName $CompanyName
 
     $WordDocument | Add-WordSection -PageBreak
-    ### 3rd section - Forest Summary
-    $SectionForestSummary = $WordDocument | Add-WordTocItem -Text 'General Information - Forest Summary' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
-    $SectionForestSummary = $WordDocument | Get-ForestSummary -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformation
 
+    ### Section - Forest Summary
     $WordDocument | New-WordBuildingBlock `
         -TocEnable $True `
         -TocText 'General Information - Forest Summary' `
@@ -52,23 +50,16 @@ function Start-WinDocumentationServer {
         -TableDesign ColorfulGridAccent5 `
         -TableTitleMerge $true `
         -TableTitleText 'FSMO Roles' `
-        -Text 'Following table contains FSMO servers'
-
-    $WordDocument | New-WordBuildingBlock `
-        -TableData $ForestInformation.FSMO `
-        -TableDesign ColorfulGridAccent5 `
-        -TableTitleMerge $true `
-        -TableTitleText 'FSMO Roles' `
-        -Text 'Following table contains FSMO servers'
-
+        -Text 'Following table contains FSMO servers' `
+        -EmptyParagraphs 1
 
     $WordDocument | New-WordBuildingBlock `
         -TableData $ForestInformation.OptionalFeatures `
         -TableDesign ColorfulGridAccent5 `
         -TableTitleMerge $true `
         -TableTitleText 'Optional Features' `
-        -Text "Following table contains optional forest features"
-
+        -Text "Following table contains optional forest features" `
+        -EmptyParagraphs 1
 
     ### Section - UPN Summary
     $SectionForestSummary = $WordDocument | Add-WordParagraph
@@ -79,7 +70,7 @@ function Start-WinDocumentationServer {
     foreach ($Domain in $ForestInformation.Domains) {
         $WordDocument | Add-WordSection -PageBreak
         $ADSnapshot = Get-ActiveDirectoryCleanData -Domain $Domain
-        $ActiveDirectorySnapshot = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
+        $DomainInformation = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
 
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain $Domain" -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
         ### Section - Domain Summary
@@ -87,12 +78,20 @@ function Start-WinDocumentationServer {
         $SectionDomainSummary = $WordDocument | Get-DomainSummary -Paragraph $SectionDomainSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot -Domain $Domain
 
         $WordDocument | New-WordBuildingBlock `
+            -TableData $DomainInformation.FSMO `
+            -TableDesign ColorfulGridAccent5 `
+            -TableTitleMerge $true `
+            -TableTitleText "FSMO Roles for $Domain" `
+            -Text "Following table contains FSMO servers with roles for domain $Domain" `
+            -EmptyParagraphs 1
+
+        $WordDocument | New-WordBuildingBlock `
             -TocEnable $True `
             -TocText 'General Information - Password Policies' `
             -TocListLevel 1 `
             -TocListItemType Numbered `
             -TocHeadingType Heading2 `
-            -TableData $ActiveDirectorySnapshot.DefaultPassWordPoLicy `
+            -TableData $DomainInformation.DefaultPassWordPoLicy `
             -TableDesign ColorfulGridAccent5 `
             -TableTitleMerge $True `
             -TableTitleText "Default Password Policy for $Domain" `
@@ -104,7 +103,7 @@ function Start-WinDocumentationServer {
             -TocListLevel 1 `
             -TocListItemType Numbered `
             -TocHeadingType Heading2 `
-            -TableData $ActiveDirectorySnapshot.GroupPoliciesTable `
+            -TableData $DomainInformation.GroupPoliciesTable `
             -TableDesign ColorfulGridAccent5 `
             -Text "Following table contains group policies for $Domain"
 
@@ -114,7 +113,7 @@ function Start-WinDocumentationServer {
             -TocListLevel 1 `
             -TocListItemType Numbered `
             -TocHeadingType Heading2 `
-            -TableData $ActiveDirectorySnapshot.PriviligedGroupMembers `
+            -TableData $DomainInformation.PriviligedGroupMembers `
             -TableDesign ColorfulGridAccent5
 
     }
@@ -123,4 +122,4 @@ function Start-WinDocumentationServer {
 }
 
 Clear-Host
-Start-WinDocumentationServer -ComputerName 'AD1' -FilePathTemplate $FilePathTemplate -FilePath $FilePath #-OpenDocument
+Start-WinDocumentationServer -ComputerName 'AD1' -FilePathTemplate $FilePathTemplate -FilePath $FilePath -OpenDocument
