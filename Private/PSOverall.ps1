@@ -1,4 +1,5 @@
 function Get-ComputerData {
+    [CmdletBinding()]
     param(
         $ComputerName = $Env:COMPUTERNAME
     )
@@ -6,6 +7,7 @@ function Get-ComputerData {
     return $Data0
 }
 function Get-ComputerBios {
+    [CmdletBinding()]
     param(
         $ComputerName = $Env:COMPUTERNAME
     )

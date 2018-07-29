@@ -1,4 +1,5 @@
 function Get-WinADForestInformation {
+    [CmdletBinding()]
     $Data = @{}
     $ForestInformation = $(Get-ADForest)
     $Data.Forest = $ForestInformation

@@ -1,4 +1,5 @@
 function Start-ActiveDirectoryDocumentation {
+    [CmdletBinding()]
     param (
         [string] $FilePath,
         [switch] $OpenDocument,
@@ -15,8 +16,9 @@ function Start-ActiveDirectoryDocumentation {
         $WordDocument = Get-WordDocument -FilePath $FilePathTemplate
     }
 
+    Write-Verbose 'Start-ActiveDirectoryDocumentation - Getting Forest Information'
     $ForestInformation = Get-WinADForestInformation
-
+    Write-Verbose 'Start-ActiveDirectoryDocumentation - Working...1'
     $Toc = Add-WordToc -WordDocument $WordDocument -Title 'Table of content' -Switches C, A -RightTabPos 15
 
     $WordDocument | Add-WordPageBreak -Supress $True
@@ -76,9 +78,10 @@ function Start-ActiveDirectoryDocumentation {
         -ListType Bulleted `
         -ListData $ForestInformation.SPNSuffixes `
         -EmptyParagraphsBefore 1
-
+    Write-Verbose 'Start-ActiveDirectoryDocumentation - Working...2'
     foreach ($Domain in $ForestInformation.Domains) {
         $WordDocument | Add-WordPageBreak -Supress $True
+        Write-Verbose 'Start-ActiveDirectoryDocumentation - Getting domain information'
         $DomainInformation = Get-WinDomainInformation -Domain $Domain
 
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain $Domain" -ListLevel 0 -ListItemType Numbered -HeadingType Heading1

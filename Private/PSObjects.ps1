@@ -13,6 +13,7 @@ function Convert-ToTable {
     return $Object.ForEach( {[PSCustomObject]$_})
 }
 function Convert-KeyToKeyValue {
+    [CmdletBinding()]
     param (
         $Object
     )

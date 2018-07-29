@@ -1,4 +1,5 @@
 function Get-ActiveDirectoryData {
+    [CmdletBinding()]
     param(
         [string] $Domain
     )
@@ -64,6 +65,7 @@ function Get-ActiveDirectoryData {
 }
 
 function Get-WinDomainInformation {
+    [CmdletBinding()]
     param (
         [string] $Domain
     )

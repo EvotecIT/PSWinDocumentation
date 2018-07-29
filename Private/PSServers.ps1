@@ -1,4 +1,5 @@
 function Get-ServerRoles {
+    [CmdletBinding()]
     param (
         $ComputerName = $env:COMPUTERNAME
     )
