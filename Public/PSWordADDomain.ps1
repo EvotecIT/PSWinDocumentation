@@ -42,7 +42,25 @@ function Get-DocumentScope {
     return $Paragraph
 }
 
-function New-WordBuildingBlock {
+function New-WordBlock {
+    [CmdletBinding()]
+    param(
+        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
+        # [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
+        [bool] $TocEnable,
+        [string] $TocText,
+        [int] $TocListLevel,
+        $TocListItemType,
+        $TocHeadingType,
+        $Text
+    )
+    if ($TocEnable) {
+        $TOC = $WordDocument | Add-WordTocItem -Text $TocText -ListLevel $TocListLevel -ListItemType $TocListItemType -HeadingType $TocHeadingType
+    }
+    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text -Alignment both
+    #@return $Paragraph
+}
+function New-WordBlockTable {
     [CmdletBinding()]
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
@@ -80,7 +98,6 @@ function New-WordBuildingBlock {
     }
     $WordDocument | New-WordBlockParagraph -EmptyParagraphs $EmptyParagraphsAfter
 }
-
 function New-WordBlockList {
     [CmdletBinding()]
     param(
@@ -111,7 +128,6 @@ function New-WordBlockList {
     }
     $WordDocument |New-WordBlockParagraph -EmptyParagraphs $EmptyParagraphsAfter
 }
-
 function New-WordBlockParagraph {
     param (
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,

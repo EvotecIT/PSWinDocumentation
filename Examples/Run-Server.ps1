@@ -27,13 +27,19 @@ function Start-WinDocumentationServer {
     $WordDocument | Add-WordSection -PageBreak
 
     ### 1st section - Introduction
-    $SectionScope = $WordDocument | Add-WordTocItem -Text 'Scope' -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
-    $SectionScope = $WordDocument | Get-DocumentScope -Paragraph $SectionScope -CompanyName $CompanyName
+    $Text = "This document provides a low-level design of roles and permissions for the IT infrastructure team at $CompanyName organization. This document utilizes knowledge from AD General Concept document that should be delivered with this document. Having all the information described in attached document one can start designing Active Directory with those principles in mind. It's important to know while best practices that were described are important in decision making they should not be treated as final and only solution. Most important aspect is to make sure company has full usability of Active Directory and is happy with how it works. Making things harder just for the sake of implementation of best practices isn't always the best way to go."
+    $WordDocument | New-WordBlock `
+        -TocEnable $True `
+        -TocText 'Scope' `
+        -TocListLevel 0 `
+        -TocListItemType Numbered `
+        -TocHeadingType Heading1 `
+        -Text $Text
 
     $WordDocument | Add-WordSection -PageBreak
 
     ### Section - Forest Summary
-    $WordDocument | New-WordBuildingBlock `
+    $WordDocument | New-WordBlockTable `
         -TocEnable $True `
         -TocText 'General Information - Forest Summary' `
         -TocListLevel 0 `
@@ -45,7 +51,7 @@ function Start-WinDocumentationServer {
         -TableTitleText "Forest Summary" `
         -Text  "Active Directory at $CompanyName has a forest name $($ForestInformation.ForestName). Following table contains forest summary with important information:" -verbose
 
-    $WordDocument | New-WordBuildingBlock `
+    $WordDocument | New-WordBlockTable `
         -TableData $ForestInformation.FSMO `
         -TableDesign ColorfulGridAccent5 `
         -TableTitleMerge $true `
@@ -53,7 +59,7 @@ function Start-WinDocumentationServer {
         -Text 'Following table contains FSMO servers' `
         -EmptyParagraphsBefore 1
 
-    $WordDocument | New-WordBuildingBlock `
+    $WordDocument | New-WordBlockTable `
         -TableData $ForestInformation.OptionalFeatures `
         -TableDesign ColorfulGridAccent5 `
         -TableTitleMerge $true `
@@ -85,7 +91,9 @@ function Start-WinDocumentationServer {
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain Summary" -ListLevel 1 -ListItemType Numbered -HeadingType Heading2
         $SectionDomainSummary = $WordDocument | Get-DomainSummary -Paragraph $SectionDomainSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot -Domain $Domain
 
-        $WordDocument | New-WordBuildingBlock `
+
+
+        $WordDocument | New-WordBlockTable `
             -TableData $DomainInformation.FSMO `
             -TableDesign ColorfulGridAccent5 `
             -TableTitleMerge $true `
@@ -93,7 +101,7 @@ function Start-WinDocumentationServer {
             -Text "Following table contains FSMO servers with roles for domain $Domain" `
             -EmptyParagraphsBefore 1
 
-        $WordDocument | New-WordBuildingBlock `
+        $WordDocument | New-WordBlockTable `
             -TocEnable $True `
             -TocText 'General Information - Password Policies' `
             -TocListLevel 1 `
@@ -105,7 +113,7 @@ function Start-WinDocumentationServer {
             -TableTitleText "Default Password Policy for $Domain" `
             -Text 'Following table contains password policies'
 
-        $WordDocument | New-WordBuildingBlock `
+        $WordDocument | New-WordBlockTable `
             -TocEnable $True `
             -TocText 'General Information - Group Policies' `
             -TocListLevel 1 `
@@ -115,7 +123,7 @@ function Start-WinDocumentationServer {
             -TableDesign ColorfulGridAccent5 `
             -Text "Following table contains group policies for $Domain"
 
-        $WordDocument | New-WordBuildingBlock `
+        $WordDocument | New-WordBlockTable `
             -TocEnable $True `
             -TocText 'General Information - Organizational Units' `
             -TocListLevel 1 `
@@ -125,7 +133,7 @@ function Start-WinDocumentationServer {
             -TableDesign ColorfulGridAccent5 `
             -Text "Following table contains all OU's created in $Domain"
 
-        $WordDocument | New-WordBuildingBlock `
+        $WordDocument | New-WordBlockTable `
             -TocEnable $True `
             -TocText 'General Information - Priviliged Members' `
             -TocListLevel 1 `
@@ -135,7 +143,7 @@ function Start-WinDocumentationServer {
             -TableDesign ColorfulGridAccent5 `
             -Text 'Following table contains list of priviliged groups and count of the members in it.'
 
-        $WordDocument | New-WordBuildingBlock `
+        $WordDocument | New-WordBlockTable `
             -TocEnable $True `
             -TocText 'General Information - Domain Administrators' `
             -TocListLevel 1 `
