@@ -25,7 +25,7 @@ function Get-ActiveDirectoryData {
     $ADSnapshot.GroupPolicies = $(Get-GPO -Domain $Domain -All) # DisplayName, Owner, DomainName, CreationTime, ModificationTime, GpoStatus, WmiFilter, Description # Id, UserVersion, ComputerVersion
     $ADSnapshot.Users = Invoke-Command -ScriptBlock {
         function Find-AllUsers () {
-            $users = Get-ADUser -ResultPageSize 5000000 -filter * -Properties Name, Manager, DisplayName, GivenName, Surname, SamAccountName, EmailAddress, msDS-UserPasswordExpiryTimeComputed, PasswordExpired, PasswordLastSet, PasswordNotRequired, PasswordNeverExpires
+            $users = Get-ADUser -Server $Domain -ResultPageSize 5000000 -filter * -Properties Name, Manager, DisplayName, GivenName, Surname, SamAccountName, EmailAddress, msDS-UserPasswordExpiryTimeComputed, PasswordExpired, PasswordLastSet, PasswordNotRequired, PasswordNeverExpires
             $users = $users | Select-Object Name, UserPrincipalName, SamAccountName, DisplayName, GivenName, Surname, EmailAddress, PasswordExpired, PasswordLastSet, PasswordNotRequired, PasswordNeverExpires, Enabled,
             @{Name = "Manager"; Expression = { (Get-ADUser $_.Manager).Name }},
             @{Name = "ManagerEmail"; Expression = { (Get-ADUser -Properties Mail $_.Manager).Mail  }},

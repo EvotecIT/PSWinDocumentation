@@ -145,9 +145,28 @@ function Start-ActiveDirectoryDocumentation {
             -TableData $DomainInformation.DomainAdministrators `
             -TableDesign ColorfulGridAccent5 `
             -Text 'Following users have highest domain priviliges and are able to control a lot of Windows resources.'
+
+        $WordDocument | New-WordBlockTable `
+            -TocEnable $True `
+            -TocText 'General Information - Users Count' `
+            -TocListLevel 1 `
+            -TocListItemType Numbered `
+            -TocHeadingType Heading2 `
+            -TableData $DomainInformation.ADSnapshot.UsersCount `
+            -TableDesign ColorfulGridAccent5 `
+            -TableTitleMerge $True `
+            -TableTitleText 'Users Count' `
+            -Text "Following table and chart shows number of users in its categories" `
+            -ChartEnable $True `
+            -ChartTitle 'Users Count'
+
+        #Add-WordPieChart -WordDocument $WordDocument -ChartName 'Users Count' -Names $DomainInformation.ADSnapshot.UsersCount.Keys -Values  $DomainInformation.ADSnapshot.UsersCount.Values -ChartLegendPosition Left -ChartLegendOverlay $true
+
+
     }
 
-    Add-WordPieChart -WordDocument $WordDocument -ChartName 'My finances' -Names 'Today', 'Yesterday' -Values  2000, 20000 -ChartLegendPosition Left -ChartLegendOverlay $true
+
+    #    Add-WordPieChart -WordDocument $WordDocument -ChartName 'My finances' -Names 'Today', 'Yesterday' -Values  2000, 20000 -ChartLegendPosition Left -ChartLegendOverlay $true
 
     Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true #-Verbose
     if ($OpenDocument) { Invoke-Item $FilePath }
