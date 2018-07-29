@@ -1,6 +1,6 @@
-function Get-ActiveDirectoryCleanData {
+function Get-ActiveDirectoryData {
     param(
-        $Domain
+        [string] $Domain
     )
     $ADSnapshot = @{}
     $ADSnapshot.RootDSE = $(Get-ADRootDSE -Server $Domain)
@@ -15,9 +15,8 @@ function Get-ActiveDirectoryCleanData {
     $ADSnapshot.CentralAccessRules = $(Get-ADCentralAccessRule -Server $Domain -Filter * )
     $ADSnapshot.ClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Server $Domain -Filter * )
     $ADSnapshot.ClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
-    $ADSnapshot.DomainAdministrators = $( Get-ADGroup -Identity $('{0}-512' -f (Get-ADDomain).domainSID) | Get-ADGroupMember -Recursive)
-    $ADSnapshot.OrganizationalUnits = $(Get-ADOrganizationalUnit -Server $Domain -Filter * )
-
+    $ADSnapshot.DomainAdministrators = $( Get-ADGroup -Identity $('{0}-512' -f (Get-ADDomain).domainSID) | Get-ADGroupMember -Recursive | Get-ADUser)
+    $ADSnapshot.OrganizationalUnits = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
     $ADSnapshot.Sites = $(Get-ADReplicationSite -Server $Domain -Filter * )
     $ADSnapshot.Subnets = $(Get-ADReplicationSubnet -Server $Domain -Filter * )
     $ADSnapshot.SiteLinks = $(Get-ADReplicationSiteLink -Server $Domain -Filter * )
@@ -27,37 +26,38 @@ function Get-ActiveDirectoryCleanData {
     return $ADSnapshot
 }
 
-function Get-ActiveDirectoryProcessedData {
+function Get-WinDomainInformation {
     param (
-        $ADSnapshot
+        [string] $Domain
     )
-    $DisplayAD = @{}
-    $DisplayAD.RootDSE = $ADSnapshot.RootDSE
-    $DisplayAD.DomainInformation = $ADSnapshot.DomainInformation
-    $DisplayAD.FSMO = [ordered] @{
+    $ADSnapshot = Get-ActiveDirectoryData -Domain $Domain
+    $Data = @{}
+    $Data.ADSnapshot = $ADSnapshot
+    $Data.RootDSE = $ADSnapshot.RootDSE
+    $Data.DomainInformation = $ADSnapshot.DomainInformation
+    $Data.FSMO = [ordered] @{
         #'Domain Naming Master'  = $ADSnapshot.ForestInformation.DomainNamingMaster
         #'Schema Master'         = $ADSnapshot.ForestInformation.SchemaMaster
         'PDC Emulator'          = $ADSnapshot.DomainInformation.PDCEmulator
         'RID Master'            = $ADSnapshot.DomainInformation.RIDMaster
         'Infrastructure Master' = $ADSnapshot.DomainInformation.InfrastructureMaster
     }
-
-    $GroupPolicies = @()
-    foreach ($gpo in $ADSnapshot.GroupPolicies) {
-
-        $GroupPolicy = [ordered] @{
-            'Display Name'      = $gpo.DisplayName
-            'Gpo Status'        = $gpo.GPOStatus
-            'Creation Time'     = $gpo.CreationTime
-            'Modification Time' = $gpo.ModificationTime
-            'Description'       = $gpo.Description
-            'Wmi Filter'        = $gpo.WmiFilter
+    $Data.GroupPolicies = Invoke-Command -ScriptBlock {
+        $GroupPolicies = @()
+        foreach ($gpo in $ADSnapshot.GroupPolicies) {
+            $GroupPolicy = [ordered] @{
+                'Display Name'      = $gpo.DisplayName
+                'Gpo Status'        = $gpo.GPOStatus
+                'Creation Time'     = $gpo.CreationTime
+                'Modification Time' = $gpo.ModificationTime
+                'Description'       = $gpo.Description
+                'Wmi Filter'        = $gpo.WmiFilter
+            }
+            $GroupPolicies += $GroupPolicy
         }
-        $GroupPolicies += $GroupPolicy
+        return $GroupPolicies.ForEach( {[PSCustomObject]$_})
     }
-    $DisplayAD.GroupPolicies = $GroupPolicies
-    $DisplayAD.GroupPoliciesTable = $GroupPolicies.ForEach( {[PSCustomObject]$_})
-    $DisplayAD.ForestInformation = [ordered] @{
+    $Data.ForestInformation = [ordered] @{
         'Name'                    = $ADSnapshot.ForestInformation.Name
         'Root Domain'             = $ADSnapshot.ForestInformation.RootDomain
         'Forest Functional Level' = $ADSnapshot.ForestInformation.ForestMode
@@ -66,13 +66,7 @@ function Get-ActiveDirectoryProcessedData {
         'Domains'                 = ($ADSnapshot.ForestInformation.Domains) -join ", "
         'Sites'                   = ($ADSnapshot.ForestInformation.Sites) -join ", "
     }
-    $UPNSuffixList = @()
-    $UPNSuffixList += $ADSnapshot.ForestInformation.RootDomain + ' (Primary/Default UPN)'
-    $UPNSuffixList += $ADSnapshot.ForestInformation.UPNSuffixes
-    $DisplayAD.UPNSuffixes = $UPNSuffixList
-
-
-    $DisplayAD.DefaultPassWordPoLicy = [ordered] @{
+    $Data.DefaultPassWordPoLicy = [ordered] @{
         'Complexity Enabled'            = $ADSnapshot.DefaultPassWordPoLicy.ComplexityEnabled
         #'Distinguished Name'            = $ADSnapshot.DefaultPassWordPoLicy.DistinguishedName
         'Lockout Duration'              = $ADSnapshot.DefaultPassWordPoLicy.LockoutDuration
@@ -84,65 +78,8 @@ function Get-ActiveDirectoryProcessedData {
         'Password History Count'        = $ADSnapshot.DefaultPassWordPoLicy.PasswordHistoryCount
         'Reversible Encryption Enabled' = $ADSnapshot.DefaultPassWordPoLicy.ReversibleEncryptionEnabled
     }
-    $DisplayAD.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $DisplayAD.DomainInformation.DNSRoot -DomainSID $DisplayAD.DomainInformation.DomainSid
-
-    return $DisplayAD
+    $Data.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
+    $Data.OrganizationalUnits = $ADSnapshot.OrganizationalUnits | Select-Object Name, CanonicalName, Created | Sort-Object CanonicalName
+    $Data.DomainAdministrators = $ADSnapshot.DomainAdministrators | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
+    return $Data
 }
-
-#Get-ADRootDSE -Server 'ad.evotec.xyz'
-#Write-Color 'Next' -Color Red
-#Get-AdRootDSe -Server 'ad.evotec.pl'
-#Write-Color 'Next' -Color Red
-#Get-AdForest -Server 'ad.evotec.xyz'
-#Write-Color 'Next' -Color Red
-#Get-AdForest -Server 'ad.evotec.pl'
-
-
-#$ADSnapshot.DomainInformation
-
-#$ADSnapshot.RootDSE
-
-#$ADSnapshot.ForestInformation
-
-#$ADSnapshot.DefaultPassWordPoLicy
-#Get-ADDefaultDomainPasswordPolicy -Server 'ad.evotec.xyz'
-#Get-ADDefaultDomainPasswordPolicy -Server 'ad.evotec.pl'
-
-
-#Get-ADDomain -Server 'ad.evotec.xyz'
-#Et-AdDomain -Server 'ad.evotec.pl'
-#( + $ADSnapshot.ForestInformation.UPNSuffixes) -join ', '
-
-#foreach ($Element in $($ADSnapshot.OptionalFeatures).PSObject.Propet) {
-#    $Element
-#} #.EnabledScopes
-
-<#
-$Info = $ADSnapshot.RootDSE | Select-Object `
-@{label = 'Configuration Naming Context'; expression = { $_.configurationNamingContext }},
-@{label = 'Default Naming Context'; expression = { $_.defaultNamingContext }},
-@{label = 'DNS Host Name'; expression = { $_.dnsHostName }},
-@{label = 'Domain Controller Functionality'; expression = { $_.domainControllerFunctionality }},
-@{label = 'Domain Functionality'; expression = { $_.domainFunctionality }},
-@{label = 'Forest Functionality'; expression = { $_.forestFunctionality }},
-@{label = 'Supported LDAP Policies'; expression = { $_.supportedLDAPPolicies }},
-@{label = 'Sub Schema Subentry'; expression = { $_.subschemaSubentry }},
-@{label = 'Supported LDAP Version'; expression = { $_.supportedLDAPVersion }},
-@{label = 'Supported SASL Mechanisms'; expression = { $_.supportedSASLMechanisms }}
-
-$Info1 = Get-ADForest | Select-Object ApplicationPartitions,
-CrossForestReferences,
-DomainNamingMaster,
-Domains,
-ForestMode,
-GlobalCatalogs,
-Name,
-PartitionsContainer,
-RootDomain,
-SchemaMaster,
-Sites,
-SPNSuffixes,
-UPNSuffixes,
-
-
-#>

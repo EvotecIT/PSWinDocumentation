@@ -1,5 +1,5 @@
 Import-Module PSWInDocumentation -Force
-Import-Module PSWriteWord #-Force
+Import-Module PSWriteWord -Force
 Import-Module ActiveDirectory
 
 $FilePathTemplate = "$PSScriptRoot\Templates\WordTemplate.docx"
@@ -20,9 +20,9 @@ function Start-WinDocumentationServer {
         $WordDocument = New-WordDocument -FilePath $FilePath
     }
 
-    $ForestInformation = Get-WinADForestInformation -ForestInformation $ForestInformation
+    $ForestInformation = Get-WinADForestInformation
 
-    $Toc = Add-WordToc -WordDocument $WordDocument -Title 'Table of content' -Switches C, A -RightTabPos 15 -HeaderStyle Heading1
+    $Toc = Add-WordToc -WordDocument $WordDocument -Title 'Table of content' -Switches C, A -RightTabPos 15
 
     $WordDocument | Add-WordSection -PageBreak
 
@@ -69,8 +69,7 @@ function Start-WinDocumentationServer {
 
     foreach ($Domain in $ForestInformation.Domains) {
         $WordDocument | Add-WordSection -PageBreak
-        $ADSnapshot = Get-ActiveDirectoryCleanData -Domain $Domain
-        $DomainInformation = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
+        $DomainInformation = Get-WinDomainInformation -Domain $Domain
 
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain $Domain" -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
         ### Section - Domain Summary
@@ -103,9 +102,19 @@ function Start-WinDocumentationServer {
             -TocListLevel 1 `
             -TocListItemType Numbered `
             -TocHeadingType Heading2 `
-            -TableData $DomainInformation.GroupPoliciesTable `
+            -TableData $DomainInformation.GroupPolicies `
             -TableDesign ColorfulGridAccent5 `
             -Text "Following table contains group policies for $Domain"
+
+        $WordDocument | New-WordBuildingBlock `
+            -TocEnable $True `
+            -TocText 'General Information - Organizational Units' `
+            -TocListLevel 1 `
+            -TocListItemType Numbered `
+            -TocHeadingType Heading2 `
+            -TableData $DomainInformation.OrganizationalUnits `
+            -TableDesign ColorfulGridAccent5 `
+            -Text "Following table contains all OU's created in $Domain"
 
         $WordDocument | New-WordBuildingBlock `
             -TocEnable $True `
@@ -114,10 +123,21 @@ function Start-WinDocumentationServer {
             -TocListItemType Numbered `
             -TocHeadingType Heading2 `
             -TableData $DomainInformation.PriviligedGroupMembers `
-            -TableDesign ColorfulGridAccent5
+            -TableDesign ColorfulGridAccent5 `
+            -Text 'Following table contains list of priviliged groups and count of the members in it.'
 
+        $WordDocument | New-WordBuildingBlock `
+            -TocEnable $True `
+            -TocText 'General Information - Domain Administrators' `
+            -TocListLevel 1 `
+            -TocListItemType Numbered `
+            -TocHeadingType Heading2 `
+            -TableData $DomainInformation.DomainAdministrators `
+            -TableDesign ColorfulGridAccent5 `
+            -Text 'Following users have highest domain priviliges and are able to control a lot of Windows resources.'
     }
-    Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true
+
+    Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true -KillWord -Verbose
     if ($OpenDocument) { Invoke-Item $FilePath }
 }
 
