@@ -12,8 +12,12 @@ foreach ($Domain in $Forest.Domains) {
 $Domain = 'ad.evotec.xyz'
 $DomainInformation = Get-WinDomainInformation  -Domain $Domain
 #$DomainInformation.ADSnapshot.DomainAdministrators
-$DomainInformation.GroupPolicies
-#$ADSnapshot.OrganizationalUnits | ft -a
+
+$OU = $DomainInformation.OrganizationalUnits
+
+#foreach ($O in $OU) {
+    #get-aduser -Filter { CanonicalName -like $O.CanonicalName* }
+#}
 # $ADSnapshot = Get-ActiveDirectoryCleanData -Domain $Domain
 #$AD = Get-ActiveDirectoryProcessedData -ADSnapshot $ADSnapshot
 

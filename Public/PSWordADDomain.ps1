@@ -46,14 +46,15 @@ function New-WordBuildingBlock {
     [CmdletBinding()]
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
-       # [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
+        # [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
         [bool] $TocEnable,
         [string] $TocText,
         [int] $TocListLevel,
         $TocListItemType,
         $TocHeadingType,
 
-        $EmptyParagraphs = 0,
+        [int] $EmptyParagraphsBefore,
+        [int] $EmptyParagraphsAfter,
         [string] $Text,
 
         [Object] $TableData,
@@ -66,12 +67,7 @@ function New-WordBuildingBlock {
     if ($TocEnable) {
         $TOC = $WordDocument | Add-WordTocItem -Text $TocText -ListLevel $TocListLevel -ListItemType $TocListItemType -HeadingType $TocHeadingType
     }
-    $i = 0
-    While ($i -lt $EmptyParagraphs) {
-        Write-Verbose 'New-Test - $Breaks'
-        $Paragraph = Add-WordParagraph -WordDocument $WordDocument
-        $i++
-    }
+    $WordDocument | New-WordBlockParagraph -EmptyParagraphs $EmptyParagraphsBefore
     $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text
     $Table = Add-WordTable -WordDocument $WordDocument -Paragraph $Paragraph -DataTable $TableData -AutoFit Window -Design $TableDesign -DoNotAddTitle:$TableTitleMerge
 
@@ -81,5 +77,50 @@ function New-WordBuildingBlock {
             $TableParagraph = Get-WordTableRow -Table $Table -RowNr 0 -ColumnNr 0
             $TableParagraph = Add-WordText -WordDocument $WordDocument -Paragraph $TableParagraph -Text $TableTitleText -Alignment $TableTitleAlignment -Color $TableTitleColor -AppendToExistingParagraph
         }
+    }
+    $WordDocument | New-WordBlockParagraph -EmptyParagraphs $EmptyParagraphsAfter
+}
+
+function New-WordBlockList {
+    [CmdletBinding()]
+    param(
+        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
+        # [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
+        [bool] $TocEnable,
+        [string] $TocText,
+        [int] $TocListLevel,
+        $TocListItemType,
+        $TocHeadingType,
+        [int] $EmptyParagraphsBefore,
+        [int] $EmptyParagraphsAfter,
+        [string] $Text,
+        [string] $TextListEmpty,
+
+        [Object] $ListData,
+        $ListType
+    )
+    if ($TocEnable) {
+        $TOC = $WordDocument | Add-WordTocItem -Text $TocText -ListLevel $TocListLevel -ListItemType $TocListItemType -HeadingType $TocHeadingType
+    }
+    $WordDocument | New-WordBlockParagraph -EmptyParagraphs $EmptyParagraphsBefore
+    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text
+    if ((Get-ObjectCount $ListData) -gt 0) {
+        $List = Add-WordList -WordDocument $WordDocument -ListType $ListType -Paragraph $Paragraph -ListData $ListData #-Verbose
+    } else {
+        $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $TextListEmpty
+    }
+    $WordDocument |New-WordBlockParagraph -EmptyParagraphs $EmptyParagraphsAfter
+}
+
+function New-WordBlockParagraph {
+    param (
+        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
+        [int] $EmptyParagraphs
+    )
+    $i = 0
+    While ($i -lt $EmptyParagraphs) {
+        Write-Verbose "New-WordBlockList - EmptyParagraphs $i"
+        $Paragraph = Add-WordParagraph -WordDocument $WordDocument
+        $i++
     }
 }

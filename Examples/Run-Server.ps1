@@ -1,5 +1,5 @@
 Import-Module PSWInDocumentation -Force
-Import-Module PSWriteWord -Force
+Import-Module PSWriteWord #-Force
 Import-Module ActiveDirectory
 
 $FilePathTemplate = "$PSScriptRoot\Templates\WordTemplate.docx"
@@ -51,7 +51,7 @@ function Start-WinDocumentationServer {
         -TableTitleMerge $true `
         -TableTitleText 'FSMO Roles' `
         -Text 'Following table contains FSMO servers' `
-        -EmptyParagraphs 1
+        -EmptyParagraphsBefore 1
 
     $WordDocument | New-WordBuildingBlock `
         -TableData $ForestInformation.OptionalFeatures `
@@ -59,13 +59,22 @@ function Start-WinDocumentationServer {
         -TableTitleMerge $true `
         -TableTitleText 'Optional Features' `
         -Text "Following table contains optional forest features" `
-        -EmptyParagraphs 1
+        -EmptyParagraphsBefore 1
 
     ### Section - UPN Summary
-    $SectionForestSummary = $WordDocument | Add-WordParagraph
-    $SectionForestSummary = $WordDocument | Get-ForestUPNSuffixes -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformation -CompanyName $CompanyName
-    $SectionForestSummary = $WordDocument | Add-WordParagraph
-    $SectionForestSummary = $WordDocument | Get-ForestSPNSuffixes -Paragraph $SectionForestSummary -ActiveDirectorySnapshot $ForestInformation -CompanyName $CompanyName
+    $WordDocument | New-WordBlockList `
+        -Text "Following UPN suffixes were created in this forest:" `
+        -TextListEmpty "No UPN suffixes were created in this forest." `
+        -ListType Bulleted `
+        -ListData $ForestInformation.UPNSuffixes `
+        -EmptyParagraphsBefore 1
+
+    $WordDocument | New-WordBlockList `
+        -Text "Following SPN suffixes were created in this forest:" `
+        -TextListEmpty "No SPN suffixes were created in this forest." `
+        -ListType Bulleted `
+        -ListData $ForestInformation.SPNSuffixes `
+        -EmptyParagraphsBefore 1
 
     foreach ($Domain in $ForestInformation.Domains) {
         $WordDocument | Add-WordSection -PageBreak
@@ -82,7 +91,7 @@ function Start-WinDocumentationServer {
             -TableTitleMerge $true `
             -TableTitleText "FSMO Roles for $Domain" `
             -Text "Following table contains FSMO servers with roles for domain $Domain" `
-            -EmptyParagraphs 1
+            -EmptyParagraphsBefore 1
 
         $WordDocument | New-WordBuildingBlock `
             -TocEnable $True `
@@ -137,7 +146,7 @@ function Start-WinDocumentationServer {
             -Text 'Following users have highest domain priviliges and are able to control a lot of Windows resources.'
     }
 
-    Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true -KillWord -Verbose
+    Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true #-Verbose
     if ($OpenDocument) { Invoke-Item $FilePath }
 }
 
