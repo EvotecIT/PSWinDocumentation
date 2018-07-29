@@ -1,16 +1,8 @@
-function Get-WinADForest {
-    $ForestInformation = $(Get-ADForest)
-    return $ForestInformation
-}
-
 function Get-WinADForestInformation {
     $Data = @{}
     $ForestInformation = $(Get-ADForest)
+    $Data.Forest = $ForestInformation
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
-
-    $UPNSuffixList = @()
-    $UPNSuffixList += $ForestInformation.RootDomain + ' (Primary/Default UPN)'
-    $UPNSuffixList += $ForestInformation.UPNSuffixes
 
     $Data.ForestName = $ForestInformation.Name
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
@@ -24,37 +16,46 @@ function Get-WinADForestInformation {
         'Domains'                 = ($ForestInformation.Domains) -join ", "
         'Sites'                   = ($ForestInformation.Sites) -join ", "
     }
-    $Data.UPNSuffixes = $UPNSuffixList
+    $Data.UPNSuffixes = Invoke-Command -ScriptBlock {
+        $UPNSuffixList = @()
+        $UPNSuffixList += $ADSnapshot.ForestInformation.RootDomain + ' (Primary/Default UPN)'
+        $UPNSuffixList += $ADSnapshot.ForestInformation.UPNSuffixes
+        return $UPNSuffixList
+    }
     $Data.GlobalCatalogs = $ForestInformation.GlobalCatalogs
     $Data.SPNSuffixes = $ForestInformation.SPNSuffixes
-    $Data.FSMO = [ordered] @{
-        'Domain Naming Master' = $ForestInformation.DomainNamingMaster
-        'Schema Master'        = $ForestInformation.SchemaMaster
+    $Data.FSMO = Invoke-Command -ScriptBlock {
+        $FSMO = [ordered] @{
+            'Domain Naming Master' = $ForestInformation.DomainNamingMaster
+            'Schema Master'        = $ForestInformation.SchemaMaster
+        }
+        return $FSMO
     }
-    $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
-    $Data.OptionalFeatures = [ordered] @{
-        'Recycle Bin Enabled'                          = ''
-        #'Recycle Bin Scopes' = ''
-        'Privileged Access Management Feature Enabled' = ''
-        #'Privileged Access Management Feature Scopes' ''
-    }
-    ### Fix Optional Features
-    foreach ($Feature in $OptionalFeatures) {
-        if ($Feature.Name -eq 'Recycle Bin Feature') {
-            if ("$($Feature.EnabledScopes)" -eq '') {
-                $Data.OptionalFeatures.'Recycle Bin Enabled' = $False
-            } else {
-                $Data.OptionalFeatures.'Recycle Bin Enabled' = $True
+    $Data.OptionalFeatures = Invoke-Command -ScriptBlock {
+        $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
+        $Optional = [ordered]@{
+            'Recycle Bin Enabled'                          = ''
+            'Privileged Access Management Feature Enabled' = ''
+        }
+        ### Fix Optional Features
+        foreach ($Feature in $OptionalFeatures) {
+            if ($Feature.Name -eq 'Recycle Bin Feature') {
+                if ("$($Feature.EnabledScopes)" -eq '') {
+                    $Optional.'Recycle Bin Enabled' = $False
+                } else {
+                    $Optional.'Recycle Bin Enabled' = $True
+                }
+            }
+            if ($Feature.Name -eq 'Privileged Access Management Feature') {
+                if ("$($Feature.EnabledScopes)" -eq '') {
+                    $Optional.'Privileged Access Management Feature Enabled' = $False
+                } else {
+                    $Optional.'Privileged Access Management Feature Enabled' = $True
+                }
             }
         }
-        if ($Feature.Name -eq 'Privileged Access Management Feature') {
-            if ("$($Feature.EnabledScopes)" -eq '') {
-                $Data.OptionalFeatures.'Privileged Access Management Feature Enabled' = $False
-            } else {
-                $Data.OptionalFeatures.'Privileged Access Management Feature Enabled' = $True
-            }
-        }
+        return $Optional
+        ### Fix optional features
     }
-    ### Fix optional features
     return $Data
 }
