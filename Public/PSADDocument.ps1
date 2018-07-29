@@ -158,15 +158,11 @@ function Start-ActiveDirectoryDocumentation {
             -TableTitleText 'Users Count' `
             -Text "Following table and chart shows number of users in its categories" `
             -ChartEnable $True `
-            -ChartTitle 'Users Count'
-
-        #Add-WordPieChart -WordDocument $WordDocument -ChartName 'Users Count' -Names $DomainInformation.ADSnapshot.UsersCount.Keys -Values  $DomainInformation.ADSnapshot.UsersCount.Values -ChartLegendPosition Left -ChartLegendOverlay $true
-
+            -ChartTitle 'Users Count' `
+            -ChartKeys (Convert-KeyToKeyValue $DomainInformation.ADSnapshot.UsersCount).Keys `
+            -ChartValues (Convert-KeyToKeyValue $DomainInformation.ADSnapshot.UsersCount).Values
 
     }
-
-
-    #    Add-WordPieChart -WordDocument $WordDocument -ChartName 'My finances' -Names 'Today', 'Yesterday' -Values  2000, 20000 -ChartLegendPosition Left -ChartLegendOverlay $true
 
     Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true #-Verbose
     if ($OpenDocument) { Invoke-Item $FilePath }

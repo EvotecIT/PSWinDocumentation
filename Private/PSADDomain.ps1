@@ -24,16 +24,22 @@ function Get-ActiveDirectoryData {
     $ADSnapshot.KerberosDNS = $(Resolve-DnsName -Name "_kerberos._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
     $ADSnapshot.GroupPolicies = $(Get-GPO -Domain $Domain -All) # DisplayName, Owner, DomainName, CreationTime, ModificationTime, GpoStatus, WmiFilter, Description # Id, UserVersion, ComputerVersion
     $ADSnapshot.Users = Invoke-Command -ScriptBlock {
-        function Find-AllUsers () {
+        param(
+            $Domain
+        )
+        function Find-AllUsers {
+            param (
+                $Domain
+            )
             $users = Get-ADUser -Server $Domain -ResultPageSize 5000000 -filter * -Properties Name, Manager, DisplayName, GivenName, Surname, SamAccountName, EmailAddress, msDS-UserPasswordExpiryTimeComputed, PasswordExpired, PasswordLastSet, PasswordNotRequired, PasswordNeverExpires
             $users = $users | Select-Object Name, UserPrincipalName, SamAccountName, DisplayName, GivenName, Surname, EmailAddress, PasswordExpired, PasswordLastSet, PasswordNotRequired, PasswordNeverExpires, Enabled,
-            @{Name = "Manager"; Expression = { (Get-ADUser $_.Manager).Name }},
-            @{Name = "ManagerEmail"; Expression = { (Get-ADUser -Properties Mail $_.Manager).Mail  }},
+            @{Name = "Manager"; Expression = { (Get-ADUser -Server $Domain $_.Manager).Name }},
+            @{Name = "ManagerEmail"; Expression = { (Get-ADUser -Server $Domain -Properties Mail $_.Manager).Mail  }},
             @{Name = "DateExpiry"; Expression = { ([datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed")) }},
             @{Name = "DaysToExpire"; Expression = { (NEW-TIMESPAN -Start (GET-DATE) -End ([datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed"))).Days }}
             return $users
         }
-        $Users = Find-AllUsers
+        $Users = Find-AllUsers -Domain $Domain
         return [ordered] @{
             Users                          = $Users
             UsersAll                       = $Users | Where { $_.PasswordNotRequired -eq $False } | Select Name, SamAccountName, UserPrincipalName, Enabled
@@ -43,15 +49,15 @@ function Get-ActiveDirectoryData {
             UsersExpiredInclDisabled       = $Users | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.PasswordNotRequired -eq $false } | Select Name, SamAccountName, UserPrincipalName, Enabled
             UsersExpiredExclDisabled       = $Users | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } | Select Name, SamAccountName, UserPrincipalName, Enabled
         }
-    }
+    } -ArgumentList $Domain
     $ADSnapshot.UsersCount = [ordered] @{
-        'Users Count Incl. System'            = Get-ObjectCount -Object $Users
-        'Users Count'                         = Get-ObjectCount -Object $UsersAll
-        'Users Expired'                       = Get-ObjectCount -Object $UsersExpiredExclDisabled
-        'Users Expired Incl. Disabled'        = Get-ObjectCount -Object $UsersExpiredInclDisabled
-        'Users Never Expiring'                = Get-ObjectCount -Object $UsersNeverExpiring
-        'Users Never Expiring Incl. Disabled' = Get-ObjectCount -Object $UsersNeverExpiringInclDisabled
-        'Users System Accounts'               = Get-ObjectCount -Object $UsersSystemAccounts
+        'Users Count Incl. System'            = Get-ObjectCount -Object $ADSnapshot.Users.Users
+        'Users Count'                         = Get-ObjectCount -Object $ADSnapshot.Users.UsersAll
+        'Users Expired'                       = Get-ObjectCount -Object $ADSnapshot.Users.UsersExpiredExclDisabled
+        'Users Expired Incl. Disabled'        = Get-ObjectCount -Object $ADSnapshot.Users.UsersExpiredInclDisabled
+        'Users Never Expiring'                = Get-ObjectCount -Object $ADSnapshot.Users.UsersNeverExpiring
+        'Users Never Expiring Incl. Disabled' = Get-ObjectCount -Object $ADSnapshot.Users.UsersNeverExpiringInclDisabled
+        'Users System Accounts'               = Get-ObjectCount -Object $ADSnapshot.Users.UsersSystemAccounts
     }
 
     return $ADSnapshot
