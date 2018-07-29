@@ -1,21 +1,25 @@
 function Start-ActiveDirectoryDocumentation {
     param (
-        [string] $FilePathTemplate,
         [string] $FilePath,
         [switch] $OpenDocument,
+        [switch] $CleanDocument,
         [string] $CompanyName = 'Evotec'
     )
-    if ($FilePathTemplate -ne $null) {
-        $WordDocument = Get-WordDocument -FilePath $FilePathTemplate
-    } else {
+    if ($FilePath -eq '') { throw 'FilePath is required. This should be path where you want to save your document to.'}
+
+    $FilePathTemplate = "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
+
+    if ($CleanDocument) {
         $WordDocument = New-WordDocument -FilePath $FilePath
+    } else {
+        $WordDocument = Get-WordDocument -FilePath $FilePathTemplate
     }
 
     $ForestInformation = Get-WinADForestInformation
 
     $Toc = Add-WordToc -WordDocument $WordDocument -Title 'Table of content' -Switches C, A -RightTabPos 15
 
-    $WordDocument | Add-WordSection -PageBreak
+    $WordDocument | Add-WordPageBreak -Supress $True
 
     ### 1st section - Introduction
     $Text = "This document provides a low-level design of roles and permissions for the IT infrastructure team at $CompanyName organization. This document utilizes knowledge from AD General Concept document that should be delivered with this document. Having all the information described in attached document one can start designing Active Directory with those principles in mind. It's important to know while best practices that were described are important in decision making they should not be treated as final and only solution. Most important aspect is to make sure company has full usability of Active Directory and is happy with how it works. Making things harder just for the sake of implementation of best practices isn't always the best way to go."
@@ -27,7 +31,7 @@ function Start-ActiveDirectoryDocumentation {
         -TocHeadingType Heading1 `
         -Text $Text
 
-    $WordDocument | Add-WordSection -PageBreak
+    $WordDocument | Add-WordPageBreak -Supress $True
 
     ### Section - Forest Summary
     $WordDocument | New-WordBlockTable `
@@ -40,7 +44,7 @@ function Start-ActiveDirectoryDocumentation {
         -TableDesign ColorfulGridAccent5 `
         -TableTitleMerge $True `
         -TableTitleText "Forest Summary" `
-        -Text  "Active Directory at $CompanyName has a forest name $($ForestInformation.ForestName). Following table contains forest summary with important information:" -verbose
+        -Text  "Active Directory at $CompanyName has a forest name $($ForestInformation.ForestName). Following table contains forest summary with important information:"
 
     $WordDocument | New-WordBlockTable `
         -TableData $ForestInformation.FSMO `
@@ -74,15 +78,13 @@ function Start-ActiveDirectoryDocumentation {
         -EmptyParagraphsBefore 1
 
     foreach ($Domain in $ForestInformation.Domains) {
-        $WordDocument | Add-WordSection -PageBreak
+        $WordDocument | Add-WordPageBreak -Supress $True
         $DomainInformation = Get-WinDomainInformation -Domain $Domain
 
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain $Domain" -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
         ### Section - Domain Summary
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain Summary" -ListLevel 1 -ListItemType Numbered -HeadingType Heading2
         $SectionDomainSummary = $WordDocument | Get-DomainSummary -Paragraph $SectionDomainSummary -ActiveDirectorySnapshot $ActiveDirectorySnapshot -Domain $Domain
-
-
 
         $WordDocument | New-WordBlockTable `
             -TableData $DomainInformation.FSMO `

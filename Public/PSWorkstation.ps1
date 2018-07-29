@@ -44,7 +44,7 @@ function Start-WinDocumentationWorkstation {
     Add-WordText -WordDocument $WordDocument -Text 'OS Information' -FontSize 10 -HeadingType Heading1
     Add-WordTable -WordDocument $WordDocument -DataTable $Data6 -Design ColorfulGrid -AutoFit Window
 
-    if ($null -ne $Data7) {
+    if ($null -ne $Data) {
         Add-WordText -WordDocument $WordDocument -Text 'OEM Information' -FontSize 10 -HeadingType Heading1
         Add-WordTable -WordDocument $WordDocument -DataTable $Data7 -Design ColorfulGrid -AutoFit Window
     }
