@@ -147,6 +147,8 @@ function Start-ActiveDirectoryDocumentation {
             -Text 'Following users have highest domain priviliges and are able to control a lot of Windows resources.'
     }
 
+    Add-WordPieChart -WordDocument $WordDocument -ChartName 'My finances' -Names 'Today', 'Yesterday' -Values  2000, 20000 -ChartLegendPosition Left -ChartLegendOverlay $true
+
     Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true #-Verbose
     if ($OpenDocument) { Invoke-Item $FilePath }
 }
