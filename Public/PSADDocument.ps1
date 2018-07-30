@@ -89,6 +89,21 @@ function Start-ActiveDirectoryDocumentation {
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain Summary" -ListLevel 1 -ListItemType Numbered -HeadingType Heading2
         $SectionDomainSummary = $WordDocument | Get-DomainSummary -Paragraph $SectionDomainSummary -ActiveDirectorySnapshot $DomainInformation.ADSnapshot -Domain $Domain
 
+        Write-Verbose "Start-ActiveDirectoryDocumentation - Creating section for $Domain - Domain Controllers"
+
+        $WordDocument | New-WordBlockTable `
+            -TocEnable $True `
+            -TocText 'General Information - Domain Controllers' `
+            -TocListLevel 1 `
+            -TocListItemType Numbered `
+            -TocHeadingType Heading2 `
+            -TableData $DomainInformation.DomainControllers `
+            -TableDesign ColorfulGridAccent5 `
+            -TableMaximumColumns 8 `
+            -Text 'Following table contains domain controllers'
+
+        Write-Verbose "Start-ActiveDirectoryDocumentation - Creating section for $Domain - FSMO Roles"
+
         $WordDocument | New-WordBlockTable `
             -TableData $DomainInformation.FSMO `
             -TableDesign ColorfulGridAccent5 `
@@ -155,15 +170,15 @@ function Start-ActiveDirectoryDocumentation {
             -TocListLevel 1 `
             -TocListItemType Numbered `
             -TocHeadingType Heading2 `
-            -TableData $DomainInformation.ADSnapshot.UsersCount `
+            -TableData $DomainInformation.UsersCount `
             -TableDesign ColorfulGridAccent5 `
             -TableTitleMerge $True `
             -TableTitleText 'Users Count' `
             -Text "Following table and chart shows number of users in its categories" `
             -ChartEnable $True `
             -ChartTitle 'Users Count' `
-            -ChartKeys (Convert-KeyToKeyValue $DomainInformation.ADSnapshot.UsersCount).Keys `
-            -ChartValues (Convert-KeyToKeyValue $DomainInformation.ADSnapshot.UsersCount).Values
+            -ChartKeys (Convert-KeyToKeyValue $DomainInformation.UsersCount).Keys `
+            -ChartValues (Convert-KeyToKeyValue $DomainInformation.UsersCount).Values
 
     }
 

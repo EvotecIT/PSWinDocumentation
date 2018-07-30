@@ -5,4 +5,4 @@ Import-Module ActiveDirectory
 $FilePath = "$Env:USERPROFILE\Desktop\PSWriteWord-Example-Report.docx"
 
 Clear-Host
-Start-ActiveDirectoryDocumentation -CompanyName 'Evotec' -FilePath $FilePath -OpenDocument -Verbose
+Start-ActiveDirectoryDocumentation -CompanyName 'Euvic' -FilePath $FilePath -OpenDocument -Verbose
