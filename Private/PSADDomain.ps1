@@ -63,6 +63,7 @@ function Get-WinDomainInformation {
     $Data.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
     $Data.OrganizationalUnits = $ADSnapshot.OrganizationalUnits | Select-Object Name, CanonicalName, Created | Sort-Object CanonicalName
     $Data.DomainAdministrators = $ADSnapshot.DomainAdministrators | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
+    Write-Verbose 'Get-WinDomainInformation - Getting All Users'
     $Data.Users = Invoke-Command -ScriptBlock {
         param(
             $Domain
@@ -90,6 +91,7 @@ function Get-WinDomainInformation {
             UsersExpiredExclDisabled       = $Users | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } | Select Name, SamAccountName, UserPrincipalName, Enabled
         }
     } -ArgumentList $Domain
+    Write-Verbose 'Get-WinDomainInformation - Getting All Users Count'
     $Data.UsersCount = [ordered] @{
         'Users Count Incl. System'            = Get-ObjectCount -Object $Data.Users.Users
         'Users Count'                         = Get-ObjectCount -Object $Data.Users.UsersAll
