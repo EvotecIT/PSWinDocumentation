@@ -12,7 +12,7 @@ Ultimate goal of this project is to have proper documentation of following servi
 - Windows Server
 - Windows Workstation
 
-I'm heavily open for feature requests and people willing to create data sets. By data sets.
+I'm heavily open for feature requests and people willing to create data sets. By data sets I mean data prepared to be included in report (usually HashTable, OrderedHashTable, Array or PSCustomobject). This module is smart enough that it can easily convert that data into Word Sections.
 
 ## Updates
 - 0.0.5 / 2018.07.30
