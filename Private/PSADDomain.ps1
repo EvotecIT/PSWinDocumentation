@@ -59,7 +59,7 @@ function Get-WinDomainInformation {
         'Lockout Threshold'             = $ADSnapshot.DefaultPassWordPoLicy.LockoutThreshold
         'Max Password Age'              = $ADSnapshot.DefaultPassWordPoLicy.MaxPasswordAge
         'Min Password Age'              = $ADSnapshot.DefaultPassWordPoLicy.MinPasswordAge
-        'Min Password Length'           = $ADSnapshot.DefaultPassWordPoLicy.MinPasswordAge
+        'Min Password Length'           = $ADSnapshot.DefaultPassWordPoLicy.MinPasswordLength
         'Password History Count'        = $ADSnapshot.DefaultPassWordPoLicy.PasswordHistoryCount
         'Reversible Encryption Enabled' = $ADSnapshot.DefaultPassWordPoLicy.ReversibleEncryptionEnabled
     }

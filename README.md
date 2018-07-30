@@ -15,6 +15,7 @@ Ultimate goal of this project is to have proper documentation of following servi
 I'm heavily open for feature requests and people willing to create data sets. By data sets.
 
 ## Updates
+- 0.0.5 - fix for DefaultPassWordPoLicy MinPasswordLength
 - 0.0.4 - added domain controllers, few verbose messages and commented out some unused code for now
 - 0.0.3 - first "good" release
 
