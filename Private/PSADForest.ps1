@@ -4,6 +4,93 @@ function Get-WinADForestInformation {
     $ForestInformation = $(Get-ADForest)
     $Data.Forest = $ForestInformation
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
+    $Data.Sites = $(Get-ADReplicationSite -Filter * -Properties * )
+    <#
+    $Data.Sites1 = $(
+        $Data.Sites | Select-Object Name, Description, Modified sDRightsEffective, ProtectedFromAccidentalDeletion, Created, Modified, Deleted
+    )
+    #>
+    $Data.Sites1 = Invoke-Command -ScriptBlock {
+        $ReturnData = @()
+        foreach ($Sites in $Data.Sites) {
+            $ReturnData += [ordered] @{
+                'Name'                               = $Sites.Name
+                'Description'                        = $Sites.Description
+                'sD Rights Effective'                = $Sites.sDRightsEffective
+                'Protected From Accidental Deletion' = $Sites.ProtectedFromAccidentalDeletion
+                'Modified'                           = $Sites.Modified
+                'Created'                            = $Sites.Created
+                'Deleted'                            = $Sites.Deleted
+            }
+        }
+        return $ReturnData
+    }
+    <#
+    $Data.Sites2 = $(
+        $Data.Sites | Select-Object Name, TopologyCleanupEnabled, TopologyDetectStaleEnabled, TopologyMinimumHopsEnabled, UniversalGroupCachingEnabled, UniversalGroupCachingRefreshSite
+    )
+    $Data.Sites3 = Invoke-Command -ScriptBlock {
+        $ReturnData = [ordered] @{
+            'Name'                             = $Data.Sites.Name
+            'TopologyCleanupEnabled'           = $Data.Sites.TopologyCleanupEnabled
+            'TopologyDetectStaleEnabled'       = $Data.Sites.TopologyDetectStaleEnabled
+            'TopologyMinimumHopsEnabled'       = $Data.Sites.TopologyMinimumHopsEnabled
+            'UniversalGroupCachingEnabled'     = $Data.Sites.UniversalGroupCachingEnabled
+            'UniversalGroupCachingRefreshSite' = $Data.Sites.UniversalGroupCachingRefreshSite
+        }
+        return $ReturnData | Convert-ToTable
+    }
+    #>
+    $Data.Sites2 = Invoke-Command -ScriptBlock {
+        $ReturnData = @()
+        foreach ($Sites in $Data.Sites) {
+            $ReturnData += [ordered] @{
+                'Name'                                = $Sites.Name
+                'Topology Cleanup Enabled'            = $Sites.TopologyCleanupEnabled
+                'Topology Detect Stale Enabled'       = $Sites.TopologyDetectStaleEnabled
+                'Topology Minimum Hops Enabled'       = $Sites.TopologyMinimumHopsEnabled
+                'Universal Group Caching Enabled'     = $Sites.UniversalGroupCachingEnabled
+                'Universal Group Caching RefreshSite' = $Sites.UniversalGroupCachingRefreshSite
+            }
+        }
+        return $ReturnData
+    }
+
+    $Data.Subnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
+            Select-Object  Name, DisplayName, Description, Site, ProtectedFromAccidentalDeletion, Created, Modified, Deleted )
+    $Data.Subnets1 = Invoke-Command -ScriptBlock {
+        $ReturnData = @()
+        foreach ($Subnets in $Data.Subnets) {
+            $ReturnData += [ordered] @{
+                'Name'                               = $Subnets.Name
+                'Description'                        = $Subnets.Description
+                'Protected From Accidental Deletion' = $Subnets.ProtectedFromAccidentalDeletion
+                'Modified'                           = $Subnets.Modified
+                'Created'                            = $Subnets.Created
+                'Deleted'                            = $Subnets.Deleted
+            }
+        }
+        return $ReturnData
+    }
+    $Data.Subnets2 = Invoke-Command -ScriptBlock {
+        $ReturnData = @()
+        foreach ($Subnets in $Data.Subnets) {
+            $ReturnData += [ordered] @{
+                'Name' = $Subnets.Name
+                'Site' = $Subnets.Site
+            }
+        }
+        return $ReturnData
+    }
+
+
+
+
+    $Data.SiteLinks = $(
+        Get-ADReplicationSiteLink -Filter * -Properties `
+            Name, Cost, ReplicationFrequencyInMinutes, replInterval, ReplicationSchedule, Created, Modified, Deleted, IsDeleted, ProtectedFromAccidentalDeletion | `
+            Select-Object Name, Cost, ReplicationFrequencyInMinutes, ReplInterval, Modified
+    )
 
     $Data.ForestName = $ForestInformation.Name
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
@@ -19,7 +106,7 @@ function Get-WinADForestInformation {
     }
     $Data.UPNSuffixes = Invoke-Command -ScriptBlock {
         $UPNSuffixList = @()
-        $UPNSuffixList += $ForestInformation.RootDomain + ' (Primary/Default UPN)'
+        $UPNSuffixList += $ForestInformation.RootDomain + ' (Primary / Default UPN)'
         $UPNSuffixList += $ForestInformation.UPNSuffixes
         return $UPNSuffixList
     }

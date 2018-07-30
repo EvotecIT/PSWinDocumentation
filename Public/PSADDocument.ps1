@@ -72,12 +72,64 @@ function Start-ActiveDirectoryDocumentation {
         -ListData $ForestInformation.UPNSuffixes `
         -EmptyParagraphsBefore 1
 
+    Write-Verbose 'Start-ActiveDirectoryDocumentation - Section Forest UPN'
     $WordDocument | New-WordBlockList `
         -Text "Following SPN suffixes were created in this forest:" `
         -TextListEmpty "No SPN suffixes were created in this forest." `
         -ListType Bulleted `
         -ListData $ForestInformation.SPNSuffixes `
         -EmptyParagraphsBefore 1
+
+    Write-Verbose 'Start-ActiveDirectoryDocumentation - Section Forest Sites'
+    $WordDocument | New-WordBlockTable `
+        -TocEnable $True `
+        -TocText 'General Information - Sites' `
+        -TocListLevel 1 `
+        -TocListItemType Numbered `
+        -TocHeadingType Heading1 `
+        -TableData $ForestInformation.Sites1 `
+        -TableDesign ColorfulGridAccent5 `
+        -Text  "Forest Sites list can be found below"
+
+    $WordDocument | New-WordBlockTable `
+        -TocHeadingType Heading1 `
+        -TableData $ForestInformation.Sites2 `
+        -TableDesign ColorfulGridAccent5 `
+        -Text  "Forest Sites list can be found below" `
+        -EmptyParagraphsBefore 1
+
+
+    Write-Verbose 'Start-ActiveDirectoryDocumentation - Section Forest Subnets'
+    $WordDocument | New-WordBlockTable `
+        -TocEnable $True `
+        -TocText 'General Information - Subnets' `
+        -TocListLevel 1 `
+        -TocListItemType Numbered `
+        -TocHeadingType Heading1 `
+        -TableData $ForestInformation.Subnets1 `
+        -TableDesign ColorfulGridAccent5 `
+        -Text  "Forest Subnet information is available below"
+
+
+    $WordDocument | New-WordBlockTable `
+        -TocHeadingType Heading1 `
+        -TableData $ForestInformation.Subnets2 `
+        -TableDesign ColorfulGridAccent5 `
+        -Text  "Table below contains information regarding relation between Subnets and sites" `
+        -EmptyParagraphsBefore 1
+
+    Write-Verbose 'Start-ActiveDirectoryDocumentation - Section Forest SiteLinks'
+    $WordDocument | New-WordBlockTable `
+        -TocEnable $True `
+        -TocText 'General Information - Site Links' `
+        -TocListLevel 1 `
+        -TocListItemType Numbered `
+        -TocHeadingType Heading1 `
+        -TableData $ForestInformation.SiteLinks `
+        -TableDesign ColorfulGridAccent5 `
+        -Text  "Forest Site Links information is available in table below"
+
+
     Write-Verbose 'Start-ActiveDirectoryDocumentation - Working...2'
     foreach ($Domain in $ForestInformation.Domains) {
         $WordDocument | Add-WordPageBreak -Supress $True
@@ -152,7 +204,11 @@ function Start-ActiveDirectoryDocumentation {
             -TocHeadingType Heading2 `
             -TableData $DomainInformation.PriviligedGroupMembers `
             -TableDesign ColorfulGridAccent5 `
-            -Text 'Following table contains list of priviliged groups and count of the members in it.'
+            -Text 'Following table contains list of priviliged groups and count of the members in it.' `
+            -ChartEnable $True `
+            -ChartTitle 'Priviliged Group Members' `
+            -ChartKeys (Convert-TwoArraysIntoOne -Object $DomainInformation.PriviligedGroupMembers.'Group Name' -ObjectToAdd $DomainInformation.PriviligedGroupMembers.'Members Count') `
+            -ChartValues ($DomainInformation.PriviligedGroupMembers.'Members Count')
 
         $WordDocument | New-WordBlockTable `
             -TocEnable $True `
