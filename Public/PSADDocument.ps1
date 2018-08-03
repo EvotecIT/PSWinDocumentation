@@ -4,7 +4,8 @@ function Start-ActiveDirectoryDocumentation {
         [string] $FilePath,
         [switch] $OpenDocument,
         [switch] $CleanDocument,
-        [string] $CompanyName = 'Evotec'
+        [string] $CompanyName = 'Evotec',
+        [string] $FilePathExcel
     )
     if ($FilePath -eq '') { throw 'FilePath is required. This should be path where you want to save your document to.'}
 
@@ -239,5 +240,15 @@ function Start-ActiveDirectoryDocumentation {
     }
 
     Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true #-Verbose
+
+    if ($FilePathExcel) {
+        $ForestInformation.ForestInformation | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -Verbose -WorkSheetname 'Forest Information' -ClearSheet -FreezeTopRow
+        $ForestInformation.FSMO | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname 'Forest FSMO' -FreezeTopRow
+        foreach ($Domain in $ForestInformation.Domains) {
+            $DomainInformation = Get-WinDomainInformation -Domain $Domain
+            $DomainInformation.DomainControllers  | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname "$Domain DCs" -ClearSheet -FreezeTopRow
+        }
+
+    }
     if ($OpenDocument) { Invoke-Item $FilePath }
 }

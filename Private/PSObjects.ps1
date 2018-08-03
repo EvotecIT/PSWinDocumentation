@@ -5,13 +5,6 @@ function Get-ObjectCount {
     )
     return $($Object | Measure-Object).Count
 }
-function Convert-ToTable {
-    [CmdletBinding()]
-    param (
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)][Object]$Object
-    )
-    return $Object.ForEach( {[PSCustomObject]$_})
-}
 function Convert-KeyToKeyValue {
     [CmdletBinding()]
     param (

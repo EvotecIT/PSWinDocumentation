@@ -23,7 +23,7 @@ function Get-WinADForestInformation {
                 'Deleted'                            = $Sites.Deleted
             }
         }
-        return $ReturnData
+        return Format-PSPivotTable $ReturnData
     }
     <#
     $Data.Sites2 = $(
@@ -53,7 +53,7 @@ function Get-WinADForestInformation {
                 'Universal Group Caching RefreshSite' = $Sites.UniversalGroupCachingRefreshSite
             }
         }
-        return $ReturnData
+        return Format-PSPivotTable $ReturnData
     }
 
     $Data.Subnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
@@ -70,7 +70,7 @@ function Get-WinADForestInformation {
                 'Deleted'                            = $Subnets.Deleted
             }
         }
-        return $ReturnData
+        return Format-PSPivotTable $ReturnData
     }
     $Data.Subnets2 = Invoke-Command -ScriptBlock {
         $ReturnData = @()
@@ -80,7 +80,7 @@ function Get-WinADForestInformation {
                 'Site' = $Subnets.Site
             }
         }
-        return $ReturnData
+        return Format-PSPivotTable $ReturnData
     }
 
 
