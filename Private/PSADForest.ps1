@@ -5,11 +5,6 @@ function Get-WinADForestInformation {
     $Data.Forest = $ForestInformation
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
     $Data.Sites = $(Get-ADReplicationSite -Filter * -Properties * )
-    <#
-    $Data.Sites1 = $(
-        $Data.Sites | Select-Object Name, Description, Modified sDRightsEffective, ProtectedFromAccidentalDeletion, Created, Modified, Deleted
-    )
-    #>
     $Data.Sites1 = Invoke-Command -ScriptBlock {
         $ReturnData = @()
         foreach ($Sites in $Data.Sites) {
@@ -25,22 +20,6 @@ function Get-WinADForestInformation {
         }
         return Format-TransposeTable $ReturnData
     }
-    <#
-    $Data.Sites2 = $(
-        $Data.Sites | Select-Object Name, TopologyCleanupEnabled, TopologyDetectStaleEnabled, TopologyMinimumHopsEnabled, UniversalGroupCachingEnabled, UniversalGroupCachingRefreshSite
-    )
-    $Data.Sites3 = Invoke-Command -ScriptBlock {
-        $ReturnData = [ordered] @{
-            'Name'                             = $Data.Sites.Name
-            'TopologyCleanupEnabled'           = $Data.Sites.TopologyCleanupEnabled
-            'TopologyDetectStaleEnabled'       = $Data.Sites.TopologyDetectStaleEnabled
-            'TopologyMinimumHopsEnabled'       = $Data.Sites.TopologyMinimumHopsEnabled
-            'UniversalGroupCachingEnabled'     = $Data.Sites.UniversalGroupCachingEnabled
-            'UniversalGroupCachingRefreshSite' = $Data.Sites.UniversalGroupCachingRefreshSite
-        }
-        return $ReturnData | Convert-ToTable
-    }
-    #>
     $Data.Sites2 = Invoke-Command -ScriptBlock {
         $ReturnData = @()
         foreach ($Sites in $Data.Sites) {
@@ -82,10 +61,6 @@ function Get-WinADForestInformation {
         }
         return Format-TransposeTable $ReturnData
     }
-
-
-
-
     $Data.SiteLinks = $(
         Get-ADReplicationSiteLink -Filter * -Properties `
             Name, Cost, ReplicationFrequencyInMinutes, replInterval, ReplicationSchedule, Created, Modified, Deleted, IsDeleted, ProtectedFromAccidentalDeletion | `

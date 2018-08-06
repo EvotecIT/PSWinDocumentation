@@ -5,7 +5,8 @@ function Start-ActiveDirectoryDocumentation {
         [switch] $OpenDocument,
         [switch] $CleanDocument,
         [string] $CompanyName = 'Evotec',
-        [string] $FilePathExcel
+        [string] $FilePathExcel,
+        [switch] $OpenWorkbook
     )
     if ($FilePath -eq '') { throw 'FilePath is required. This should be path where you want to save your document to.'}
 
@@ -251,4 +252,5 @@ function Start-ActiveDirectoryDocumentation {
 
     }
     if ($OpenDocument) { Invoke-Item $FilePath }
+    if ($OpenWorkbook) { Invoke-Item $FilePathExcel }
 }
