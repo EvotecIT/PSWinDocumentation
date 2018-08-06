@@ -229,7 +229,7 @@ function Start-ActiveDirectoryDocumentation {
             -TocHeadingType Heading2 `
             -TableData $DomainInformation.UsersCount `
             -TableDesign ColorfulGridAccent5 `
-            -TableTitleMerge $True `
+            -TableTitleMerge $False `
             -TableTitleText 'Users Count' `
             -Text "Following table and chart shows number of users in its categories" `
             -ChartEnable $True `

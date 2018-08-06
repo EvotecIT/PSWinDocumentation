@@ -122,7 +122,7 @@ function Get-WinDomainInformation {
                 'SSL Port'           = $DC.SSLPort
             }
         }
-        return Format-PSPivotTable $DCs
+        return Format-TransposeTable $DCs
     }
 
     return $Data
