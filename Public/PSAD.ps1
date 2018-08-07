@@ -13,10 +13,17 @@ function Test-Configuration {
     param (
         [System.Object] $Document
     )
+    [int] $ErrorCount = 0
+    $Script:WriteParameters = $Document.Configuration.DisplayConsole
+
+
     $Keys = Get-ObjectKeys -Object $Document -Ignore 'Configuration'
     foreach ($Key in $Keys) {
-        Test-File -File $Document.$Key.FilePathWord -FileName 'FilePathWord' -Skip:(-not $Document.$Key.ExportWord)
-        Test-File -File $Document.$Key.FilePathExcel -FileName 'FilePathExcel' -Skip:(-not $Document.$Key.ExportExcel)
+        $ErrorCount += Test-File -File $Document.$Key.FilePathWord -FileName 'FilePathWord' -Skip:(-not $Document.$Key.ExportWord)
+        $ErrorCount += Test-File -File $Document.$Key.FilePathExcel -FileName 'FilePathExcel' -Skip:(-not $Document.$Key.ExportExcel)
+    }
+    if ($ErrorCount -ne 0) {
+        Exit
     }
 }
 
@@ -27,20 +34,24 @@ function Test-File {
         [switch] $Require,
         [switch] $Skip
     )
+    [int] $ErrorCount = 0
     if ($Skip) {
-        return
+        return $ErrorCount
     }
     if ($File -ne '') {
         if ($Require) {
             if (Test-Path $File) {
-                return
+                return $ErrorCount
             } else {
-                Write-Color '[e] ', $FileName, " doesn't exists (", $File, "). It's required if you want to use this feature." -Color Red, Yellow, Yellow, White
+                Write-Color  @Script:WriteParameters '[e] ', $FileName, " doesn't exists (", $File, "). It's required if you want to use this feature." -Color Red, Yellow, Yellow, White
+                $ErrorCount++
             }
         }
     } else {
-        Write-Color '[e] ', $FileName, " was empty. It's required if you want to use this feature." -Color Red, Yellow, White
+        $ErrorCount++
+        Write-Color @Script:WriteParameters '[e] ', $FileName, " was empty. It's required if you want to use this feature." -Color Red, Yellow, White
     }
+    return $ErrorCount
 }
 
 function Start-Documentation {
@@ -48,21 +59,7 @@ function Start-Documentation {
     param (
         [System.Object] $Document
     )
-
-    $Document.PSObject.Properties
-
     Test-Configuration -Document $Document
-    return
-    <#
-    [string] $FilePath,
-    [switch] $OpenDocument,
-    [switch] $CleanDocument,
-    [string] $CompanyName = 'Evotec',
-    [string] $FilePathExcel,
-    [switch] $OpenWorkbook
-
-    #>
-    if ($FilePath -eq '') { throw 'FilePath is required. This should be path where you want to save your document to.'}
 
     $FilePathTemplate = "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
 
