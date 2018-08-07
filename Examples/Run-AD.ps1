@@ -3,15 +3,11 @@ Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 
 $Document = [ordered]@{
-    Configuration = [ordered] @{
+    Configuration    = [ordered] @{
         Prettify       = @{
-            CompanyName = 'Evotec'
-        }
-        Template       = @{
-            Use        = $true
-            UseBuiltin = $true
-
-
+            CompanyName        = 'Evotec'
+            UseBuiltinTemplate = $false
+            CustomTemplatePath = ''
         }
         Options        = @{
             OpenDocument = $true
@@ -26,9 +22,10 @@ $Document = [ordered]@{
             Verbose = $false
         }
     }
-    DocumentAD    = [ordered] @{
+    DocumentAD       = [ordered] @{
+        Enable        = $true
         ExportWord    = $true
-        ExportExcel   = $true
+        ExportExcel   = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWriteWord-Example-Report.docx"
         FilePathExcel = ""
         Sections      = [ordered] @{
@@ -58,7 +55,7 @@ $Document = [ordered]@{
         }
 
     }
-    DocumentAD1   = [ordered] @{
+    DocumentExchange = [ordered] @{
 
     }
 }

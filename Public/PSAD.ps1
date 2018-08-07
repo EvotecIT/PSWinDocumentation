@@ -8,25 +8,6 @@ function Register-DataFillers {
     $CompanyName = $Document.Configuration.CompanyName
 }
 
-function Test-Configuration {
-    [CmdletBinding()]
-    param (
-        [System.Object] $Document
-    )
-    [int] $ErrorCount = 0
-    $Script:WriteParameters = $Document.Configuration.DisplayConsole
-
-
-    $Keys = Get-ObjectKeys -Object $Document -Ignore 'Configuration'
-    foreach ($Key in $Keys) {
-        $ErrorCount += Test-File -File $Document.$Key.FilePathWord -FileName 'FilePathWord' -Skip:(-not $Document.$Key.ExportWord)
-        $ErrorCount += Test-File -File $Document.$Key.FilePathExcel -FileName 'FilePathExcel' -Skip:(-not $Document.$Key.ExportExcel)
-    }
-    if ($ErrorCount -ne 0) {
-        Exit
-    }
-}
-
 function Test-File {
     param(
         [string] $File,
@@ -54,6 +35,44 @@ function Test-File {
     return $ErrorCount
 }
 
+function Test-Configuration {
+    [CmdletBinding()]
+    param (
+        [System.Object] $Document
+    )
+    [int] $ErrorCount = 0
+    $Script:WriteParameters = $Document.Configuration.DisplayConsole
+
+
+    $Keys = Get-ObjectKeys -Object $Document -Ignore 'Configuration'
+    foreach ($Key in $Keys) {
+        $ErrorCount += Test-File -File $Document.$Key.FilePathWord -FileName 'FilePathWord' -Skip:(-not $Document.$Key.ExportWord)
+        $ErrorCount += Test-File -File $Document.$Key.FilePathExcel -FileName 'FilePathExcel' -Skip:(-not $Document.$Key.ExportExcel)
+    }
+    if ($ErrorCount -ne 0) {
+        Exit
+    }
+}
+
+function Get-DocumentPath {
+    [CmdletBinding()]
+    param (
+        [System.Object] $Document,
+        [string] $FinalDocumentLocation
+    )
+    if ($Document.Configuration.Prettify.UseBuiltinTemplate) {
+        $WordDocument = Get-WordDocument -FilePath "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
+    } else {
+        if ($Document.Configuration.Prettify.CustomTemplatePath) {
+            if (Test-File -File $Document.Configuration.Prettify.CustomTemplatePath -FileName 'CustomTemplatePath' -eq 0) {
+                $WordDocument = Get-WordDocument -FilePath $Document.Configuration.Prettify.CustomTemplatePath
+            } else {
+                $WordDocument = New-WordDocument -FilePath $FinalDocumentLocation
+            }
+        }
+    }
+}
+
 function Start-Documentation {
     [CmdletBinding()]
     param (
@@ -61,13 +80,19 @@ function Start-Documentation {
     )
     Test-Configuration -Document $Document
 
-    $FilePathTemplate = "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
+    if ($Document.DocumentAD.Enable) {
+        $ForestInformation = Get-WinADForestInformation
+        $ForestInformation.ForestInformation
 
-    if ($CleanDocument) {
-        $WordDocument = New-WordDocument -FilePath $FilePath
-    } else {
-        $WordDocument = Get-WordDocument -FilePath $FilePathTemplate
+
+        Write-Color 'Test' -Color Red
+
+        $ForestInformation.FoundDomains.Count
+
+        # $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation
+
     }
+    return
 
     Write-Verbose 'Start-ActiveDirectoryDocumentation - Getting Forest Information'
     $ForestInformation = Get-WinADForestInformation
