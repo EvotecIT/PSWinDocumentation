@@ -1,4 +1,4 @@
-function Get-WinDomainInformation {
+function Get-WinADDomainInformation {
     [CmdletBinding()]
     param (
         [string] $Domain
@@ -48,6 +48,7 @@ function Get-WinDomainInformation {
         }
         return $GroupPolicies.ForEach( {[PSCustomObject]$_})
     }
+    $Data.GroupPoliciesDetails = Format-TransposeTable (Get-GPOInfo -DomainName $Domain)
     $Data.DefaultPassWordPoLicy = [ordered] @{
         'Complexity Enabled'            = $ADSnapshot.DefaultPassWordPoLicy.ComplexityEnabled
         #'Distinguished Name'            = $ADSnapshot.DefaultPassWordPoLicy.DistinguishedName

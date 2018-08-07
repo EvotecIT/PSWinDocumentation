@@ -46,7 +46,7 @@ function Start-ActiveDirectoryDocumentation {
         -TocHeadingType Heading1 `
         -TableData $ForestInformation.ForestInformation `
         -TableDesign ColorfulGridAccent5 `
-        -TableTitleMerge $True `
+        -TableTitleMerge $true `
         -TableTitleText "Forest Summary" `
         -Text  "Active Directory at $CompanyName has a forest name $($ForestInformation.ForestName). Following table contains forest summary with important information:"
 
@@ -136,7 +136,7 @@ function Start-ActiveDirectoryDocumentation {
     foreach ($Domain in $ForestInformation.Domains) {
         $WordDocument | Add-WordPageBreak -Supress $True
         Write-Verbose 'Start-ActiveDirectoryDocumentation - Getting domain information'
-        $DomainInformation = Get-WinDomainInformation -Domain $Domain
+        $DomainInformation = Get-WinADDomainInformation -Domain $Domain
 
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain $Domain" -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
         ### Section - Domain Summary
@@ -246,8 +246,10 @@ function Start-ActiveDirectoryDocumentation {
         $ForestInformation.ForestInformation | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -Verbose -WorkSheetname 'Forest Information' -ClearSheet -FreezeTopRow
         $ForestInformation.FSMO | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname 'Forest FSMO' -FreezeTopRow
         foreach ($Domain in $ForestInformation.Domains) {
-            $DomainInformation = Get-WinDomainInformation -Domain $Domain
+            $DomainInformation = Get-WinADDomainInformation -Domain $Domain
             $DomainInformation.DomainControllers  | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname "$Domain DCs" -ClearSheet -FreezeTopRow
+            $DomainInformation.GroupPoliciesDetails | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorksheetName "$Domain GPOs Details" -ClearSheet -FreezeTopRow -NoNumberConversion SSDL, GUID, ID, ACLs
+            $DomainInformation.GroupPoliciesDetails | fl *
         }
 
     }
