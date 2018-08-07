@@ -7,4 +7,4 @@ $FilePath = "$Env:USERPROFILE\Desktop\PSWriteWord-Example-Report.docx"
 $FilePathExcel = "$Env:USERPROFILE\Desktop\PSWriteWord-Example-Report.xlsx"
 
 Clear-Host
-Start-ActiveDirectoryDocumentation -CompanyName 'Euvic' -FilePath $FilePath -Verbose -FilePathExcel $FilePathExcel -OpenDocument
+Start-ActiveDirectoryDocumentation -CompanyName 'Evotec' -FilePath $FilePath -Verbose -FilePathExcel $FilePathExcel -OpenDocument

@@ -8,16 +8,60 @@ function Register-DataFillers {
     $CompanyName = $Document.Configuration.CompanyName
 }
 
-function Start-ActiveDirectoryDocumentation {
+function Test-Configuration {
     [CmdletBinding()]
     param (
-        [string] $FilePath,
-        [switch] $OpenDocument,
-        [switch] $CleanDocument,
-        [string] $CompanyName = 'Evotec',
-        [string] $FilePathExcel,
-        [switch] $OpenWorkbook
+        [System.Object] $Document
     )
+    $Keys = Get-ObjectKeys -Object $Document -Ignore 'Configuration'
+    foreach ($Key in $Keys) {
+        Test-File -File $Document.$Key.FilePathWord -FileName 'FilePathWord' -Skip:(-not $Document.$Key.ExportWord)
+        Test-File -File $Document.$Key.FilePathExcel -FileName 'FilePathExcel' -Skip:(-not $Document.$Key.ExportExcel)
+    }
+}
+
+function Test-File {
+    param(
+        [string] $File,
+        [string] $FileName,
+        [switch] $Require,
+        [switch] $Skip
+    )
+    if ($Skip) {
+        return
+    }
+    if ($File -ne '') {
+        if ($Require) {
+            if (Test-Path $File) {
+                return
+            } else {
+                Write-Color '[e] ', $FileName, " doesn't exists (", $File, "). It's required if you want to use this feature." -Color Red, Yellow, Yellow, White
+            }
+        }
+    } else {
+        Write-Color '[e] ', $FileName, " was empty. It's required if you want to use this feature." -Color Red, Yellow, White
+    }
+}
+
+function Start-Documentation {
+    [CmdletBinding()]
+    param (
+        [System.Object] $Document
+    )
+
+    $Document.PSObject.Properties
+
+    Test-Configuration -Document $Document
+    return
+    <#
+    [string] $FilePath,
+    [switch] $OpenDocument,
+    [switch] $CleanDocument,
+    [string] $CompanyName = 'Evotec',
+    [string] $FilePathExcel,
+    [switch] $OpenWorkbook
+
+    #>
     if ($FilePath -eq '') { throw 'FilePath is required. This should be path where you want to save your document to.'}
 
     $FilePathTemplate = "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"

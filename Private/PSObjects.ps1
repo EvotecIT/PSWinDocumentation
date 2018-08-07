@@ -8,7 +8,7 @@ function Get-ObjectCount {
 function Convert-KeyToKeyValue {
     [CmdletBinding()]
     param (
-        $Object
+        [object] $Object
     )
     $NewHash = [ordered] @{}
     foreach ($O in $Object.Keys) {
@@ -17,6 +17,14 @@ function Convert-KeyToKeyValue {
         $NewHash.$KeyName = $KeyValue
     }
     return $NewHash
+}
+function Get-ObjectKeys {
+    param(
+        [object] $Object,
+        [string] $Ignore
+    )
+    $Data = $Object.Keys | Where { $_ -notcontains $Ignore }
+    return $Data
 }
 
 ## This methods converts 2 Arrays into 1 Array

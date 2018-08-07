@@ -19,7 +19,7 @@
     CompanyName       = 'Evotec'
 
     # Copyright statement for this module
-    Copyright         = 'Evotec (c) 2018. All rights reserved.'
+    Copyright         = 'Evotec (c) 2011-2018. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description       = 'Simple project generating Active Directory (for now) documentation with a single button!'
@@ -49,7 +49,7 @@
     # RequiredAssemblies = @()
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-    # ScriptsToProcess = @()
+    ScriptsToProcess  = @('Enums\TableData.ps1')
 
     # Type files (.ps1xml) to be loaded when importing this module
     # TypesToProcess = @()
@@ -87,7 +87,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = @('documentation', 'windows', 'word', 'workstation')
+            Tags       = @('documentation', 'windows', 'word', 'workstation', 'active directory')
 
             # A URL to the license for this module.
             # LicenseUri = ''
