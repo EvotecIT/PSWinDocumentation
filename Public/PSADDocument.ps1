@@ -250,7 +250,7 @@ function Start-ActiveDirectoryDocumentation {
 
     }
 
-    Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true #-Verbose
+    $FilePath = Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $false #-Verbose
 
     if ($FilePathExcel) {
         $ForestInformation.ForestInformation | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -Verbose -WorkSheetname 'Forest Information' -ClearSheet -FreezeTopRow

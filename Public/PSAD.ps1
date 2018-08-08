@@ -53,7 +53,6 @@ function Test-Configuration {
         Exit
     }
 }
-
 function Get-DocumentPath {
     [CmdletBinding()]
     param (
@@ -61,16 +60,92 @@ function Get-DocumentPath {
         [string] $FinalDocumentLocation
     )
     if ($Document.Configuration.Prettify.UseBuiltinTemplate) {
+        Write-Verbose 'Get-DocumentPath - Option 1'
         $WordDocument = Get-WordDocument -FilePath "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
     } else {
         if ($Document.Configuration.Prettify.CustomTemplatePath) {
             if (Test-File -File $Document.Configuration.Prettify.CustomTemplatePath -FileName 'CustomTemplatePath' -eq 0) {
+                Write-Verbose 'Get-DocumentPath - Option 2'
                 $WordDocument = Get-WordDocument -FilePath $Document.Configuration.Prettify.CustomTemplatePath
             } else {
+                Write-Verbose 'Get-DocumentPath - Option 3'
                 $WordDocument = New-WordDocument -FilePath $FinalDocumentLocation
             }
+        } else {
+            Write-Verbose 'Get-DocumentPath - Option 4'
+            $WordDocument = New-WordDocument -FilePath $FinalDocumentLocation
         }
     }
+    if ($WordDocument -eq $null) { Write-Verbose ' Null'}
+    return $WordDocument
+}
+function Get-WinDocumentationData {
+    param (
+        [nullable[TableData]] $TableData,
+        $ForestInformation
+    )
+    switch ( $TableData ) {
+        ForestSummary {
+            Write-Verbose 'Forest summary'
+            return $ForestInformation.ForestInformation
+        }
+        ForestFSMO {
+            Write-Verbose 'Forest FSMO'
+            return $ForestInformation.FSMO
+        }
+        ForestOptionalFeatures {
+            return $ForestInformation.OptionalFeatures
+        }
+        ForestUPNSuffixes {
+            return $ForestInformation.UPNSuffixes
+        }
+        default {
+            Write-Verbose 'Default NULL'
+            return $null
+        }
+    }
+}
+function Get-WinDocumentationText {
+    param (
+        [string] $Text,
+        $ForestInformation
+    )
+    #$ForestInformation.GetType()
+    $Text = $Text.Replace('<CompanyName>', $Document.Configuration.Prettify.CompanyName)
+    $Text = $Text.Replace('<ForestName>', $ForestInformation.ForestName)
+    return $Text
+}
+
+function New-ADDocumentBlock {
+    param(
+        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Mandatory = $true)][Xceed.Words.NET.Container]$WordDocument,
+        $Section,
+        $ForestInformation
+    )
+    if ($Section.Use) {
+        $WordDocument | New-WordBlock `
+            -TocGlobalDefinition $Section.TocGlobalDefinition`
+            -TocGlobalTitle $Section.TocGlobalTitle `
+            -TocGlobalSwitches $Section.TocGlobalSwitches `
+            -TocGlobalRightTabPos $Section.TocGlobalRightTabPos `
+            -TocEnable $Section.TocEnable `
+            -TocText (Get-WinDocumentationText -Text $Section.TocText -ForestInformation $ForestInformation) `
+            -TocListLevel $Section.TocListLevel `
+            -TocListItemType $Section.TocListItemType `
+            -TocHeadingType $Section.TocHeadingType `
+            -TableData (Get-WinDocumentationData -TableData $Section.TableData -ForestInformation $ForestInformation) `
+            -TableDesign $Section.TableDesign `
+            -TableTitleMerge $Section.TableTitleMerge `
+            -TableTitleText (Get-WinDocumentationText -Text $Section.TableTitleText -ForestInformation $ForestInformation) `
+            -Text (Get-WinDocumentationText -Text $Section.Text -ForestInformation $ForestInformation) `
+            -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
+            -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `
+            -PageBreaksBefore $Section.PageBreaksBefore `
+            -PageBreaksAfter $Section.PageBreaksAfter `
+            -TextAlignment $Section.TextAlignment `
+
+    }
+    return $WordDocument
 }
 
 function Start-Documentation {
@@ -81,50 +156,27 @@ function Start-Documentation {
     Test-Configuration -Document $Document
 
     if ($Document.DocumentAD.Enable) {
-        $ForestInformation = Get-WinADForestInformation
-        $ForestInformation.ForestInformation
+        # $ForestInformation = Get-WinADForestInformation
+        #$ForestInformation.FoundDomains.Count
+
+        ### Starting WORD
+        $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
 
 
-        Write-Color 'Test' -Color Red
+        ### Start Sections
+        $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
+        foreach ($Section in $ADSectionsForest) {
+            $WordDocument = $WordDocument | New-ADDocumentBlock -Section $Document.DocumentAD.Sections.SectionForest.$Section -ForestInformation $ForestInformation
+        }
+        ### End Sections
 
-        $ForestInformation.FoundDomains.Count
 
-        # $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation
-
+        ### Ending WORD
+        $Document.DocumentAD.FilePathWord = Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $Document.DocumentAD.FilePathWord -Supress $false
+        Invoke-Item $Document.DocumentAD.FilePathWord
     }
     return
 
-    Write-Verbose 'Start-ActiveDirectoryDocumentation - Getting Forest Information'
-    $ForestInformation = Get-WinADForestInformation
-    Write-Verbose 'Start-ActiveDirectoryDocumentation - Working...1'
-    $Toc = Add-WordToc -WordDocument $WordDocument -Title 'Table of content' -Switches C, A -RightTabPos 15
-
-    $WordDocument | Add-WordPageBreak -Supress $True
-
-    ### 1st section - Introduction
-    $Text = "This document provides a low-level design of roles and permissions for the IT infrastructure team at $CompanyName organization. This document utilizes knowledge from AD General Concept document that should be delivered with this document. Having all the information described in attached document one can start designing Active Directory with those principles in mind. It's important to know while best practices that were described are important in decision making they should not be treated as final and only solution. Most important aspect is to make sure company has full usability of Active Directory and is happy with how it works. Making things harder just for the sake of implementation of best practices isn't always the best way to go."
-    $WordDocument | New-WordBlock `
-        -TocEnable $True `
-        -TocText 'Scope' `
-        -TocListLevel 0 `
-        -TocListItemType Numbered `
-        -TocHeadingType Heading1 `
-        -Text $Text
-
-    $WordDocument | Add-WordPageBreak -Supress $True
-
-    ### Section - Forest Summary
-    $WordDocument | New-WordBlockTable `
-        -TocEnable $True `
-        -TocText 'General Information - Forest Summary' `
-        -TocListLevel 0 `
-        -TocListItemType Numbered `
-        -TocHeadingType Heading1 `
-        -TableData $ForestInformation.ForestInformation `
-        -TableDesign ColorfulGridAccent5 `
-        -TableTitleMerge $true `
-        -TableTitleText "Forest Summary" `
-        -Text  "Active Directory at $CompanyName has a forest name $($ForestInformation.ForestName). Following table contains forest summary with important information:"
 
     $WordDocument | New-WordBlockTable `
         -TableData $ForestInformation.FSMO `

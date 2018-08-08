@@ -1,6 +1,9 @@
 Add-Type -TypeDefinition @"
     public enum TableData {
         Introduction,
-        ForestSummary
+        ForestSummary,
+        ForestFSMO,
+        ForestOptionalFeatures,
+        ForestUPNSuffixes
     }
 "@

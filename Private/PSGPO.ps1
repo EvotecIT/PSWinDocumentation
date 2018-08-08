@@ -53,4 +53,4 @@ Function Get-GPOInfo {
     End {}
 }
 
-Get-GPOInfo | Select -First 1 | Format-TransposeTable | fl
+#Get-GPOInfo | Select -First 1 | Format-TransposeTable | fl
