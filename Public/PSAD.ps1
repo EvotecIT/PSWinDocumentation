@@ -143,6 +143,16 @@ function New-ADDocumentBlock {
         $TableData = (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain)
         $ListData = (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain)
         $ChartData = (Get-WinDocumentationData -Data $Section.ChartData -Forest $Forest -Domain $Domain)
+        if ($ChartData) {
+            if ($Section.ChartKeys -eq 'Keys' -and $Section.ChartValues -eq 'Values') {
+                $ChartKeys = (Convert-KeyToKeyValue $ChartData).Keys
+                $ChartValues = (Convert-KeyToKeyValue $ChartData).Values
+            } else {
+                $ChartKeys = (Convert-TwoArraysIntoOne -Object $ChartData.($Section.ChartKeys[0]) -ObjectToAdd $ChartData.($Section.ChartKeys[1]))
+                $ChartValues = ($ChartData.($Section.ChartValues))
+            }
+        }
+
 
         ### Converts for Text
         $TocText = (Get-WinDocumentationText -Text $Section.TocText -Forest $Forest -Domain $Domain)
@@ -175,9 +185,8 @@ function New-ADDocumentBlock {
             -ListTextEmpty $Section.ListTextEmpty `
             -ChartEnable $Section.ChartEnable `
             -ChartTitle $ChartTitle `
-            -ChartKeys (Convert-KeyToKeyValue $ChartData).Keys `
-            -ChartValues (Convert-KeyToKeyValue $ChartData).Values `
-
+            -ChartKeys $ChartKeys `
+            -ChartValues $ChartValues
     }
     return $WordDocument
 }
