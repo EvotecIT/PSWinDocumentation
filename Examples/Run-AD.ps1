@@ -157,16 +157,36 @@ $Document = [ordered]@{
                     TableData       = [Forest]::SiteLinks
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = "Forest Site Links information is available in table below"
-
+                    PageBreaksAfter = 1
                 }
 
             }
             SectionDomain = [ordered] @{
-                SectionPageBreak         = [ordered] @{
-                    Use              = $true
+                SectionPageBreak                    = [ordered] @{
+                    Use              = $True
                     PageBreaksBefore = 1
                 }
-                SectionDomainControllers = [ordered] @{
+                SectionDomainStarter                = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Domain <Domain>'
+                    TocListLevel    = 0
+                    TocListItemType = [ListItemType]::Numbered
+                    TocHeadingType  = [HeadingType]::Heading1
+                }
+                SectionDomainIntroduction           = [ordered] @{
+                    Use                   = $true
+                    TocEnable             = $True
+                    TocText               = 'General Information - Domain Summary'
+                    TocListLevel          = 1
+                    TocListItemType       = [ListItemType]::Numbered
+                    TocHeadingType        = [HeadingType]::Heading1
+                    TableData             = [Domain]::DomainInformation
+                    TableDesign           = 'ColorfulGridAccent5'
+                    Text                  = ""
+                    EmptyParagraphsBefore = 0
+                }
+                SectionDomainControllers            = [ordered] @{
                     Use                 = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Domain Controllers'
@@ -177,6 +197,94 @@ $Document = [ordered]@{
                     TableDesign         = 'ColorfulGridAccent5'
                     TableMaximumColumns = 8
                     Text                = 'Following table contains domain controllers'
+                }
+                SectionDomainFSMO                   = [ordered] @{
+                    Use                   = $true
+                    TableData             = [Domain]::FSMO
+                    TableDesign           = ColorfulGridAccent5
+                    TableTitleMerge       = $true
+                    TableTitleText        = "FSMO Roles for $Domain"
+                    Text                  = "Following table contains FSMO servers with roles for domain $Domain"
+                    EmptyParagraphsBefore = 1
+                }
+
+                SectionDomainDefaultPasswordPoLicy  = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Password Policies'
+                    TocListLevel    = 1
+                    TocListItemType = Numbered
+                    TocHeadingType  = Heading2
+                    TableData       = [Domain]::DefaultPasswordPoLicy
+                    TableDesign     = ColorfulGridAccent5
+                    TableTitleMerge = $True
+                    TableTitleText  = "Default Password Policy for $Domain"
+                    Text            = 'Following table contains password policies'
+                }
+                SectionDomainGroupPolicies          = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Group Policies'
+                    TocListLevel    = 1
+                    TocListItemType = Numbered
+                    TocHeadingType  = Heading2
+                    TableData       = [Domain]::GroupPolicies
+                    TableDesign     = ColorfulGridAccent5
+                    Text            = "Following table contains group policies for <Domain>"
+                }
+                SectionDomainOrganizationalUnits    = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Organizational Units'
+                    TocListLevel    = 1
+                    TocListItemType = Numbered
+                    TocHeadingType  = Heading2
+                    TableData       = [Domain]::OrganizationalUnits
+                    TableDesign     = ColorfulGridAccent5
+                    Text            = "Following table contains all OU's created in <Domain>"
+                }
+                SectionDomainPriviligedGroupMembers = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Priviliged Members'
+                    TocListLevel    = 1
+                    TocListItemType = Numbered
+                    TocHeadingType  = Heading2
+                    TableData       = [Domain]::PriviligedGroupMembers
+                    TableDesign     = ColorfulGridAccent5
+                    Text            = 'Following table contains list of priviliged groups and count of the members in it.'
+                    #   ChartEnable     = $True
+                    #  ChartTitle      = 'Priviliged Group Members'
+                    # ChartKeys       = (Convert-TwoArraysIntoOne -Object $DomainInformation.PriviligedGroupMembers.'Group Name' -ObjectToAdd $DomainInformation.PriviligedGroupMembers.'Members Count')
+                    # ChartValues     = ($DomainInformation.PriviligedGroupMembers.'Members Count')
+                }
+                SectionDomainAdministrators         = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Domain Administrators'
+                    TocListLevel    = 1
+                    TocListItemType = Numbered
+                    TocHeadingType  = Heading2
+                    TableData       = [Domain]::DomainAdministrators
+                    TableDesign     = ColorfulGridAccent5
+                    Text            = 'Following users have highest domain priviliges and are able to control a lot of Windows resources.'
+                }
+                SectionDomainUsersCount             = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Users Count'
+                    TocListLevel    = 1
+                    TocListItemType = Numbered
+                    TocHeadingType  = Heading2
+                    TableData       = [Domain]::UsersCount
+                    TableDesign     = ColorfulGridAccent5
+                    TableTitleMerge = $False
+                    TableTitleText  = 'Users Count'
+                    Text            = "Following table and chart shows number of users in its categories"
+                    ChartEnable     = $True
+                    ChartTitle      = 'Users Count'
+                    # ChartKeys       = (Convert-KeyToKeyValue $DomainInformation.UsersCount).Keys
+                    #  ChartValues     = (Convert-KeyToKeyValue $DomainInformation.UsersCount).Values
                 }
             }
         }

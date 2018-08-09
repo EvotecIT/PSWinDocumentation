@@ -93,10 +93,7 @@ function Get-WinDocumentationData {
             FSMO { return $Forest.FSMO }
             OptionalFeatures { return $Forest.OptionalFeatures }
             UPNSuffixes { return $Forest.UPNSuffixes }
-            SPNSuffixes {
-                write-verbose 'spn suffixes'
-                return $Forest.SPNSuffixes
-            }
+            SPNSuffixes { return $Forest.SPNSuffixes }
             Sites { return $Forest.Sites }
             Sites1 { return $Forest.Sites1 }
             Sites2 { return $Forest.Sites2 }
@@ -109,17 +106,27 @@ function Get-WinDocumentationData {
     } elseif ($Type.ObjectTypeName -eq 'Domain' ) {
         switch ( $Data ) {
             DomainControllers { return $Forest.FoundDomains.$Domain.DomainControllers }
+            DomainInformation { return $Forest.FoundDomains.$Domain.DomainInformation }
+            FSMO { return $Forest.FoundDomains.$Domain.FSMO }
+            DefaultPasswordPoLicy { return $Forest.FoundDomains.$Domain.DefaultPasswordPoLicy }
+            GroupPolicies { return $Forest.FoundDomains.$Domain.GroupPolicies }
+            OrganizationalUnits { return $Forest.FoundDomains.$Domain.OrganizationalUnits }
+            PriviligedGroupMembers { return $Forest.FoundDomains.$Domain.PriviligedGroupMembers }
+            DomainAdministrators { return $Forest.FoundDomains.$Domain.DomainAdministrators }
+            UsersCount { return $Forest.FoundDomains.$Domain.UsersCount }
         }
     }
 }
 function Get-WinDocumentationText {
     param (
         [string] $Text,
-        $Forest
+        $Forest,
+        [string] $Domain
     )
     #$ForestInformation.GetType()
     $Text = $Text.Replace('<CompanyName>', $Document.Configuration.Prettify.CompanyName)
     $Text = $Text.Replace('<ForestName>', $Forest.ForestName)
+    $Text = $Text.Replace('<Domain>', $Domain)
     return $Text
 }
 
@@ -138,15 +145,15 @@ function New-ADDocumentBlock {
             -TocGlobalSwitches $Section.TocGlobalSwitches `
             -TocGlobalRightTabPos $Section.TocGlobalRightTabPos `
             -TocEnable $Section.TocEnable `
-            -TocText (Get-WinDocumentationText -Text $Section.TocText -Forest $Forest) `
+            -TocText (Get-WinDocumentationText -Text $Section.TocText -Forest $Forest -Domain $Domain) `
             -TocListLevel $Section.TocListLevel `
             -TocListItemType $Section.TocListItemType `
             -TocHeadingType $Section.TocHeadingType `
             -TableData (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain) `
             -TableDesign $Section.TableDesign `
             -TableTitleMerge $Section.TableTitleMerge `
-            -TableTitleText (Get-WinDocumentationText -Text $Section.TableTitleText -Forest $Forest) `
-            -Text (Get-WinDocumentationText -Text $Section.Text -Forest $Forest) `
+            -TableTitleText (Get-WinDocumentationText -Text $Section.TableTitleText -Forest $Forest -Domain $Domain) `
+            -Text (Get-WinDocumentationText -Text $Section.Text -Forest $Forest -Domain $Domain) `
             -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
             -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `
             -PageBreaksBefore $Section.PageBreaksBefore `
@@ -224,116 +231,18 @@ function Start-Documentation {
         $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain Summary" -ListLevel 1 -ListItemType Numbered -HeadingType Heading2
         $SectionDomainSummary = $WordDocument | Get-DomainSummary -Paragraph $SectionDomainSummary -ActiveDirectorySnapshot $DomainInformation.ADSnapshot -Domain $Domain
 
-        Write-Verbose "Start-ActiveDirectoryDocumentation - Creating section for $Domain - Domain Controllers"
 
-        $WordDocument | New-WordBlockTable `
-            -TocEnable $True `
-            -TocText 'General Information - Domain Controllers' `
-            -TocListLevel 1 `
-            -TocListItemType Numbered `
-            -TocHeadingType Heading2 `
-            -TableData $DomainInformation.DomainControllers `
-            -TableDesign ColorfulGridAccent5 `
-            -TableMaximumColumns 8 `
-            -Text 'Following table contains domain controllers'
+        if ($FilePathExcel) {
+            $ForestInformation.ForestInformation | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -Verbose -WorkSheetname 'Forest Information' -ClearSheet -FreezeTopRow
+            $ForestInformation.FSMO | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname 'Forest FSMO' -FreezeTopRow
+            foreach ($Domain in $ForestInformation.Domains) {
+                $DomainInformation = Get-WinADDomainInformation -Domain $Domain
+                $DomainInformation.DomainControllers  | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname "$Domain DCs" -ClearSheet -FreezeTopRow
+                $DomainInformation.GroupPoliciesDetails | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorksheetName "$Domain GPOs Details" -ClearSheet -FreezeTopRow -NoNumberConversion SSDL, GUID, ID, ACLs
+                $DomainInformation.GroupPoliciesDetails | fl *
+            }
 
-        Write-Verbose "Start-ActiveDirectoryDocumentation - Creating section for $Domain - FSMO Roles"
-
-        $WordDocument | New-WordBlockTable `
-            -TableData $DomainInformation.FSMO `
-            -TableDesign ColorfulGridAccent5 `
-            -TableTitleMerge $true `
-            -TableTitleText "FSMO Roles for $Domain" `
-            -Text "Following table contains FSMO servers with roles for domain $Domain" `
-            -EmptyParagraphsBefore 1
-
-        $WordDocument | New-WordBlockTable `
-            -TocEnable $True `
-            -TocText 'General Information - Password Policies' `
-            -TocListLevel 1 `
-            -TocListItemType Numbered `
-            -TocHeadingType Heading2 `
-            -TableData $DomainInformation.DefaultPassWordPoLicy `
-            -TableDesign ColorfulGridAccent5 `
-            -TableTitleMerge $True `
-            -TableTitleText "Default Password Policy for $Domain" `
-            -Text 'Following table contains password policies'
-
-        $WordDocument | New-WordBlockTable `
-            -TocEnable $True `
-            -TocText 'General Information - Group Policies' `
-            -TocListLevel 1 `
-            -TocListItemType Numbered `
-            -TocHeadingType Heading2 `
-            -TableData $DomainInformation.GroupPolicies `
-            -TableDesign ColorfulGridAccent5 `
-            -Text "Following table contains group policies for $Domain"
-
-        $WordDocument | New-WordBlockTable `
-            -TocEnable $True `
-            -TocText 'General Information - Organizational Units' `
-            -TocListLevel 1 `
-            -TocListItemType Numbered `
-            -TocHeadingType Heading2 `
-            -TableData $DomainInformation.OrganizationalUnits `
-            -TableDesign ColorfulGridAccent5 `
-            -Text "Following table contains all OU's created in $Domain"
-
-        $WordDocument | New-WordBlockTable `
-            -TocEnable $True `
-            -TocText 'General Information - Priviliged Members' `
-            -TocListLevel 1 `
-            -TocListItemType Numbered `
-            -TocHeadingType Heading2 `
-            -TableData $DomainInformation.PriviligedGroupMembers `
-            -TableDesign ColorfulGridAccent5 `
-            -Text 'Following table contains list of priviliged groups and count of the members in it.' `
-            -ChartEnable $True `
-            -ChartTitle 'Priviliged Group Members' `
-            -ChartKeys (Convert-TwoArraysIntoOne -Object $DomainInformation.PriviligedGroupMembers.'Group Name' -ObjectToAdd $DomainInformation.PriviligedGroupMembers.'Members Count') `
-            -ChartValues ($DomainInformation.PriviligedGroupMembers.'Members Count')
-
-        $WordDocument | New-WordBlockTable `
-            -TocEnable $True `
-            -TocText 'General Information - Domain Administrators' `
-            -TocListLevel 1 `
-            -TocListItemType Numbered `
-            -TocHeadingType Heading2 `
-            -TableData $DomainInformation.DomainAdministrators `
-            -TableDesign ColorfulGridAccent5 `
-            -Text 'Following users have highest domain priviliges and are able to control a lot of Windows resources.'
-
-        $WordDocument | New-WordBlockTable `
-            -TocEnable $True `
-            -TocText 'General Information - Users Count' `
-            -TocListLevel 1 `
-            -TocListItemType Numbered `
-            -TocHeadingType Heading2 `
-            -TableData $DomainInformation.UsersCount `
-            -TableDesign ColorfulGridAccent5 `
-            -TableTitleMerge $False `
-            -TableTitleText 'Users Count' `
-            -Text "Following table and chart shows number of users in its categories" `
-            -ChartEnable $True `
-            -ChartTitle 'Users Count' `
-            -ChartKeys (Convert-KeyToKeyValue $DomainInformation.UsersCount).Keys `
-            -ChartValues (Convert-KeyToKeyValue $DomainInformation.UsersCount).Values
-
-    }
-
-    Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $FilePath -Supress $true #-Verbose
-
-    if ($FilePathExcel) {
-        $ForestInformation.ForestInformation | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -Verbose -WorkSheetname 'Forest Information' -ClearSheet -FreezeTopRow
-        $ForestInformation.FSMO | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname 'Forest FSMO' -FreezeTopRow
-        foreach ($Domain in $ForestInformation.Domains) {
-            $DomainInformation = Get-WinADDomainInformation -Domain $Domain
-            $DomainInformation.DomainControllers  | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname "$Domain DCs" -ClearSheet -FreezeTopRow
-            $DomainInformation.GroupPoliciesDetails | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorksheetName "$Domain GPOs Details" -ClearSheet -FreezeTopRow -NoNumberConversion SSDL, GUID, ID, ACLs
-            $DomainInformation.GroupPoliciesDetails | fl *
         }
-
+        if ($OpenDocument) { Invoke-Item $FilePath }
+        if ($OpenWorkbook) { Invoke-Item $FilePathExcel }
     }
-    if ($OpenDocument) { Invoke-Item $FilePath }
-    if ($OpenWorkbook) { Invoke-Item $FilePathExcel }
-}

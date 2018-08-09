@@ -17,6 +17,7 @@ Add-Type -TypeDefinition @"
 
 Add-Type -TypeDefinition @"
     public enum Domain {
+        DomainInformation,
         DomainControllers,
         FSMO,
         DefaultPasswordPoLicy,
@@ -24,6 +25,7 @@ Add-Type -TypeDefinition @"
         OrganizationalUnits,
         PriviligedGroupMembers,
         DomainAdministrators,
+        Users,
         UsersCount
     }
 "@
