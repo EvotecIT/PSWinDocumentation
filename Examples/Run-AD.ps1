@@ -10,7 +10,7 @@ $Document = [ordered]@{
             CustomTemplatePath = ''
         }
         Options        = @{
-            OpenDocument = $true
+            OpenDocument = $false
             OpenExcel    = $true
         }
         DisplayConsole = @{

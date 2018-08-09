@@ -4,6 +4,14 @@ Add-Type -TypeDefinition @"
         ForestSummary,
         ForestFSMO,
         ForestOptionalFeatures,
-        ForestUPNSuffixes
+        ForestUPNSuffixes,
+        ForestSPNSuffixes,
+        ForestSites,
+        ForestSites1,
+        ForestSites2,
+        ForestSubnets,
+        ForestSubnets1,
+        ForestSubnets2,
+        ForestSiteLinks,
     }
 "@

@@ -85,24 +85,19 @@ function Get-WinDocumentationData {
         $ForestInformation
     )
     switch ( $TableData ) {
-        ForestSummary {
-            Write-Verbose 'Forest summary'
-            return $ForestInformation.ForestInformation
-        }
-        ForestFSMO {
-            Write-Verbose 'Forest FSMO'
-            return $ForestInformation.FSMO
-        }
-        ForestOptionalFeatures {
-            return $ForestInformation.OptionalFeatures
-        }
-        ForestUPNSuffixes {
-            return $ForestInformation.UPNSuffixes
-        }
-        default {
-            Write-Verbose 'Default NULL'
-            return $null
-        }
+        ForestSummary { return $ForestInformation.ForestInformation }
+        ForestFSMO { return $ForestInformation.FSMO }
+        ForestOptionalFeatures { return $ForestInformation.OptionalFeatures }
+        ForestUPNSuffixes { return $ForestInformation.UPNSuffixes }
+        ForestSPNSuffixes { return $ForestInformation.SPNSuffixes }
+        ForestSites { return $ForestInformation.Sites }
+        ForestSites1 { return $ForestInformation.Sites1 }
+        ForestSites2 { return $ForestInformation.Sites2 }
+        ForestSubnets { return $ForestInformation.Subnets }
+        ForestSubnets1 { return $ForestInformation.Subnets1 }
+        ForestSubnets2 { return $ForestInformation.Subnets2 }
+        ForestSiteLinks { return $ForestInformation.SiteLinks }
+        default { return $null }
     }
 }
 function Get-WinDocumentationText {
@@ -156,12 +151,11 @@ function Start-Documentation {
     Test-Configuration -Document $Document
 
     if ($Document.DocumentAD.Enable) {
-        # $ForestInformation = Get-WinADForestInformation
+        #$ForestInformation = Get-WinADForestInformation
         #$ForestInformation.FoundDomains.Count
 
         ### Starting WORD
         $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
-
 
         ### Start Sections
         $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
@@ -170,10 +164,8 @@ function Start-Documentation {
         }
         ### End Sections
 
-
         ### Ending WORD
-        $Document.DocumentAD.FilePathWord = Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $Document.DocumentAD.FilePathWord -Supress $false
-        Invoke-Item $Document.DocumentAD.FilePathWord
+        $FilePath = Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $Document.DocumentAD.FilePathWord -Supress $false -OpenDocument:$Document.Configuration.Options.OpenDocument
     }
     return
 
