@@ -113,6 +113,7 @@ function Get-WinDocumentationData {
             OrganizationalUnits { return $Forest.FoundDomains.$Domain.OrganizationalUnits }
             PriviligedGroupMembers { return $Forest.FoundDomains.$Domain.PriviligedGroupMembers }
             DomainAdministrators { return $Forest.FoundDomains.$Domain.DomainAdministrators }
+            Users { return $Forest.FoundDomains.$Domain.Users }
             UsersCount { return $Forest.FoundDomains.$Domain.UsersCount }
         }
     }
@@ -162,7 +163,6 @@ function New-ADDocumentBlock {
             -ListData (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain) `
             -ListType $Section.ListType `
             -ListTextEmpty $Section.ListTextEmpty #-Verbose
-
     }
     return $WordDocument
 }
@@ -246,3 +246,4 @@ function Start-Documentation {
         if ($OpenDocument) { Invoke-Item $FilePath }
         if ($OpenWorkbook) { Invoke-Item $FilePathExcel }
     }
+}
