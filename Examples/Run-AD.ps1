@@ -257,8 +257,6 @@ $Document = [ordered]@{
                     ChartData       = [Domain]::PriviligedGroupMembers
                     ChartKeys       = 'Group Name', 'Members Count'
                     ChartValues     = 'Members Count'
-                    # ChartKeys       = (Convert-TwoArraysIntoOne -Object $DomainInformation.PriviligedGroupMembers.'Group Name' -ObjectToAdd $DomainInformation.PriviligedGroupMembers.'Members Count')
-                    # ChartValues     = ($DomainInformation.PriviligedGroupMembers.'Members Count')
                 }
                 SectionDomainAdministrators         = [ordered] @{
                     Use             = $true
@@ -288,8 +286,6 @@ $Document = [ordered]@{
                     ChartData       = [Domain]::UsersCount
                     ChartKeys       = 'Keys'
                     ChartValues     = 'Values'
-                    # ChartKeys       = (Convert-KeyToKeyValue $DomainInformation.UsersCount).Keys
-                    #  ChartValues     = (Convert-KeyToKeyValue $DomainInformation.UsersCount).Values
                 }
             }
         }

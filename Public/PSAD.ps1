@@ -142,6 +142,8 @@ function New-ADDocumentBlock {
         #Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.TableData)]"
         $TableData = (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain)
         $ListData = (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain)
+
+        ### Preparing chart data
         $ChartData = (Get-WinDocumentationData -Data $Section.ChartData -Forest $Forest -Domain $Domain)
         if ($ChartData) {
             if ($Section.ChartKeys -eq 'Keys' -and $Section.ChartValues -eq 'Values') {
@@ -152,7 +154,6 @@ function New-ADDocumentBlock {
                 $ChartValues = ($ChartData.($Section.ChartValues))
             }
         }
-
 
         ### Converts for Text
         $TocText = (Get-WinDocumentationText -Text $Section.TocText -Forest $Forest -Domain $Domain)
