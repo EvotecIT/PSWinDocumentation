@@ -8,9 +8,10 @@ $Document = [ordered]@{
             CompanyName        = 'Evotec'
             UseBuiltinTemplate = $false
             CustomTemplatePath = ''
+            Language           = 'en-US'
         }
         Options        = @{
-            OpenDocument = $false
+            OpenDocument = $true
             OpenExcel    = $true
         }
         DisplayConsole = @{
@@ -93,6 +94,72 @@ $Document = [ordered]@{
                     Text                  = 'Following table contains optional forest features'
                     EmptyParagraphsBefore = 1
                 }
+                SectionForestUPNSuffixes      = [ordered] @{
+                    Use                   = $true
+                    Text                  = "Following UPN suffixes were created in this forest:"
+                    ListTextEmpty         = "No UPN suffixes were created in this forest."
+                    ListType              = 'Bulleted'
+                    ListData              = [TableData]::ForestUPNSuffixes
+                    EmptyParagraphsBefore = 1
+                }
+                SectionForesSPNSuffixes       = [ordered] @{
+                    Use                   = $true
+                    Text                  = "Following SPN suffixes were created in this forest:"
+                    ListTextEmpty         = "No SPN suffixes were created in this forest."
+                    ListType              = 'Bulleted'
+                    ListData              = [TableData]::ForestSPNSuffixes
+                    EmptyParagraphsBefore = 1
+                }
+                SectionForestSites1           = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Sites'
+                    TocListLevel    = 1
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading1'
+                    TableData       = [TableData]::ForestSites1
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = "Forest Sites list can be found below"
+                }
+                SectionForestSites2           = [ordered] @{
+                    Use                   = $true
+                    TableData             = [TableData]::ForestSites2
+                    TableDesign           = 'ColorfulGridAccent5'
+                    Text                  = "Forest Sites list can be found below"
+                    EmptyParagraphsBefore = 1
+                }
+                SectionForestSubnets1         = [ordered] @{
+                    Use                   = $true
+                    TocEnable             = $True
+                    TocText               = 'General Information - Subnets'
+                    TocListLevel          = 1
+                    TocListItemType       = 'Numbered'
+                    TocHeadingType        = 'Heading1'
+                    TableData             = [TableData]::ForestSubnets1
+                    TableDesign           = 'ColorfulGridAccent5'
+                    Text                  = "Table below contains information regarding relation between Subnets and sites"
+                    EmptyParagraphsBefore = 1
+                }
+                SectionForestSubnets2         = [ordered] @{
+                    Use                   = $true
+                    TableData             = [TableData]::ForestSubnets2
+                    TableDesign           = 'ColorfulGridAccent5'
+                    Text                  = "Table below contains information regarding relation between Subnets and sites"
+                    EmptyParagraphsBefore = 1
+                }
+                SectionForestSiteLinks        = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Site Links'
+                    TocListLevel    = 1
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading1'
+                    TableData       = [TableData]::ForestSiteLinks
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = "Forest Site Links information is available in table below"
+
+                }
+
             }
             #SectionDomain = [ordered] @{
             #    SectionDomainInformation = [ordered] @{

@@ -89,7 +89,10 @@ function Get-WinDocumentationData {
         ForestFSMO { return $ForestInformation.FSMO }
         ForestOptionalFeatures { return $ForestInformation.OptionalFeatures }
         ForestUPNSuffixes { return $ForestInformation.UPNSuffixes }
-        ForestSPNSuffixes { return $ForestInformation.SPNSuffixes }
+        ForestSPNSuffixes {
+            write-verbose 'spn suffixes'
+            return $ForestInformation.SPNSuffixes
+        }
         ForestSites { return $ForestInformation.Sites }
         ForestSites1 { return $ForestInformation.Sites1 }
         ForestSites2 { return $ForestInformation.Sites2 }
@@ -138,9 +141,26 @@ function New-ADDocumentBlock {
             -PageBreaksBefore $Section.PageBreaksBefore `
             -PageBreaksAfter $Section.PageBreaksAfter `
             -TextAlignment $Section.TextAlignment `
+            -ListData (Get-WinDocumentationData -TableData $Section.ListData -ForestInformation $ForestInformation) `
+            -ListType $Section.ListType `
+            -ListTextEmpty $Section.ListTextEmpty `
+            -Verbose
 
     }
     return $WordDocument
+}
+
+function Search-Command($CommandName) {
+    return [bool](Get-Command -Name $CommandName -ErrorAction SilentlyContinue)
+}
+
+function Test-ModuleAvailability {
+    if (Search-Command -CommandName 'Get-AdForest') {
+        # future use
+    } else {
+        Write-Warning 'Modules required to run not found.'
+        Exit
+    }
 }
 
 function Start-Documentation {
@@ -148,10 +168,13 @@ function Start-Documentation {
     param (
         [System.Object] $Document
     )
+    Test-ModuleAvailability
     Test-Configuration -Document $Document
 
+
+
     if ($Document.DocumentAD.Enable) {
-        #$ForestInformation = Get-WinADForestInformation
+        $ForestInformation = Get-WinADForestInformation
         #$ForestInformation.FoundDomains.Count
 
         ### Starting WORD
@@ -160,97 +183,19 @@ function Start-Documentation {
         ### Start Sections
         $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
         foreach ($Section in $ADSectionsForest) {
+            Write-Verbose "Generating WORD Section for [$Section]"
             $WordDocument = $WordDocument | New-ADDocumentBlock -Section $Document.DocumentAD.Sections.SectionForest.$Section -ForestInformation $ForestInformation
         }
         ### End Sections
 
         ### Ending WORD
-        $FilePath = Save-WordDocument -WordDocument $WordDocument -Language 'en-US' -FilePath $Document.DocumentAD.FilePathWord -Supress $false -OpenDocument:$Document.Configuration.Options.OpenDocument
+        $FilePath = Save-WordDocument -WordDocument $WordDocument `
+            -Language $Document.Configuration.Prettify.Language `
+            -FilePath $Document.DocumentAD.FilePathWord `
+            -Supress $True `
+            -OpenDocument:$Document.Configuration.Options.OpenDocument
     }
     return
-
-
-    $WordDocument | New-WordBlockTable `
-        -TableData $ForestInformation.FSMO `
-        -TableDesign ColorfulGridAccent5 `
-        -TableTitleMerge $true `
-        -TableTitleText 'FSMO Roles' `
-        -Text 'Following table contains FSMO servers' `
-        -EmptyParagraphsBefore 1
-
-    $WordDocument | New-WordBlockTable `
-        -TableData $ForestInformation.OptionalFeatures `
-        -TableDesign ColorfulGridAccent5 `
-        -TableTitleMerge $true `
-        -TableTitleText 'Optional Features' `
-        -Text "Following table contains optional forest features" `
-        -EmptyParagraphsBefore 1
-
-    ### Section - UPN Summary
-    $WordDocument | New-WordBlockList `
-        -Text "Following UPN suffixes were created in this forest:" `
-        -TextListEmpty "No UPN suffixes were created in this forest." `
-        -ListType Bulleted `
-        -ListData $ForestInformation.UPNSuffixes `
-        -EmptyParagraphsBefore 1
-
-    Write-Verbose 'Start-ActiveDirectoryDocumentation - Section Forest UPN'
-    $WordDocument | New-WordBlockList `
-        -Text "Following SPN suffixes were created in this forest:" `
-        -TextListEmpty "No SPN suffixes were created in this forest." `
-        -ListType Bulleted `
-        -ListData $ForestInformation.SPNSuffixes `
-        -EmptyParagraphsBefore 1
-
-    Write-Verbose 'Start-ActiveDirectoryDocumentation - Section Forest Sites'
-    $WordDocument | New-WordBlockTable `
-        -TocEnable $True `
-        -TocText 'General Information - Sites' `
-        -TocListLevel 1 `
-        -TocListItemType Numbered `
-        -TocHeadingType Heading1 `
-        -TableData $ForestInformation.Sites1 `
-        -TableDesign ColorfulGridAccent5 `
-        -Text  "Forest Sites list can be found below"
-
-    $WordDocument | New-WordBlockTable `
-        -TocHeadingType Heading1 `
-        -TableData $ForestInformation.Sites2 `
-        -TableDesign ColorfulGridAccent5 `
-        -Text  "Forest Sites list can be found below" `
-        -EmptyParagraphsBefore 1
-
-
-    Write-Verbose 'Start-ActiveDirectoryDocumentation - Section Forest Subnets'
-    $WordDocument | New-WordBlockTable `
-        -TocEnable $True `
-        -TocText 'General Information - Subnets' `
-        -TocListLevel 1 `
-        -TocListItemType Numbered `
-        -TocHeadingType Heading1 `
-        -TableData $ForestInformation.Subnets1 `
-        -TableDesign ColorfulGridAccent5 `
-        -Text  "Forest Subnet information is available below"
-
-
-    $WordDocument | New-WordBlockTable `
-        -TocHeadingType Heading1 `
-        -TableData $ForestInformation.Subnets2 `
-        -TableDesign ColorfulGridAccent5 `
-        -Text  "Table below contains information regarding relation between Subnets and sites" `
-        -EmptyParagraphsBefore 1
-
-    Write-Verbose 'Start-ActiveDirectoryDocumentation - Section Forest SiteLinks'
-    $WordDocument | New-WordBlockTable `
-        -TocEnable $True `
-        -TocText 'General Information - Site Links' `
-        -TocListLevel 1 `
-        -TocListItemType Numbered `
-        -TocHeadingType Heading1 `
-        -TableData $ForestInformation.SiteLinks `
-        -TableDesign ColorfulGridAccent5 `
-        -Text  "Forest Site Links information is available in table below"
-
 
     Write-Verbose 'Start-ActiveDirectoryDocumentation - Working...2'
     foreach ($Domain in $ForestInformation.Domains) {

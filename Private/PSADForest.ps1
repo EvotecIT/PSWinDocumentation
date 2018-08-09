@@ -78,8 +78,8 @@ function Get-WinADForestInformation {
     }
     $Data.UPNSuffixes = Invoke-Command -ScriptBlock {
         $UPNSuffixList = @()
-        $UPNSuffixList += $ForestInformation.RootDomain + ' (Primary / Default UPN)'
-        $UPNSuffixList += $ForestInformation.UPNSuffixes
+        $UPNSuffixList += $Data.Forest.RootDomain + ' (Primary / Default UPN)'
+        $UPNSuffixList += $Data.Forest.UPNSuffixes
         return $UPNSuffixList
     }
     $Data.GlobalCatalogs = $Data.Forest.GlobalCatalogs
