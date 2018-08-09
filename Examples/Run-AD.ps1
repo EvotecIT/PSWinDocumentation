@@ -69,7 +69,7 @@ $Document = [ordered]@{
                     TocListLevel    = 0
                     TocListItemType = [ListItemType]::Numbered
                     TocHeadingType  = [HeadingType]::Heading1
-                    TableData       = [TableData]::ForestSummary
+                    TableData       = [Forest]::Summary
                     TableDesign     = [TableDesign]::ColorfulGridAccent5
                     TableTitleMerge = $true
                     TableTitleText  = "Forest Summary"
@@ -78,7 +78,7 @@ $Document = [ordered]@{
                 }
                 SectionForestFSMO             = [ordered] @{
                     Use                   = $true
-                    TableData             = [TableData]::ForestFSMO
+                    TableData             = [Forest]::FSMO
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
                     TableTitleText        = 'FSMO Roles'
@@ -87,7 +87,7 @@ $Document = [ordered]@{
                 }
                 SectionForestOptionalFeatures = [ordered] @{
                     Use                   = $true
-                    TableData             = [TableData]::ForestOptionalFeatures
+                    TableData             = [Forest]::OptionalFeatures
                     TableDesign           = [TableDesign]::ColorfulGridAccent5
                     TableTitleMerge       = $true
                     TableTitleText        = 'Optional Features'
@@ -99,7 +99,7 @@ $Document = [ordered]@{
                     Text                  = "Following UPN suffixes were created in this forest:"
                     ListTextEmpty         = "No UPN suffixes were created in this forest."
                     ListType              = 'Bulleted'
-                    ListData              = [TableData]::ForestUPNSuffixes
+                    ListData              = [Forest]::UPNSuffixes
                     EmptyParagraphsBefore = 1
                 }
                 SectionForesSPNSuffixes       = [ordered] @{
@@ -107,7 +107,7 @@ $Document = [ordered]@{
                     Text                  = "Following SPN suffixes were created in this forest:"
                     ListTextEmpty         = "No SPN suffixes were created in this forest."
                     ListType              = 'Bulleted'
-                    ListData              = [TableData]::ForestSPNSuffixes
+                    ListData              = [Forest]::SPNSuffixes
                     EmptyParagraphsBefore = 1
                 }
                 SectionForestSites1           = [ordered] @{
@@ -117,13 +117,13 @@ $Document = [ordered]@{
                     TocListLevel    = 1
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading1'
-                    TableData       = [TableData]::ForestSites1
+                    TableData       = [Forest]::Sites1
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = "Forest Sites list can be found below"
                 }
                 SectionForestSites2           = [ordered] @{
                     Use                   = $true
-                    TableData             = [TableData]::ForestSites2
+                    TableData             = [Forest]::Sites2
                     TableDesign           = 'ColorfulGridAccent5'
                     Text                  = "Forest Sites list can be found below"
                     EmptyParagraphsBefore = 1
@@ -135,14 +135,14 @@ $Document = [ordered]@{
                     TocListLevel          = 1
                     TocListItemType       = 'Numbered'
                     TocHeadingType        = 'Heading1'
-                    TableData             = [TableData]::ForestSubnets1
+                    TableData             = [Forest]::Subnets1
                     TableDesign           = 'ColorfulGridAccent5'
                     Text                  = "Table below contains information regarding relation between Subnets and sites"
                     EmptyParagraphsBefore = 1
                 }
                 SectionForestSubnets2         = [ordered] @{
                     Use                   = $true
-                    TableData             = [TableData]::ForestSubnets2
+                    TableData             = [Forest]::Subnets2
                     TableDesign           = 'ColorfulGridAccent5'
                     Text                  = "Table below contains information regarding relation between Subnets and sites"
                     EmptyParagraphsBefore = 1
@@ -154,18 +154,31 @@ $Document = [ordered]@{
                     TocListLevel    = 1
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading1'
-                    TableData       = [TableData]::ForestSiteLinks
+                    TableData       = [Forest]::SiteLinks
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = "Forest Site Links information is available in table below"
 
                 }
 
             }
-            #SectionDomain = [ordered] @{
-            #    SectionDomainInformation = [ordered] @{
-            #
-            #               }
-            #          }
+            SectionDomain = [ordered] @{
+                SectionPageBreak         = [ordered] @{
+                    Use              = $true
+                    PageBreaksBefore = 1
+                }
+                SectionDomainControllers = [ordered] @{
+                    Use                 = $true
+                    TocEnable           = $True
+                    TocText             = 'General Information - Domain Controllers'
+                    TocListLevel        = 1
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [Domain]::DomainControllers
+                    TableDesign         = 'ColorfulGridAccent5'
+                    TableMaximumColumns = 8
+                    Text                = 'Following table contains domain controllers'
+                }
+            }
         }
 
     }

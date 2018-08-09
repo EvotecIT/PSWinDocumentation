@@ -1,17 +1,29 @@
 Add-Type -TypeDefinition @"
-    public enum TableData {
-        Introduction,
-        ForestSummary,
-        ForestFSMO,
-        ForestOptionalFeatures,
-        ForestUPNSuffixes,
-        ForestSPNSuffixes,
-        ForestSites,
-        ForestSites1,
-        ForestSites2,
-        ForestSubnets,
-        ForestSubnets1,
-        ForestSubnets2,
-        ForestSiteLinks,
+    public enum Forest {
+        Summary,
+        FSMO,
+        OptionalFeatures,
+        UPNSuffixes,
+        SPNSuffixes,
+        Sites,
+        Sites1,
+        Sites2,
+        Subnets,
+        Subnets1,
+        Subnets2,
+        SiteLinks
+    }
+"@
+
+Add-Type -TypeDefinition @"
+    public enum Domain {
+        DomainControllers,
+        FSMO,
+        DefaultPasswordPoLicy,
+        GroupPolicies,
+        OrganizationalUnits,
+        PriviligedGroupMembers,
+        DomainAdministrators,
+        UsersCount
     }
 "@

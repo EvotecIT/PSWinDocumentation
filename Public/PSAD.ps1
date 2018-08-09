@@ -81,36 +81,45 @@ function Get-DocumentPath {
 }
 function Get-WinDocumentationData {
     param (
-        [nullable[TableData]] $TableData,
-        $ForestInformation
+        $Data,
+        $Forest,
+        [string] $Domain
     )
-    switch ( $TableData ) {
-        ForestSummary { return $ForestInformation.ForestInformation }
-        ForestFSMO { return $ForestInformation.FSMO }
-        ForestOptionalFeatures { return $ForestInformation.OptionalFeatures }
-        ForestUPNSuffixes { return $ForestInformation.UPNSuffixes }
-        ForestSPNSuffixes {
-            write-verbose 'spn suffixes'
-            return $ForestInformation.SPNSuffixes
+    $Type = Get-ObjectType $Data
+    #Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl"
+    if ($Type.ObjectTypeName -eq 'Forest') {
+        switch ( $Data ) {
+            Summary { return $Forest.ForestInformation }
+            FSMO { return $Forest.FSMO }
+            OptionalFeatures { return $Forest.OptionalFeatures }
+            UPNSuffixes { return $Forest.UPNSuffixes }
+            SPNSuffixes {
+                write-verbose 'spn suffixes'
+                return $Forest.SPNSuffixes
+            }
+            Sites { return $Forest.Sites }
+            Sites1 { return $Forest.Sites1 }
+            Sites2 { return $Forest.Sites2 }
+            Subnets { return $Forest.Subnets }
+            Subnets1 { return $Forest.Subnets1 }
+            Subnets2 { return $Forest.Subnets2 }
+            SiteLinks { return $Forest.SiteLinks }
+            default { return $null }
         }
-        ForestSites { return $ForestInformation.Sites }
-        ForestSites1 { return $ForestInformation.Sites1 }
-        ForestSites2 { return $ForestInformation.Sites2 }
-        ForestSubnets { return $ForestInformation.Subnets }
-        ForestSubnets1 { return $ForestInformation.Subnets1 }
-        ForestSubnets2 { return $ForestInformation.Subnets2 }
-        ForestSiteLinks { return $ForestInformation.SiteLinks }
-        default { return $null }
+    } elseif ($Type.ObjectTypeName -eq 'Domain' ) {
+        switch ( $Data ) {
+            DomainControllers { return $Forest.FoundDomains.$Domain.DomainControllers }
+        }
     }
 }
 function Get-WinDocumentationText {
     param (
         [string] $Text,
-        $ForestInformation
+        $Forest
     )
     #$ForestInformation.GetType()
     $Text = $Text.Replace('<CompanyName>', $Document.Configuration.Prettify.CompanyName)
-    $Text = $Text.Replace('<ForestName>', $ForestInformation.ForestName)
+    $Text = $Text.Replace('<ForestName>', $Forest.ForestName)
     return $Text
 }
 
@@ -118,33 +127,34 @@ function New-ADDocumentBlock {
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Mandatory = $true)][Xceed.Words.NET.Container]$WordDocument,
         $Section,
-        $ForestInformation
+        $Forest,
+        [string] $Domain
     )
     if ($Section.Use) {
+        #Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.TableData)]"
         $WordDocument | New-WordBlock `
             -TocGlobalDefinition $Section.TocGlobalDefinition`
             -TocGlobalTitle $Section.TocGlobalTitle `
             -TocGlobalSwitches $Section.TocGlobalSwitches `
             -TocGlobalRightTabPos $Section.TocGlobalRightTabPos `
             -TocEnable $Section.TocEnable `
-            -TocText (Get-WinDocumentationText -Text $Section.TocText -ForestInformation $ForestInformation) `
+            -TocText (Get-WinDocumentationText -Text $Section.TocText -Forest $Forest) `
             -TocListLevel $Section.TocListLevel `
             -TocListItemType $Section.TocListItemType `
             -TocHeadingType $Section.TocHeadingType `
-            -TableData (Get-WinDocumentationData -TableData $Section.TableData -ForestInformation $ForestInformation) `
+            -TableData (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain) `
             -TableDesign $Section.TableDesign `
             -TableTitleMerge $Section.TableTitleMerge `
-            -TableTitleText (Get-WinDocumentationText -Text $Section.TableTitleText -ForestInformation $ForestInformation) `
-            -Text (Get-WinDocumentationText -Text $Section.Text -ForestInformation $ForestInformation) `
+            -TableTitleText (Get-WinDocumentationText -Text $Section.TableTitleText -Forest $Forest) `
+            -Text (Get-WinDocumentationText -Text $Section.Text -Forest $Forest) `
             -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
             -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `
             -PageBreaksBefore $Section.PageBreaksBefore `
             -PageBreaksAfter $Section.PageBreaksAfter `
             -TextAlignment $Section.TextAlignment `
-            -ListData (Get-WinDocumentationData -TableData $Section.ListData -ForestInformation $ForestInformation) `
+            -ListData (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain) `
             -ListType $Section.ListType `
-            -ListTextEmpty $Section.ListTextEmpty `
-            -Verbose
+            -ListTextEmpty $Section.ListTextEmpty #-Verbose
 
     }
     return $WordDocument
@@ -174,8 +184,7 @@ function Start-Documentation {
 
 
     if ($Document.DocumentAD.Enable) {
-        $ForestInformation = Get-WinADForestInformation
-        #$ForestInformation.FoundDomains.Count
+        $Forest = Get-WinADForestInformation
 
         ### Starting WORD
         $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
@@ -184,7 +193,14 @@ function Start-Documentation {
         $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
         foreach ($Section in $ADSectionsForest) {
             Write-Verbose "Generating WORD Section for [$Section]"
-            $WordDocument = $WordDocument | New-ADDocumentBlock -Section $Document.DocumentAD.Sections.SectionForest.$Section -ForestInformation $ForestInformation
+            $WordDocument = $WordDocument | New-ADDocumentBlock -Section $Document.DocumentAD.Sections.SectionForest.$Section -Forest $Forest
+        }
+        foreach ($Domain in $Forest.Domains) {
+            $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
+            foreach ($Section in $ADSectionsDomain) {
+                Write-Verbose "Generating WORD Section for [$Domain - $Section]"
+                $WordDocument = $WordDocument | New-ADDocumentBlock -Section $Document.DocumentAD.Sections.SectionDomain.$Section -Forest $Forest -Domain $Domain
+            }
         }
         ### End Sections
 

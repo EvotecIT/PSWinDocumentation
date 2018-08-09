@@ -1,6 +1,6 @@
 function Get-WinADForestInformation {
     [CmdletBinding()]
-    $Data = @{}
+    $Data = [ordered] @{}
     $Data.Forest = $(Get-ADForest)
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
     $Data.Sites = $(Get-ADReplicationSite -Filter * -Properties * )
@@ -117,14 +117,11 @@ function Get-WinADForestInformation {
         return $Optional
         ### Fix optional features
     }
-    $Data.FoundDomains = Invoke-Command -ScriptBlock {
-        $DomainData = @()
-        foreach ($Domain in $Data.Domains) {
-            $DomainData += Get-WinADDomainInformation -Domain $Domain
-        }
-        return $DomainData
+    $Data.FoundDomains = [ordered]@{}
+    $DomainData = @()
+    foreach ($Domain in $Data.Domains) {
+        $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain
     }
-
     return $Data
 }
 
@@ -133,7 +130,7 @@ function Get-WinADDomainInformation {
     param (
         [string] $Domain
     )
-    $Data = @{}
+    $Data = [ordered] @{}
     $Data.AuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
     $Data.AuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Server $Domain -Filter 'Name -like "*AuthenticationPolicySilo*"')
     $Data.CentralAccessPolicies = $(Get-ADCentralAccessPolicy -Server $Domain -Filter * )
