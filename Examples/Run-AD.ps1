@@ -252,8 +252,8 @@ $Document = [ordered]@{
                     TableData       = [Domain]::PriviligedGroupMembers
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = 'Following table contains list of priviliged groups and count of the members in it.'
-                    #   ChartEnable     = $True
-                    #  ChartTitle      = 'Priviliged Group Members'
+                    #ChartEnable     = $True
+                    #ChartTitle      = 'Priviliged Group Members'
                     # ChartKeys       = (Convert-TwoArraysIntoOne -Object $DomainInformation.PriviligedGroupMembers.'Group Name' -ObjectToAdd $DomainInformation.PriviligedGroupMembers.'Members Count')
                     # ChartValues     = ($DomainInformation.PriviligedGroupMembers.'Members Count')
                 }
@@ -280,8 +280,9 @@ $Document = [ordered]@{
                     TableTitleMerge = $False
                     TableTitleText  = 'Users Count'
                     Text            = "Following table and chart shows number of users in its categories"
-                    #ChartEnable     = $True
-                    #ChartTitle      = 'Users Count'
+                    ChartEnable     = $True
+                    ChartTitle      = 'Users Count'
+                    ChartData       = [Domain]::UsersCount
                     # ChartKeys       = (Convert-KeyToKeyValue $DomainInformation.UsersCount).Keys
                     #  ChartValues     = (Convert-KeyToKeyValue $DomainInformation.UsersCount).Values
                 }

@@ -140,29 +140,44 @@ function New-ADDocumentBlock {
     )
     if ($Section.Use) {
         #Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.TableData)]"
+        $TableData = (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain)
+        $ListData = (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain)
+        $ChartData = (Get-WinDocumentationData -Data $Section.ChartData -Forest $Forest -Domain $Domain)
+
+        ### Converts for Text
+        $TocText = (Get-WinDocumentationText -Text $Section.TocText -Forest $Forest -Domain $Domain)
+        $TableTitleText = (Get-WinDocumentationText -Text $Section.TableTitleText -Forest $Forest -Domain $Domain)
+        $Text = (Get-WinDocumentationText -Text $Section.Text -Forest $Forest -Domain $Domain)
+        $ChartTitle = (Get-WinDocumentationText -Text $Section.ChartTitle -Forest $Forest -Domain $Domain)
+
         $WordDocument | New-WordBlock `
             -TocGlobalDefinition $Section.TocGlobalDefinition`
             -TocGlobalTitle $Section.TocGlobalTitle `
             -TocGlobalSwitches $Section.TocGlobalSwitches `
             -TocGlobalRightTabPos $Section.TocGlobalRightTabPos `
             -TocEnable $Section.TocEnable `
-            -TocText (Get-WinDocumentationText -Text $Section.TocText -Forest $Forest -Domain $Domain) `
+            -TocText $TocText `
             -TocListLevel $Section.TocListLevel `
             -TocListItemType $Section.TocListItemType `
             -TocHeadingType $Section.TocHeadingType `
-            -TableData (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain) `
+            -TableData $TableData `
             -TableDesign $Section.TableDesign `
             -TableTitleMerge $Section.TableTitleMerge `
-            -TableTitleText (Get-WinDocumentationText -Text $Section.TableTitleText -Forest $Forest -Domain $Domain) `
-            -Text (Get-WinDocumentationText -Text $Section.Text -Forest $Forest -Domain $Domain) `
+            -TableTitleText $TableTitleText `
+            -Text $Text `
             -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
             -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `
             -PageBreaksBefore $Section.PageBreaksBefore `
             -PageBreaksAfter $Section.PageBreaksAfter `
             -TextAlignment $Section.TextAlignment `
-            -ListData (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain) `
+            -ListData $ListData `
             -ListType $Section.ListType `
-            -ListTextEmpty $Section.ListTextEmpty #-Verbose
+            -ListTextEmpty $Section.ListTextEmpty `
+            -ChartEnable $Section.ChartEnable `
+            -ChartTitle $ChartTitle `
+            -ChartKeys (Convert-KeyToKeyValue $ChartData).Keys `
+            -ChartValues (Convert-KeyToKeyValue $ChartData).Values `
+
     }
     return $WordDocument
 }

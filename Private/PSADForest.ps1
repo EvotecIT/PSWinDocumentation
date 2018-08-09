@@ -117,6 +117,7 @@ function Get-WinADForestInformation {
         return $Optional
         ### Fix optional features
     }
+    ### Generate Data from Domains
     $Data.FoundDomains = [ordered]@{}
     $DomainData = @()
     foreach ($Domain in $Data.Domains) {
@@ -183,7 +184,7 @@ function Get-WinADDomainInformation {
     $Data.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
     $Data.OrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
     $Data.OrganizationalUnits = Invoke-Command -ScriptBlock {
-        return $Data.OrganizationalUnitsClean | Select-Object Name, CanonicalName, Created | Sort-Object CanonicalName
+        return $Data.OrganizationalUnitsClean | Select-Object CanonicalName, Created | Sort-Object CanonicalName
     }
     $Data.DomainAdministratorsClean = $( Get-ADGroup -Server $Domain -Identity $('{0}-512' -f (Get-ADDomain -Server $Domain).domainSID) | Get-ADGroupMember -Server $Domain -Recursive | Get-ADUser -Server $Domain)
     $Data.DomainAdministrators = $Data.DomainAdministratorsClean | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
