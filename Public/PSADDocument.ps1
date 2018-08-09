@@ -1,13 +1,3 @@
-function Register-DataFillers {
-    param(
-        $Document,
-        $ForestInformation
-    )
-
-    $ForestName = $ForestInformation.ForestName
-    $CompanyName = $Document.Configuration.CompanyName
-}
-
 function Start-ActiveDirectoryDocumentation {
     [CmdletBinding()]
     param (

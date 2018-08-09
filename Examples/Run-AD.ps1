@@ -6,7 +6,7 @@ $Document = [ordered]@{
     Configuration    = [ordered] @{
         Prettify       = @{
             CompanyName        = 'Evotec'
-            UseBuiltinTemplate = $false
+            UseBuiltinTemplate = $true
             CustomTemplatePath = ''
             Language           = 'en-US'
         }
@@ -37,7 +37,7 @@ $Document = [ordered]@{
                     TocGlobalTitle       = 'Table of content'
                     TocGlobalRightTabPos = 15
                     #TocGlobalSwitches    = 'A', 'C' #[TableContentSwitches]::C, [TableContentSwitches]::A
-                    PageBreaksAfter      = $true
+                    PageBreaksAfter      = 1
                 }
                 SectionForestIntroduction     = [ordered] @{
                     ### Enables section
@@ -60,6 +60,7 @@ $Document = [ordered]@{
                         + " usability of Active Directory and is happy with how it works. Making things harder just for the sake of" `
                         + " implementation of best practices isn't always the best way to go."
                     TextAlignment   = [Alignment]::Both
+                    PageBreaksAfter = 1
 
                 }
                 SectionForestSummary          = [ordered] @{
