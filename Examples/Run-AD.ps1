@@ -159,7 +159,6 @@ $Document = [ordered]@{
                     TableData       = [Forest]::SiteLinks
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = "Forest Site Links information is available in table below"
-                    PageBreaksAfter = 1
                 }
 
             }
@@ -183,9 +182,10 @@ $Document = [ordered]@{
                     TocListLevel          = 1
                     TocListItemType       = [ListItemType]::Numbered
                     TocHeadingType        = [HeadingType]::Heading1
-                    TableData             = [Domain]::DomainInformation
-                    TableDesign           = 'ColorfulGridAccent5'
-                    Text                  = ""
+                    Text                  = "Following domain exists within forest <ForestName>:"
+                    ListBuilderContent    = "Domain <DomainDN>", 'Name for fully qualified domain name (FQDN): <Domain>', 'Name for NetBIOS: <DomainNetBios>'
+                    ListBuilderLevel      = 0, 1, 1
+                    ListBuilderType       = [ListItemType]::Bulleted, [ListItemType]::Bulleted, [ListItemType]::Bulleted
                     EmptyParagraphsBefore = 0
                 }
                 SectionDomainControllers            = [ordered] @{

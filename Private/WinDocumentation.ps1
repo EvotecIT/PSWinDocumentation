@@ -1,7 +1,7 @@
 function Get-WinDocumentationData {
     param (
-        $Data,
-        $Forest,
+        [Object] $Data,
+        [Object] $Forest,
         [string] $Domain
     )
     $Type = Get-ObjectType $Data
@@ -39,25 +39,29 @@ function Get-WinDocumentationData {
 }
 function Get-WinDocumentationText {
     param (
-        [string] $Text,
-        $Forest,
+        [string[]] $Text,
+        [Object] $Forest,
         [string] $Domain
     )
-    #$ForestInformation.GetType()
-    $Text = $Text.Replace('<CompanyName>', $Document.Configuration.Prettify.CompanyName)
-    $Text = $Text.Replace('<ForestName>', $Forest.ForestName)
-    $Text = $Text.Replace('<ForestNameDN>', $Forest.RootDSE.defaultNamingContext)
-    $Text = $Text.Replace('<Domain>', $Domain)
-    $Text = $Text.Replace('<DomainNetBios>', $Forest.FoundDomains.$Domain.DomainInformation.NetBIOSName)
-    $Text = $Text.Replace('<DomainDN>', $Forest.FoundDomains.$Domain.DomainInformation.DistinguishedName)
-    return $Text
+    Write-verbose "$($Forest.GetType().Name) $($Forest.GetType().BaseType)"
+    $Array = @()
+    foreach ($T in $Text) {
+        $T = $T.Replace('<CompanyName>', $Document.Configuration.Prettify.CompanyName)
+        $T = $T.Replace('<ForestName>', $Forest.ForestName)
+        $T = $T.Replace('<ForestNameDN>', $Forest.RootDSE.defaultNamingContext)
+        $T = $T.Replace('<Domain>', $Domain)
+        $T = $T.Replace('<DomainNetBios>', $Forest.FoundDomains.$Domain.DomainInformation.NetBIOSName)
+        $T = $T.Replace('<DomainDN>', $Forest.FoundDomains.$Domain.DomainInformation.DistinguishedName)
+        $Array += $T
+    }
+    return $Array
 }
 
 function New-ADDocumentBlock {
     param(
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Mandatory = $true)][Xceed.Words.NET.Container]$WordDocument,
-        $Section,
-        $Forest,
+        [Object] $Section,
+        [Object] $Forest,
         [string] $Domain
     )
     if ($Section.Use) {
@@ -82,6 +86,8 @@ function New-ADDocumentBlock {
         $TableTitleText = (Get-WinDocumentationText -Text $Section.TableTitleText -Forest $Forest -Domain $Domain)
         $Text = (Get-WinDocumentationText -Text $Section.Text -Forest $Forest -Domain $Domain)
         $ChartTitle = (Get-WinDocumentationText -Text $Section.ChartTitle -Forest $Forest -Domain $Domain)
+
+        $ListBuilderContent = (Get-WinDocumentationText -Text $Section.ListBuilderContent -Forest $Forest -Domain $Domain)
 
         $WordDocument | New-WordBlock `
             -TocGlobalDefinition $Section.TocGlobalDefinition`
@@ -109,7 +115,11 @@ function New-ADDocumentBlock {
             -ChartEnable $Section.ChartEnable `
             -ChartTitle $ChartTitle `
             -ChartKeys $ChartKeys `
-            -ChartValues $ChartValues
+            -ChartValues $ChartValues `
+            -ListBuilderContent $ListBuilderContent `
+            -ListBuilderType $Section.ListBuilderType `
+            -ListBuilderLevel $Section.ListBuilderLevel
+
     }
     return $WordDocument
 }

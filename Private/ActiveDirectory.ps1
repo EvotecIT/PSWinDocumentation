@@ -151,7 +151,7 @@ function Get-WinADDomainInformation {
     $Data.GroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
     $Data.GroupPolicies = Invoke-Command -ScriptBlock {
         $GroupPolicies = @()
-        foreach ($gpo in $ADSnapshot.GroupPolicies) {
+        foreach ($gpo in $Data.GroupPoliciesClean) {
             $GroupPolicy = [ordered] @{
                 'Display Name'      = $gpo.DisplayName
                 'Gpo Status'        = $gpo.GPOStatus
@@ -162,7 +162,7 @@ function Get-WinADDomainInformation {
             }
             $GroupPolicies += $GroupPolicy
         }
-        return $GroupPolicies.ForEach( {[PSCustomObject]$_})
+        return Format-TransposeTable $GroupPolicies
     }
     $Data.GroupPoliciesDetails = Format-TransposeTable (Get-GPOInfo -DomainName $Domain)
     $Data.DefaultPassWordPoLicy = Invoke-Command -ScriptBlock {
