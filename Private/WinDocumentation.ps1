@@ -29,6 +29,7 @@ function Get-WinDocumentationData {
             FSMO { return $Forest.FoundDomains.$Domain.FSMO }
             DefaultPasswordPoLicy { return $Forest.FoundDomains.$Domain.DefaultPasswordPoLicy }
             GroupPolicies { return $Forest.FoundDomains.$Domain.GroupPolicies }
+            GroupPoliciesDetails { return $Forest.FoundDomains.$Domain.GroupPoliciesDetails }
             OrganizationalUnits { return $Forest.FoundDomains.$Domain.OrganizationalUnits }
             PriviligedGroupMembers { return $Forest.FoundDomains.$Domain.PriviligedGroupMembers }
             DomainAdministrators { return $Forest.FoundDomains.$Domain.DomainAdministrators }

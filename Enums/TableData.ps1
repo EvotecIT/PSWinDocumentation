@@ -17,14 +17,15 @@ Add-Type -TypeDefinition @"
 
 Add-Type -TypeDefinition @"
     public enum Domain {
+        DomainAdministrators,
         DomainInformation,
         DomainControllers,
         FSMO,
         DefaultPasswordPoLicy,
         GroupPolicies,
+        GroupPoliciesDetails,
         OrganizationalUnits,
         PriviligedGroupMembers,
-        DomainAdministrators,
         Users,
         UsersCount
     }
