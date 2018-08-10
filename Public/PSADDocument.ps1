@@ -10,6 +10,9 @@ function Start-ActiveDirectoryDocumentation {
     )
     if ($FilePath -eq '') { throw 'FilePath is required. This should be path where you want to save your document to.'}
 
+    Test-ModuleAvailability
+    Test-ForestConnectivity
+
     $FilePathTemplate = "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
 
     if ($CleanDocument) {

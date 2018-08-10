@@ -1,6 +1,7 @@
 Import-Module PSWriteWord -Force
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
+Import-Module ActiveDirectory
 
 $Document = [ordered]@{
     Configuration    = [ordered] @{
@@ -12,7 +13,7 @@ $Document = [ordered]@{
         }
         Options        = @{
             OpenDocument = $true
-            OpenExcel    = $true
+            OpenExcel    = $false
         }
         DisplayConsole = @{
             ShowTime   = $false

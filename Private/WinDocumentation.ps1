@@ -46,7 +46,10 @@ function Get-WinDocumentationText {
     #$ForestInformation.GetType()
     $Text = $Text.Replace('<CompanyName>', $Document.Configuration.Prettify.CompanyName)
     $Text = $Text.Replace('<ForestName>', $Forest.ForestName)
+    $Text = $Text.Replace('<ForestNameDN>', $Forest.RootDSE.defaultNamingContext)
     $Text = $Text.Replace('<Domain>', $Domain)
+    $Text = $Text.Replace('<DomainNetBios>', $Forest.FoundDomains.$Domain.DomainInformation.NetBIOSName)
+    $Text = $Text.Replace('<DomainDN>', $Forest.FoundDomains.$Domain.DomainInformation.DistinguishedName)
     return $Text
 }
 

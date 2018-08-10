@@ -81,3 +81,12 @@ function Test-ModuleAvailability {
         Exit
     }
 }
+function Test-ForestConnectivity {
+    $Test = Test-ComputerSecureChannel
+    if ($Test) {
+        # future use
+    } else {
+        Write-Warning 'No connectivity to forest/domain.'
+        Exit
+    }
+}

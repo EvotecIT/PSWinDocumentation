@@ -4,6 +4,7 @@ function Start-Documentation {
         [System.Object] $Document
     )
     Test-ModuleAvailability
+    Test-ForestConnectivity
     Test-Configuration -Document $Document
 
     if ($Document.DocumentAD.Enable) {
