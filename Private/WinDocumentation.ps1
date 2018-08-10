@@ -44,7 +44,6 @@ function Get-WinDocumentationText {
         [Object] $Forest,
         [string] $Domain
     )
-    Write-verbose "$($Forest.GetType().Name) $($Forest.GetType().BaseType)"
     $Array = @()
     foreach ($T in $Text) {
         $T = $T.Replace('<CompanyName>', $Document.Configuration.Prettify.CompanyName)
@@ -104,6 +103,7 @@ function New-ADDocumentBlock {
             -TableDesign $Section.TableDesign `
             -TableTitleMerge $Section.TableTitleMerge `
             -TableTitleText $TableTitleText `
+            -TableMaximumColumns $Section.TableMaximumColumns `
             -Text $Text `
             -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
             -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `

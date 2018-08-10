@@ -234,15 +234,16 @@ $Document = [ordered]@{
                     Text            = "Following table contains group policies for <Domain>"
                 }
                 SectionDomainGroupPoliciesDetails   = [ordered] @{
-                    Use             = $true
-                    TocEnable       = $True
-                    TocText         = 'General Information - Group Policies Details'
-                    TocListLevel    = 1
-                    TocListItemType = 'Numbered'
-                    TocHeadingType  = 'Heading2'
-                    TableData       = [Domain]::GroupPoliciesDetails
-                    TableDesign     = 'ColorfulGridAccent5'
-                    Text            = "Following table contains group policies for <Domain>"
+                    Use                 = $true
+                    TocEnable           = $True
+                    TocText             = 'General Information - Group Policies Details'
+                    TocListLevel        = 1
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [Domain]::GroupPoliciesDetails
+                    TableMaximumColumns = 15
+                    TableDesign         = 'ColorfulGridAccent5'
+                    Text                = "Following table contains group policies for <Domain>"
                 }
                 SectionDomainOrganizationalUnits    = [ordered] @{
                     Use             = $true
