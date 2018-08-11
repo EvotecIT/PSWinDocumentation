@@ -1,5 +1,6 @@
 function Test-File {
-    param(
+    [CmdletBinding()]
+    param (
         [string] $File,
         [string] $FileName,
         [switch] $Require,
@@ -42,6 +43,30 @@ function Test-Configuration {
     if ($ErrorCount -ne 0) {
         Exit
     }
+}
+function Get-TypesRequired {
+    [CmdletBinding()]
+    param (
+        [System.Object] $Document
+    )
+    $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
+    $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
+
+    $TypesRequired = New-ArrayList
+    foreach ($Section in $ADSectionsDomain) {
+        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.TableData -SkipNull -RequireUnique -FullComparison
+        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ListData -SkipNull -RequireUnique -FullComparison
+        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ChartData -SkipNull -RequireUnique -FullComparison
+    }
+
+    foreach ($Section in $ADSectionsForest) {
+        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.TableData -SkipNull -RequireUnique -FullComparison
+        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ListData -SkipNull -RequireUnique -FullComparison
+        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ChartData -SkipNull -RequireUnique -FullComparison
+    }
+
+    #Show-Array $TypesRequired -WithType
+    return $TypesRequired
 }
 function Get-DocumentPath {
     [CmdletBinding()]

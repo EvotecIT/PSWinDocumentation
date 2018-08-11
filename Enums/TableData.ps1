@@ -17,6 +17,14 @@ Add-Type -TypeDefinition @"
 
 Add-Type -TypeDefinition @"
     public enum Domain {
+        AuthenticationPolicies,
+        AuthenticationPolicySilos,
+        CentralAccessPolicies,
+        CentralAccessRules,
+        ClaimTransformPolicies,
+        ClaimTypes, // Not yet done
+        LDAPDNS, // not yet done
+        KerberosDNS, // not yet done
         DomainAdministrators,
         DomainInformation,
         DomainControllers,
@@ -27,6 +35,7 @@ Add-Type -TypeDefinition @"
         OrganizationalUnits,
         PriviligedGroupMembers,
         Users,
-        UsersCount
+        UsersCount,
+        DomainTrusts
     }
 "@

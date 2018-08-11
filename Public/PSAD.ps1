@@ -8,14 +8,19 @@ function Start-Documentation {
     Test-Configuration -Document $Document
 
     if ($Document.DocumentAD.Enable) {
-        $Forest = Get-WinADForestInformation
+        $TypesRequired = Get-TypesRequired -Document $Document
+        $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
+        $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
+
+        $Forest = Get-WinADForestInformation -TypesRequired $TypesRequired
+
 
         ### Starting WORD
         $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
         $ExcelDocument = $Document.DocumentAD.FilePathExcel
 
         ### Start Sections
-        $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
+
         foreach ($Section in $ADSectionsForest) {
             Write-Verbose "Generating WORD Section for [$Section]"
             $WordDocument = New-ADDocumentBlock `
@@ -26,7 +31,6 @@ function Start-Documentation {
             #$ExcelDocument = $ExcelDocument | New-ExportExcelBlock -Section $Document.DocumentAD.Sections.SectionDomain.$Section -Forest $Forest -Domain $Domain
         }
         foreach ($Domain in $Forest.Domains) {
-            $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
             foreach ($Section in $ADSectionsDomain) {
                 Write-Verbose "Generating WORD Section for [$Domain - $Section]"
                 $WordDocument = New-ADDocumentBlock `

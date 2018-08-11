@@ -1,5 +1,8 @@
 function Get-WinADForestInformation {
     [CmdletBinding()]
+    param (
+        $TypesRequired
+    )
     $Data = [ordered] @{}
     $Data.Forest = $(Get-ADForest)
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
@@ -121,64 +124,132 @@ function Get-WinADForestInformation {
     $Data.FoundDomains = [ordered]@{}
     $DomainData = @()
     foreach ($Domain in $Data.Domains) {
-        $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain
+        $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain -TypesRequired $TypesRequired
     }
     return $Data
 }
 function Get-WinADDomainInformation {
     [CmdletBinding()]
     param (
-        [string] $Domain
+        [string] $Domain,
+        $TypesRequired
     )
     $Data = [ordered] @{}
-    $Data.AuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
-    $Data.AuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Server $Domain -Filter 'Name -like "*AuthenticationPolicySilo*"')
-    $Data.CentralAccessPolicies = $(Get-ADCentralAccessPolicy -Server $Domain -Filter * )
-    $Data.CentralAccessRules = $(Get-ADCentralAccessRule -Server $Domain -Filter * )
-    $Data.ClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Server $Domain -Filter * )
-    $Data.ClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
-    $Data.LDAPDNS = $(Resolve-DnsName -Name "_ldap._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
-    $Data.KerberosDNS = $(Resolve-DnsName -Name "_kerberos._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
-    $Data.DomainTrusts = (Get-ADTrust -Server $Domain -Filter * )
     $Data.RootDSE = $(Get-ADRootDSE -Server $Domain)
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
-    $Data.FSMO = [ordered] @{
-        'PDC Emulator'          = $Data.DomainInformation.PDCEmulator
-        'RID Master'            = $Data.DomainInformation.RIDMaster
-        'Infrastructure Master' = $Data.DomainInformation.InfrastructureMaster
+    if ($TypesRequired -contains [Domain]::AuthenticationPolicies) {
+        $Data.AuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
     }
-    $Data.GroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
-    $Data.GroupPolicies = Invoke-Command -ScriptBlock {
-        $GroupPolicies = @()
-        foreach ($gpo in $Data.GroupPoliciesClean) {
-            $GroupPolicy = [ordered] @{
-                'Display Name'      = $gpo.DisplayName
-                'Gpo Status'        = $gpo.GPOStatus
-                'Creation Time'     = $gpo.CreationTime
-                'Modification Time' = $gpo.ModificationTime
-                'Description'       = $gpo.Description
-                'Wmi Filter'        = $gpo.WmiFilter
+    if ($TypesRequired -contains [Domain]::AuthenticationPolicySilos) {
+        $Data.AuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Server $Domain -Filter 'Name -like "*AuthenticationPolicySilo*"')
+    }
+    if ($TypesRequired -contains [Domain]::CentralAccessPolicies) {
+        $Data.CentralAccessPolicies = $(Get-ADCentralAccessPolicy -Server $Domain -Filter * )
+    }
+    if ($TypesRequired -contains [Domain]::CentralAccessRules) {
+        $Data.CentralAccessRules = $(Get-ADCentralAccessRule -Server $Domain -Filter * )
+    }
+    if ($TypesRequired -contains [Domain]::ClaimTransformPolicies) {
+        $Data.ClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Server $Domain -Filter * )
+    }
+    if ($TypesRequired -contains [Domain]::ClaimTypes) {
+        $Data.ClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
+    }
+    if ($TypesRequired -contains [Domain]::LDAPDNS) {
+        $Data.LDAPDNS = $(Resolve-DnsName -Name "_ldap._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
+    }
+    if ($TypesRequired -contains [Domain]::KerberosDNS) {
+        $Data.KerberosDNS = $(Resolve-DnsName -Name "_kerberos._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
+    }
+    if ($TypesRequired -contains [Domain]::FSMO -or $TypesRequired -contains [Domain]::DomainTrusts) {
+        # required for multiple use cases FSMO/DomainTrusts
+        $Data.FSMO = [ordered] @{
+            'PDC Emulator'          = $Data.DomainInformation.PDCEmulator
+            'RID Master'            = $Data.DomainInformation.RIDMaster
+            'Infrastructure Master' = $Data.DomainInformation.InfrastructureMaster
+        }
+    }
+    if ($TypesRequired -contains [Domain]::DomainTrusts) {
+        ## requires both DomainTrusts and FSMO.
+        $Data.DomainTrustsClean = (Get-ADTrust -Server $Domain -Filter * -Properties *)
+        $Data.DomainTrusts = Invoke-Command -ScriptBlock {
+            $DomainPDC = $Data.FSMO.'PDC Emulator'
+            $Trust = $Data.DomainTrustsClean
+            $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
+
+            $ReturnData = [ordered] @{
+                'Trust Source'               = $Domain
+                'Trust Target'               = $Trust.Target
+                'Trust Direction'            = $Trust.Direction
+                'Trust Attributes'           = Set-TrustAttributes -Value $Trust.TrustAttributes
+                #'Trust OK'                   = $TrustWMI.TrustIsOK
+                #'Trust Status'               = $TrustWMI.TrustStatus
+                'Trust Status'               = $TrustWMI.TrustStatusString
+                'Forest Transitive'          = $Trust.ForestTransitive
+                'Selective Authentication'   = $Trust.SelectiveAuthentication
+                'SID Filtering Forest Aware' = $Trust.SIDFilteringForestAware
+                'SID Filtering Quarantined'  = $Trust.SIDFilteringQuarantined
+                'Disallow Transivity'        = $Trust.DisallowTransivity
+                'Intra Forest'               = $Trust.IntraForest
+                'Is Tree Parent'             = $Trust.IsTreeParent
+                'Is Tree Root'               = $Trust.IsTreeRoot
+                'TGTDelegation'              = $Trust.TGTDelegation
+                'TrustedPolicy'              = $Trust.TrustedPolicy
+                'TrustingPolicy'             = $Trust.TrustingPolicy
+                'TrustType'                  = $Trust.TrustType
+                'UplevelOnly'                = $Trust.UplevelOnly
+                'UsesAESKeys'                = $Trust.UsesAESKeys
+                'UsesRC4Encryption'          = $Trust.UsesRC4Encryption
+                'Trust Source DC'            = $TrustWMI.PSComputerName
+                'Trust Target DC'            = $TrustWMI.TrustedDCName.Replace('\\', '')
+                'Trust Source DN'            = $Trust.Source
+                'ObjectGUID'                 = $Trust.ObjectGUID
+                'Created'                    = $Trust.Created
+                'Modified'                   = $Trust.Modified
+                'Deleted'                    = $Trust.Deleted
+                'SID'                        = $Trust.securityIdentifier
             }
-            $GroupPolicies += $GroupPolicy
+            return Format-TransposeTable $ReturnData
         }
-        return Format-TransposeTable $GroupPolicies
     }
-    $Data.GroupPoliciesDetails = Format-TransposeTable (Get-GPOInfo -DomainName $Domain)
-    $Data.DefaultPassWordPoLicy = Invoke-Command -ScriptBlock {
-        $DefaultPasswordPolicy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
-        $Data = [ordered] @{
-            'Complexity Enabled'            = $DefaultPasswordPolicy.ComplexityEnabled
-            'Lockout Duration'              = $DefaultPasswordPolicy.LockoutDuration
-            'Lockout Observation Window'    = $DefaultPasswordPolicy.LockoutObservationWindow
-            'Lockout Threshold'             = $DefaultPasswordPolicy.LockoutThreshold
-            'Max Password Age'              = $DefaultPasswordPolicy.MaxPasswordAge
-            'Min Password Length'           = $DefaultPasswordPolicy.MinPasswordLength
-            'Min Password Age'              = $DefaultPasswordPolicy.MinPasswordAge
-            'Password History Count'        = $DefaultPasswordPolicy.PasswordHistoryCount
-            'Reversible Encryption Enabled' = $DefaultPasswordPolicy.ReversibleEncryptionEnabled
-            'Distinguished Name'            = $DefaultPasswordPolicy.DistinguishedName
+    if ($TypesRequired -contains [Domain]::GroupPolicies) {
+        $Data.GroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
+        $Data.GroupPolicies = Invoke-Command -ScriptBlock {
+            $GroupPolicies = @()
+            foreach ($gpo in $Data.GroupPoliciesClean) {
+                $GroupPolicy = [ordered] @{
+                    'Display Name'      = $gpo.DisplayName
+                    'Gpo Status'        = $gpo.GPOStatus
+                    'Creation Time'     = $gpo.CreationTime
+                    'Modification Time' = $gpo.ModificationTime
+                    'Description'       = $gpo.Description
+                    'Wmi Filter'        = $gpo.WmiFilter
+                }
+                $GroupPolicies += $GroupPolicy
+            }
+            return Format-TransposeTable $GroupPolicies
         }
-        return $Data
+    }
+    if ($TypesRequired -contains [Domain]::GroupPoliciesDetails) {
+        $Data.GroupPoliciesDetails = Format-TransposeTable (Get-GPOInfo -DomainName $Domain)
+    }
+    if ($TypesRequired -contains [Domain]::DefaultPasswordPolicy) {
+        $Data.DefaultPassWordPoLicy = Invoke-Command -ScriptBlock {
+            $DefaultPasswordPolicy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
+            $Data = [ordered] @{
+                'Complexity Enabled'            = $DefaultPasswordPolicy.ComplexityEnabled
+                'Lockout Duration'              = $DefaultPasswordPolicy.LockoutDuration
+                'Lockout Observation Window'    = $DefaultPasswordPolicy.LockoutObservationWindow
+                'Lockout Threshold'             = $DefaultPasswordPolicy.LockoutThreshold
+                'Max Password Age'              = $DefaultPasswordPolicy.MaxPasswordAge
+                'Min Password Length'           = $DefaultPasswordPolicy.MinPasswordLength
+                'Min Password Age'              = $DefaultPasswordPolicy.MinPasswordAge
+                'Password History Count'        = $DefaultPasswordPolicy.PasswordHistoryCount
+                'Reversible Encryption Enabled' = $DefaultPasswordPolicy.ReversibleEncryptionEnabled
+                'Distinguished Name'            = $DefaultPasswordPolicy.DistinguishedName
+            }
+            return $Data
+        }
     }
     $Data.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
     $Data.OrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )

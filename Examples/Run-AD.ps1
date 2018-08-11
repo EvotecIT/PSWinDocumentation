@@ -1,6 +1,6 @@
 Import-Module PSWriteWord -Force
-Import-Module PSWriteExcel -Force # Import-Module Import-Excel
-Import-Module PSWinDocumentation -Force
+Import-Module PSWriteExcel #-Force # Import-Module Import-Excel
+Import-Module PSWinDocumentation #-Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
 
@@ -245,6 +245,18 @@ $Document = [ordered]@{
                     TableMaximumColumns = 6
                     TableDesign         = 'ColorfulGridAccent5'
                     Text                = "Following table contains group policies for <Domain>"
+                }
+                SectionDomainTrusts                 = [ordered] @{
+                    Use                 = $true
+                    TocEnable           = $True
+                    TocText             = 'General Information - Trusts'
+                    TocListLevel        = 1
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [Domain]::DomainTrusts
+                    TableMaximumColumns = 6
+                    TableDesign         = 'ColorfulGridAccent5'
+                    Text                = "Following table contains trusts established with domains..."
                 }
                 SectionDomainOrganizationalUnits    = [ordered] @{
                     Use             = $true

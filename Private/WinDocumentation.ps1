@@ -7,6 +7,8 @@ function Get-WinDocumentationData {
     $Type = Get-ObjectType $Data
     #Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl"
     if ($Type.ObjectTypeName -eq 'Forest') {
+        return $Forest."$Data"
+        <#
         switch ( $Data ) {
             Summary { return $Forest.ForestInformation }
             FSMO { return $Forest.FSMO }
@@ -22,7 +24,10 @@ function Get-WinDocumentationData {
             SiteLinks { return $Forest.SiteLinks }
             default { return $null }
         }
+        #>
     } elseif ($Type.ObjectTypeName -eq 'Domain' ) {
+        return $Forest.FoundDomains.$Domain."$Data"
+        <#
         switch ( $Data ) {
             DomainControllers { return $Forest.FoundDomains.$Domain.DomainControllers }
             DomainInformation { return $Forest.FoundDomains.$Domain.DomainInformation }
@@ -35,7 +40,9 @@ function Get-WinDocumentationData {
             DomainAdministrators { return $Forest.FoundDomains.$Domain.DomainAdministrators }
             Users { return $Forest.FoundDomains.$Domain.Users }
             UsersCount { return $Forest.FoundDomains.$Domain.UsersCount }
+            DomainTrusts { return $Forest.FoundDomains.$Domain.DomainTrusts }
         }
+        #>
     }
 }
 function Get-WinDocumentationText {

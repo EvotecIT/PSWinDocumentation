@@ -1,6 +1,6 @@
 Function Get-PrivilegedGroupsMembers {
     [CmdletBinding()]
-    Param (
+    param (
         $Domain,
         $DomainSID
     )
