@@ -8,41 +8,8 @@ function Get-WinDocumentationData {
     #Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl"
     if ($Type.ObjectTypeName -eq 'Forest') {
         return $Forest."$Data"
-        <#
-        switch ( $Data ) {
-            Summary { return $Forest.ForestInformation }
-            FSMO { return $Forest.FSMO }
-            OptionalFeatures { return $Forest.OptionalFeatures }
-            UPNSuffixes { return $Forest.UPNSuffixes }
-            SPNSuffixes { return $Forest.SPNSuffixes }
-            Sites { return $Forest.Sites }
-            Sites1 { return $Forest.Sites1 }
-            Sites2 { return $Forest.Sites2 }
-            Subnets { return $Forest.Subnets }
-            Subnets1 { return $Forest.Subnets1 }
-            Subnets2 { return $Forest.Subnets2 }
-            SiteLinks { return $Forest.SiteLinks }
-            default { return $null }
-        }
-        #>
     } elseif ($Type.ObjectTypeName -eq 'Domain' ) {
         return $Forest.FoundDomains.$Domain."$Data"
-        <#
-        switch ( $Data ) {
-            DomainControllers { return $Forest.FoundDomains.$Domain.DomainControllers }
-            DomainInformation { return $Forest.FoundDomains.$Domain.DomainInformation }
-            FSMO { return $Forest.FoundDomains.$Domain.FSMO }
-            DefaultPasswordPoLicy { return $Forest.FoundDomains.$Domain.DefaultPasswordPoLicy }
-            GroupPolicies { return $Forest.FoundDomains.$Domain.GroupPolicies }
-            GroupPoliciesDetails { return $Forest.FoundDomains.$Domain.GroupPoliciesDetails }
-            OrganizationalUnits { return $Forest.FoundDomains.$Domain.OrganizationalUnits }
-            PriviligedGroupMembers { return $Forest.FoundDomains.$Domain.PriviligedGroupMembers }
-            DomainAdministrators { return $Forest.FoundDomains.$Domain.DomainAdministrators }
-            Users { return $Forest.FoundDomains.$Domain.Users }
-            UsersCount { return $Forest.FoundDomains.$Domain.UsersCount }
-            DomainTrusts { return $Forest.FoundDomains.$Domain.DomainTrusts }
-        }
-        #>
     }
 }
 function Get-WinDocumentationText {
