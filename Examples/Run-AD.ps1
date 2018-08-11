@@ -1,7 +1,9 @@
 Import-Module PSWriteWord -Force
+Import-Module PSWriteExcel -Force # Import-Module Import-Excel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
+Import-Module PSWriteExcel
 
 $Document = [ordered]@{
     Configuration    = [ordered] @{
@@ -25,12 +27,12 @@ $Document = [ordered]@{
         }
     }
     DocumentAD       = [ordered] @{
-        Enable        = $true
-        ExportWord    = $true
-        ExportExcel   = $false
-        FilePathWord  = "$Env:USERPROFILE\Desktop\PSWriteWord-Example-Report.docx"
-        FilePathExcel = ""
-        Sections      = [ordered] @{
+        Enable       = $true
+        ExportWord   = $true
+        # ExportExcel   = $false Not read/working
+        FilePathWord = "$Env:USERPROFILE\Desktop\PSWriteWord-Example-Report.docx"
+        # FilePathExcel = "$Env:USERPROFILE\Desktop\PSWriteWord-Example-Report.xlsx"
+        Sections     = [ordered] @{
             SectionForest = [ordered] @{
                 SectionTOC                    = [ordered] @{
                     Use                  = $true
@@ -241,7 +243,7 @@ $Document = [ordered]@{
                     TocListItemType     = 'Numbered'
                     TocHeadingType      = 'Heading2'
                     TableData           = [Domain]::GroupPoliciesDetails
-                    TableMaximumColumns = 15
+                    TableMaximumColumns = 6
                     TableDesign         = 'ColorfulGridAccent5'
                     Text                = "Following table contains group policies for <Domain>"
                 }

@@ -62,7 +62,8 @@ function New-ADDocumentBlock {
         [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Mandatory = $true)][Xceed.Words.NET.Container]$WordDocument,
         [Object] $Section,
         [Object] $Forest,
-        [string] $Domain
+        [string] $Domain,
+        [string] $Excel
     )
     if ($Section.Use) {
         #Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.TableData)]"
@@ -121,6 +122,30 @@ function New-ADDocumentBlock {
             -ListBuilderType $Section.ListBuilderType `
             -ListBuilderLevel $Section.ListBuilderLevel
 
+        if ($TableData) {
+            #$WorkSheetName = [System.IO.Path]::GetRandomFileName()
+            #$TableData | Convert-ToExcel -Path $Excel -AutoSize -AutoFilter -WorksheetName $WorkSheetName -ClearSheet -NoNumberConversion * #SSDL, GUID, ID, ACLs
+        }
     }
     return $WordDocument
+}
+
+function Start-ActiveDirectoryDocumentation {
+    [CmdletBinding()]
+    param (
+        [string] $FilePath,
+        [switch] $CleanDocument,
+        [string] $CompanyName = 'Evotec',
+        [switch] $OpenDocument
+    )
+    # Left here for legacy reasons.
+    $Document = $Script:Document
+    $Document.Configuration.Prettify.CompanyName = $CompanyName
+    if ($CleanDocument) {
+        $Document.Configuration.Prettify.UseBuiltinTemplate = $false
+    }
+    $Document.Configuration.Options.OpenDocument = $OpenDocument
+    $Document.DocumentAD.FilePathWord = $FilePath
+
+    Start-Documentation -Document $Document
 }

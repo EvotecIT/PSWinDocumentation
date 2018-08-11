@@ -12,18 +12,29 @@ function Start-Documentation {
 
         ### Starting WORD
         $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
+        $ExcelDocument = $Document.DocumentAD.FilePathExcel
 
         ### Start Sections
         $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
         foreach ($Section in $ADSectionsForest) {
             Write-Verbose "Generating WORD Section for [$Section]"
-            $WordDocument = $WordDocument | New-ADDocumentBlock -Section $Document.DocumentAD.Sections.SectionForest.$Section -Forest $Forest
+            $WordDocument = New-ADDocumentBlock `
+                -WordDocument $WordDocument `
+                -Section $Document.DocumentAD.Sections.SectionForest.$Section `
+                -Forest $Forest `
+                -Excel $ExcelDocument
+            #$ExcelDocument = $ExcelDocument | New-ExportExcelBlock -Section $Document.DocumentAD.Sections.SectionDomain.$Section -Forest $Forest -Domain $Domain
         }
         foreach ($Domain in $Forest.Domains) {
             $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
             foreach ($Section in $ADSectionsDomain) {
                 Write-Verbose "Generating WORD Section for [$Domain - $Section]"
-                $WordDocument = $WordDocument | New-ADDocumentBlock -Section $Document.DocumentAD.Sections.SectionDomain.$Section -Forest $Forest -Domain $Domain
+                $WordDocument = New-ADDocumentBlock `
+                    -WordDocument $WordDocument `
+                    -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
+                    -Forest $Forest `
+                    -Domain $Domain `
+                    -Excel $ExcelDocument
             }
         }
         ### End Sections
@@ -39,16 +50,6 @@ function Start-Documentation {
 
     Write-Verbose 'Start-ActiveDirectoryDocumentation - Working...2'
     foreach ($Domain in $ForestInformation.Domains) {
-        $WordDocument | Add-WordPageBreak -Supress $True
-        Write-Verbose 'Start-ActiveDirectoryDocumentation - Getting domain information'
-        $DomainInformation = Get-WinADDomainInformation -Domain $Domain
-
-        $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain $Domain" -ListLevel 0 -ListItemType Numbered -HeadingType Heading1
-        ### Section - Domain Summary
-        $SectionDomainSummary = $WordDocument | Add-WordTocItem -Text "General Information - Domain Summary" -ListLevel 1 -ListItemType Numbered -HeadingType Heading2
-        $SectionDomainSummary = $WordDocument | Get-DomainSummary -Paragraph $SectionDomainSummary -ActiveDirectorySnapshot $DomainInformation.ADSnapshot -Domain $Domain
-
-
         if ($FilePathExcel) {
             $ForestInformation.ForestInformation | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -Verbose -WorkSheetname 'Forest Information' -ClearSheet -FreezeTopRow
             $ForestInformation.FSMO | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname 'Forest FSMO' -FreezeTopRow

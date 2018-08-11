@@ -1,4 +1,4 @@
-function Start-ActiveDirectoryDocumentation {
+function Start-1ActiveDirectoryDocumentation {
     [CmdletBinding()]
     param (
         [string] $FilePath,
