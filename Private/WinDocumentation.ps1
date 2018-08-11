@@ -10,6 +10,7 @@ function Get-WinDocumentationData {
         return $Forest."$Data"
     } elseif ($Type.ObjectTypeName -eq 'Domain' ) {
         return $Forest.FoundDomains.$Domain."$Data"
+        # DomainControllers { return $Forest.FoundDomains.$Domain.DomainControllers }
     }
 }
 function Get-WinDocumentationText {
