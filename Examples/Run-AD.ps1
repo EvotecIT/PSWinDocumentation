@@ -3,7 +3,6 @@ Import-Module PSWriteExcel -Force # Import-Module Import-Excel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
-Import-Module PSWriteExcel
 
 $Document = [ordered]@{
     Configuration    = [ordered] @{

@@ -125,7 +125,6 @@ function Get-WinADForestInformation {
     }
     return $Data
 }
-
 function Get-WinADDomainInformation {
     [CmdletBinding()]
     param (
@@ -248,7 +247,6 @@ function Get-WinADDomainInformation {
 
     return $Data
 }
-
 function Get-DomainSummary {
     [CmdletBinding()]
     param(
