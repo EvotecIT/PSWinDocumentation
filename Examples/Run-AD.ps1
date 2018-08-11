@@ -1,4 +1,3 @@
-Set-StrictMode -Version Latest
 Import-Module PSWriteWord -Force
 Import-Module PSWriteExcel #-Force # Import-Module Import-Excel
 Import-Module PSWinDocumentation -Force
@@ -162,7 +161,6 @@ $Document = [ordered]@{
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = "Forest Site Links information is available in table below"
                 }
-
             }
             SectionDomain = [ordered] @{
                 SectionPageBreak                    = [ordered] @{
