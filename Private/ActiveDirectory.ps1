@@ -5,126 +5,147 @@ function Get-WinADForestInformation {
         [switch] $RequireTypes
     )
     if ($TypesRequired -eq $null) {
-        # Write-Verbose ' Get-WinADForestInformation - TypesRequired is null. Getting all.'
-        # $TypesRequired = Get-Types
+        Write-Verbose ' Get-WinADForestInformation - TypesRequired is null. Getting all.'
+        $TypesRequired = Get-Types
     } # Gets all types
 
     $Data = [ordered] @{}
     $Data.Forest = $(Get-ADForest)
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
-    $Data.Sites = $(Get-ADReplicationSite -Filter * -Properties * )
-    $Data.Sites1 = Invoke-Command -ScriptBlock {
-        $ReturnData = @()
-        foreach ($Sites in $Data.Sites) {
-            $ReturnData += [ordered] @{
-                'Name'                               = $Sites.Name
-                'Description'                        = $Sites.Description
-                'sD Rights Effective'                = $Sites.sDRightsEffective
-                'Protected From Accidental Deletion' = $Sites.ProtectedFromAccidentalDeletion
-                'Modified'                           = $Sites.Modified
-                'Created'                            = $Sites.Created
-                'Deleted'                            = $Sites.Deleted
-            }
-        }
-        return Format-TransposeTable $ReturnData
-    }
-    $Data.Sites2 = Invoke-Command -ScriptBlock {
-        $ReturnData = @()
-        foreach ($Sites in $Data.Sites) {
-            $ReturnData += [ordered] @{
-                'Name'                                = $Sites.Name
-                'Topology Cleanup Enabled'            = $Sites.TopologyCleanupEnabled
-                'Topology Detect Stale Enabled'       = $Sites.TopologyDetectStaleEnabled
-                'Topology Minimum Hops Enabled'       = $Sites.TopologyMinimumHopsEnabled
-                'Universal Group Caching Enabled'     = $Sites.UniversalGroupCachingEnabled
-                'Universal Group Caching RefreshSite' = $Sites.UniversalGroupCachingRefreshSite
-            }
-        }
-        return Format-TransposeTable $ReturnData
-    }
-    $Data.Subnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
-            Select-Object  Name, DisplayName, Description, Site, ProtectedFromAccidentalDeletion, Created, Modified, Deleted )
-    $Data.Subnets1 = Invoke-Command -ScriptBlock {
-        $ReturnData = @()
-        foreach ($Subnets in $Data.Subnets) {
-            $ReturnData += [ordered] @{
-                'Name'                               = $Subnets.Name
-                'Description'                        = $Subnets.Description
-                'Protected From Accidental Deletion' = $Subnets.ProtectedFromAccidentalDeletion
-                'Modified'                           = $Subnets.Modified
-                'Created'                            = $Subnets.Created
-                'Deleted'                            = $Subnets.Deleted
-            }
-        }
-        return Format-TransposeTable $ReturnData
-    }
-    $Data.Subnets2 = Invoke-Command -ScriptBlock {
-        $ReturnData = @()
-        foreach ($Subnets in $Data.Subnets) {
-            $ReturnData += [ordered] @{
-                'Name' = $Subnets.Name
-                'Site' = $Subnets.Site
-            }
-        }
-        return Format-TransposeTable $ReturnData
-    }
-    $Data.SiteLinks = $(
-        Get-ADReplicationSiteLink -Filter * -Properties `
-            Name, Cost, ReplicationFrequencyInMinutes, replInterval, ReplicationSchedule, Created, Modified, Deleted, IsDeleted, ProtectedFromAccidentalDeletion | `
-            Select-Object Name, Cost, ReplicationFrequencyInMinutes, ReplInterval, Modified
-    )
     $Data.ForestName = $Data.Forest.Name
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
     $Data.Domains = $Data.Forest.Domains
-    $Data.ForestInformation = [ordered] @{
-        'Name'                    = $Data.Forestn.Name
-        'Root Domain'             = $Data.Forest.RootDomain
-        'Forest Functional Level' = $Data.Forest.ForestMode
-        'Domains Count'           = ($Data.Forest.Domains).Count
-        'Sites Count'             = ($Data.Forest.Sites).Count
-        'Domains'                 = ($Data.Forest.Domains) -join ", "
-        'Sites'                   = ($Data.Forest.Sites) -join ", "
-    }
-    $Data.UPNSuffixes = Invoke-Command -ScriptBlock {
-        $UPNSuffixList = @()
-        $UPNSuffixList += $Data.Forest.RootDomain + ' (Primary / Default UPN)'
-        $UPNSuffixList += $Data.Forest.UPNSuffixes
-        return $UPNSuffixList
-    }
-    $Data.GlobalCatalogs = $Data.Forest.GlobalCatalogs
-    $Data.SPNSuffixes = $Data.Forest.SPNSuffixes
-    $Data.FSMO = Invoke-Command -ScriptBlock {
-        $FSMO = [ordered] @{
-            'Domain Naming Master' = $Data.Forest.DomainNamingMaster
-            'Schema Master'        = $Data.Forest.SchemaMaster
-        }
-        return $FSMO
-    }
-    $Data.OptionalFeatures = Invoke-Command -ScriptBlock {
-        $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
-        $Optional = [ordered]@{
-            'Recycle Bin Enabled'                          = ''
-            'Privileged Access Management Feature Enabled' = ''
-        }
-        ### Fix Optional Features
-        foreach ($Feature in $OptionalFeatures) {
-            if ($Feature.Name -eq 'Recycle Bin Feature') {
-                if ("$($Feature.EnabledScopes)" -eq '') {
-                    $Optional.'Recycle Bin Enabled' = $False
-                } else {
-                    $Optional.'Recycle Bin Enabled' = $True
+
+
+    if ($TypesRequired -contains [Forest]::Sites -or $TypesRequired -contains [Forest]::Sites1 -or $TypesRequired -contains [Forest]::Sites2) {
+        $Data.Sites = $(Get-ADReplicationSite -Filter * -Properties * )
+
+        $Data.Sites1 = Invoke-Command -ScriptBlock {
+            $ReturnData = @()
+            foreach ($Sites in $Data.Sites) {
+                $ReturnData += [ordered] @{
+                    'Name'                               = $Sites.Name
+                    'Description'                        = $Sites.Description
+                    'sD Rights Effective'                = $Sites.sDRightsEffective
+                    'Protected From Accidental Deletion' = $Sites.ProtectedFromAccidentalDeletion
+                    'Modified'                           = $Sites.Modified
+                    'Created'                            = $Sites.Created
+                    'Deleted'                            = $Sites.Deleted
                 }
             }
-            if ($Feature.Name -eq 'Privileged Access Management Feature') {
-                if ("$($Feature.EnabledScopes)" -eq '') {
-                    $Optional.'Privileged Access Management Feature Enabled' = $False
-                } else {
-                    $Optional.'Privileged Access Management Feature Enabled' = $True
+            return Format-TransposeTable $ReturnData
+        }
+        $Data.Sites2 = Invoke-Command -ScriptBlock {
+            $ReturnData = @()
+            foreach ($Sites in $Data.Sites) {
+                $ReturnData += [ordered] @{
+                    'Name'                                = $Sites.Name
+                    'Topology Cleanup Enabled'            = $Sites.TopologyCleanupEnabled
+                    'Topology Detect Stale Enabled'       = $Sites.TopologyDetectStaleEnabled
+                    'Topology Minimum Hops Enabled'       = $Sites.TopologyMinimumHopsEnabled
+                    'Universal Group Caching Enabled'     = $Sites.UniversalGroupCachingEnabled
+                    'Universal Group Caching RefreshSite' = $Sites.UniversalGroupCachingRefreshSite
                 }
             }
+            return Format-TransposeTable $ReturnData
         }
-        return $Optional
-        ### Fix optional features
+    }
+    if ($TypesRequired -contains [Forest]::Subnets -or $TypesRequired -contains [Forest]::Subnets1 -or $TypesRequired -contains [Forest]::Subnets2) {
+        $Data.Subnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
+                Select-Object  Name, DisplayName, Description, Site, ProtectedFromAccidentalDeletion, Created, Modified, Deleted )
+        $Data.Subnets1 = Invoke-Command -ScriptBlock {
+            $ReturnData = @()
+            foreach ($Subnets in $Data.Subnets) {
+                $ReturnData += [ordered] @{
+                    'Name'                               = $Subnets.Name
+                    'Description'                        = $Subnets.Description
+                    'Protected From Accidental Deletion' = $Subnets.ProtectedFromAccidentalDeletion
+                    'Modified'                           = $Subnets.Modified
+                    'Created'                            = $Subnets.Created
+                    'Deleted'                            = $Subnets.Deleted
+                }
+            }
+            return Format-TransposeTable $ReturnData
+        }
+        $Data.Subnets2 = Invoke-Command -ScriptBlock {
+            $ReturnData = @()
+            foreach ($Subnets in $Data.Subnets) {
+                $ReturnData += [ordered] @{
+                    'Name' = $Subnets.Name
+                    'Site' = $Subnets.Site
+                }
+            }
+            return Format-TransposeTable $ReturnData
+        }
+    }
+    if ($TypesRequired -contains [Forest]::SiteLinks) {
+        $Data.SiteLinks = $(
+            Get-ADReplicationSiteLink -Filter * -Properties `
+                Name, Cost, ReplicationFrequencyInMinutes, replInterval, ReplicationSchedule, Created, Modified, Deleted, IsDeleted, ProtectedFromAccidentalDeletion | `
+                Select-Object Name, Cost, ReplicationFrequencyInMinutes, ReplInterval, Modified
+        )
+    }
+    if ($TypesRequired -contains [Forest]::ForestInformation) {
+        $Data.ForestInformation = [ordered] @{
+            'Name'                    = $Data.Forest.Name
+            'Root Domain'             = $Data.Forest.RootDomain
+            'Forest Functional Level' = $Data.Forest.ForestMode
+            'Domains Count'           = ($Data.Forest.Domains).Count
+            'Sites Count'             = ($Data.Forest.Sites).Count
+            'Domains'                 = ($Data.Forest.Domains) -join ", "
+            'Sites'                   = ($Data.Forest.Sites) -join ", "
+        }
+    }
+    if ($TypesRequired -contains [Forest]::UPNSuffixes) {
+        $Data.UPNSuffixes = Invoke-Command -ScriptBlock {
+            $UPNSuffixList = @()
+            $UPNSuffixList += $Data.Forest.RootDomain + ' (Primary / Default UPN)'
+            $UPNSuffixList += $Data.Forest.UPNSuffixes
+            return $UPNSuffixList
+        }
+    }
+    if ($TypesRequired -contains [Forest]::GlobalCatalogs) {
+        $Data.GlobalCatalogs = $Data.Forest.GlobalCatalogs
+    }
+    if ($TypesRequired -contains [Forest]::SPNSuffixes) {
+        $Data.SPNSuffixes = $Data.Forest.SPNSuffixes
+    }
+    if ($TypesRequired -contains [Forest]::FSMO) {
+        $Data.FSMO = Invoke-Command -ScriptBlock {
+            $FSMO = [ordered] @{
+                'Domain Naming Master' = $Data.Forest.DomainNamingMaster
+                'Schema Master'        = $Data.Forest.SchemaMaster
+            }
+            return $FSMO
+        }
+    }
+    if ($TypesRequired -contains [Forest]::OptionalFeatures) {
+        $Data.OptionalFeatures = Invoke-Command -ScriptBlock {
+            $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
+            $Optional = [ordered]@{
+                'Recycle Bin Enabled'                          = ''
+                'Privileged Access Management Feature Enabled' = ''
+            }
+            ### Fix Optional Features
+            foreach ($Feature in $OptionalFeatures) {
+                if ($Feature.Name -eq 'Recycle Bin Feature') {
+                    if ("$($Feature.EnabledScopes)" -eq '') {
+                        $Optional.'Recycle Bin Enabled' = $False
+                    } else {
+                        $Optional.'Recycle Bin Enabled' = $True
+                    }
+                }
+                if ($Feature.Name -eq 'Privileged Access Management Feature') {
+                    if ("$($Feature.EnabledScopes)" -eq '') {
+                        $Optional.'Privileged Access Management Feature Enabled' = $False
+                    } else {
+                        $Optional.'Privileged Access Management Feature Enabled' = $True
+                    }
+                }
+            }
+            return $Optional
+            ### Fix optional features
+        }
     }
     ### Generate Data from Domains
     $Data.FoundDomains = [ordered]@{}
@@ -141,10 +162,10 @@ function Get-WinADDomainInformation {
         [string] $Domain,
         [Object] $TypesRequired
     )
-    #if ($TypesRequired -eq $null) {
-    # Write-Verbose ' Get-WinADDomainInformation - TypesRequired is null. Getting all.'
-    # $TypesRequired = Get-Types
-    #} # Gets all types
+    if ($TypesRequired -eq $null) {
+        Write-Verbose ' Get-WinADDomainInformation - TypesRequired is null. Getting all.'
+        $TypesRequired = Get-Types
+    } # Gets all types
     $Data = [ordered] @{}
     $Data.RootDSE = $(Get-ADRootDSE -Server $Domain)
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)

@@ -1,7 +1,8 @@
 Add-Type -TypeDefinition @"
     public enum Forest {
-        Summary,
+        ForestInformation,
         FSMO,
+        GlobalCatalogs,
         OptionalFeatures,
         UPNSuffixes,
         SPNSuffixes,

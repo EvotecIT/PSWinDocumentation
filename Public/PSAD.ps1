@@ -11,7 +11,6 @@ function Start-Documentation {
         $TypesRequired = Get-TypesRequired -Document $Document
         $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
         $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
-        $TypesRequired
         $Forest = Get-WinADForestInformation -TypesRequired $TypesRequired
 
 

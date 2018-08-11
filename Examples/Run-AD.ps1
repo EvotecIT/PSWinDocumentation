@@ -1,3 +1,4 @@
+Set-StrictMode -Version Latest
 Import-Module PSWriteWord -Force
 Import-Module PSWriteExcel #-Force # Import-Module Import-Excel
 Import-Module PSWinDocumentation -Force
@@ -72,7 +73,7 @@ $Document = [ordered]@{
                     TocListLevel    = 0
                     TocListItemType = [ListItemType]::Numbered
                     TocHeadingType  = [HeadingType]::Heading1
-                    TableData       = [Forest]::Summary
+                    TableData       = [Forest]::ForestInformation
                     TableDesign     = [TableDesign]::ColorfulGridAccent5
                     TableTitleMerge = $true
                     TableTitleText  = "Forest Summary"
