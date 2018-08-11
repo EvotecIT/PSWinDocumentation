@@ -1,8 +1,14 @@
 function Get-WinADForestInformation {
     [CmdletBinding()]
     param (
-        $TypesRequired
+        [Object] $TypesRequired,
+        [switch] $RequireTypes
     )
+    if ($TypesRequired -eq $null) {
+        # Write-Verbose ' Get-WinADForestInformation - TypesRequired is null. Getting all.'
+        # $TypesRequired = Get-Types
+    } # Gets all types
+
     $Data = [ordered] @{}
     $Data.Forest = $(Get-ADForest)
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
@@ -135,10 +141,10 @@ function Get-WinADDomainInformation {
         [string] $Domain,
         [Object] $TypesRequired
     )
-    if ($TypesRequired -eq $null) {
-        Write-Verbose ' Get-WinADDomainInformation - TypesRequired is null. Getting all.'
-        $TypesRequired = Get-Types
-    } # Gets all types
+    #if ($TypesRequired -eq $null) {
+    # Write-Verbose ' Get-WinADDomainInformation - TypesRequired is null. Getting all.'
+    # $TypesRequired = Get-Types
+    #} # Gets all types
     $Data = [ordered] @{}
     $Data.RootDSE = $(Get-ADRootDSE -Server $Domain)
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
@@ -257,6 +263,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [Domain]::PriviligedGroupMembers) {
+        Write-Verbose "Get-WinADDomainInformation - TypesRequired: PriviligedGroupMembers"
         $Data.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
     }
     if ($TypesRequired -contains [Domain]::OrganizationalUnits) {

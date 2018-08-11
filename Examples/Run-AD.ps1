@@ -270,7 +270,7 @@ $Document = [ordered]@{
                     Text            = "Following table contains all OU's created in <Domain>"
                 }
                 SectionDomainPriviligedGroupMembers = [ordered] @{
-                    Use             = $true
+                    Use             = $False
                     TocEnable       = $True
                     TocText         = 'General Information - Priviliged Members'
                     TocListLevel    = 1

@@ -34,7 +34,6 @@ Add-Type -TypeDefinition @"
         GroupPoliciesDetails,
         OrganizationalUnits,
         PriviligedGroupMembers,
-        OrganizationalUnits,
         Users,
         UsersCount,
         DomainTrusts

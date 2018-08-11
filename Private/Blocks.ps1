@@ -65,17 +65,20 @@ function Get-TypesRequired {
 
     $TypesRequired = New-ArrayList
     foreach ($Section in $ADSectionsDomain) {
-        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.TableData -SkipNull -RequireUnique -FullComparison
-        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ListData -SkipNull -RequireUnique -FullComparison
-        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ChartData -SkipNull -RequireUnique -FullComparison
+        if ($Document.DocumentAD.Sections.SectionDomain.$Section.Use -eq $True) {
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.TableData -SkipNull -RequireUnique -FullComparison
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ListData -SkipNull -RequireUnique -FullComparison
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ChartData -SkipNull -RequireUnique -FullComparison
+        }
     }
 
     foreach ($Section in $ADSectionsForest) {
-        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.TableData -SkipNull -RequireUnique -FullComparison
-        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ListData -SkipNull -RequireUnique -FullComparison
-        Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ChartData -SkipNull -RequireUnique -FullComparison
+        if ($Document.DocumentAD.Sections.SectionForest.$Section.Use -eq $True) {
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.TableData -SkipNull -RequireUnique -FullComparison
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ListData -SkipNull -RequireUnique -FullComparison
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ChartData -SkipNull -RequireUnique -FullComparison
+        }
     }
-
     #Show-Array $TypesRequired -WithType
     return $TypesRequired
 }
