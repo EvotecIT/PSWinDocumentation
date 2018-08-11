@@ -128,12 +128,17 @@ function Get-WinADForestInformation {
     }
     return $Data
 }
+
 function Get-WinADDomainInformation {
     [CmdletBinding()]
     param (
         [string] $Domain,
-        $TypesRequired
+        [Object] $TypesRequired
     )
+    if ($TypesRequired -eq $null) {
+        Write-Verbose ' Get-WinADDomainInformation - TypesRequired is null. Getting all.'
+        $TypesRequired = Get-Types
+    } # Gets all types
     $Data = [ordered] @{}
     $Data.RootDSE = $(Get-ADRootDSE -Server $Domain)
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)

@@ -44,6 +44,17 @@ function Test-Configuration {
         Exit
     }
 }
+Function Get-Types {
+    [CmdletBinding()]
+    param ()
+    $TypesRequired = @()
+    $Types = [Forest], [Domain]
+    foreach ($Type in $Types) {
+        $TypesRequired += $Type.GetEnumValues()
+    }
+    return $TypesRequired
+}
+
 function Get-TypesRequired {
     [CmdletBinding()]
     param (
