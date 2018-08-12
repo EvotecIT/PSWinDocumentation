@@ -187,11 +187,32 @@ function Get-WinADDomainInformation {
     if ($TypesRequired -contains [Domain]::ClaimTypes) {
         $Data.ClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
     }
-    if ($TypesRequired -contains [Domain]::LDAPDNS) {
-        $Data.LDAPDNS = $(Resolve-DnsName -Name "_ldap._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
-    }
-    if ($TypesRequired -contains [Domain]::KerberosDNS) {
-        $Data.KerberosDNS = $(Resolve-DnsName -Name "_kerberos._tcp.$((Get-ADDomain).DNSRoot)" -Type srv)
+    if ($TypesRequired -contains [Domain]::DNSSRV -or $TypesRequired -contains [Domain]::DNSA) {
+        $Data.DNSData = Invoke-Command -ScriptBlock {
+            $DnsSrv = @()
+            $DnsA = @()
+
+            $DnsRecords = "_kerberos._tcp.$Domain", "_ldap._tcp.$Domain"
+            foreach ($DnsRecord in $DnsRecords) {
+                $Value = Resolve-DnsName -Name $DnsRecord -Type SRV | Select *
+                foreach ($V in $Value) {
+                    if ($V.QueryType -eq 'SRV') {
+                        $DnsSrv += $V
+                    } else {
+                        $DnsA += $V
+                    }
+                }
+            }
+            $ReturnData = @{
+                # QueryType, Target, NameTarget, Priority, Weight, Port, Name, Type, CharacterSet, Section
+                SRV = $DnsSrv | Select-Object Target, NameTarget, Priority, Weight, Port, Name # Type, QueryType, CharacterSet, Section
+                # Address, IPAddress, QueryType, IP4Address, Name, Type, CharacterSet, Section, DataLength, TTL
+                A   = $DnsA | Select-Object Address, IPAddress, IP4Address, Name, Type, DataLength, TTL # QueryType, CharacterSet, Section
+            }
+            return $ReturnData
+        }
+        $Data.DNSSrv = $Data.DNSData.SRV
+        $Data.DNSA = $Data.DNSData.A
     }
     if ($TypesRequired -contains [Domain]::FSMO -or $TypesRequired -contains [Domain]::DomainTrusts) {
         # required for multiple use cases FSMO/DomainTrusts
@@ -261,8 +282,6 @@ function Get-WinADDomainInformation {
             }
             return Format-TransposeTable $GroupPolicies
         }
-
-
         $Data.GroupPoliciesDetails = Invoke-Command -ScriptBlock {
             Write-Verbose -Message "Get-WinADDomainInformation - Group Policies Details"
             $Output = @()
@@ -353,7 +372,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [Domain]::DomainAdministrators) {
-        $Data.DomainAdministratorsClean = $( Get-ADGroup -Server $Domain -Identity $('{0}-512' -f (Get-ADDomain -Server $Domain).domainSID) | Get-ADGroupMember -Server $Domain -Recursive | Get-ADUser -Server $Domain)
+        $Data.DomainAdministratorsClean = $( Get-ADGroup -Server $Domain -Identity $('{0}-512' -f $Data.DomainInformation.DomainSID) | Get-ADGroupMember -Server $Domain -Recursive | Get-ADUser -Server $Domain)
         $Data.DomainAdministrators = $Data.DomainAdministratorsClean | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
     }
     if ($TypesRequired -contains [Domain]::Users -or $TypesRequired -contains [Domain]::UsersCount) {

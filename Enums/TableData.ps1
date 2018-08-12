@@ -24,8 +24,8 @@ Add-Type -TypeDefinition @"
         CentralAccessRules, // Not yet tested
         ClaimTransformPolicies, // Not yet tested
         ClaimTypes, // Not yet tested
-        LDAPDNS, // not yet tested
-        KerberosDNS, // not yet tested
+        DNSSRV,
+        DNSA,
         DomainAdministrators,
         DomainInformation,
         DomainControllers,

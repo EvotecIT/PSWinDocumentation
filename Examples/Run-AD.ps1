@@ -13,7 +13,7 @@ $Document = [ordered]@{
             Language           = 'en-US'
         }
         Options        = @{
-            OpenDocument = $false
+            OpenDocument = $true
             OpenExcel    = $false
         }
         DisplayConsole = @{
@@ -244,6 +244,38 @@ $Document = [ordered]@{
                     TableMaximumColumns = 6
                     TableDesign         = 'ColorfulGridAccent5'
                     Text                = "Following table contains group policies for <Domain>"
+                }
+                SectionDomainGroupPoliciesACL       = [ordered] @{
+                    Use                 = $true
+                    TocEnable           = $True
+                    TocText             = 'General Information - Group Policies ACL'
+                    TocListLevel        = 1
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [Domain]::GroupPoliciesACL
+                    TableMaximumColumns = 6
+                    TableDesign         = 'ColorfulGridAccent5'
+                    Text                = "Following table contains group policies ACL for <Domain>"
+                }
+                SectionDomainDNSSrv                 = [ordered] @{
+                    Use                  = $true
+                    TocEnable            = $True
+                    TocText              = 'General Information - DNS A/SRV Records'
+                    TocListLevel         = 1
+                    TocListItemType      = 'Numbered'
+                    TocHeadingType       = 'Heading2'
+                    TableData            = [Domain]::DNSSRV
+                    TableMaximumColumns  = 10
+                    TableDesign          = 'ColorfulGridAccent5'
+                    Text                 = "Following table contains SRV records for Kerberos and LDAP"
+                    EmptyParagraphsAfter = 1
+                }
+                SectionDomainDNSA                   = [ordered] @{
+                    Use                 = $true
+                    TableData           = [Domain]::DNSA
+                    TableMaximumColumns = 10
+                    TableDesign         = 'ColorfulGridAccent5'
+                    Text                = "Following table contains A records for Kerberos and LDAP"
                 }
                 SectionDomainTrusts                 = [ordered] @{
                     Use                 = $true
