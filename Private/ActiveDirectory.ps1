@@ -244,7 +244,7 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $ReturnData
         }
     }
-    if ($TypesRequired -contains [Domain]::GroupPolicies) {
+    if ($TypesRequired -contains [Domain]::GroupPolicies -or $TypesRequired -contains [Domain]::GroupPoliciesDetails -or $TypesRequired -contains [Domain]::GroupPoliciesACL) {
         $Data.GroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
         $Data.GroupPolicies = Invoke-Command -ScriptBlock {
             $GroupPolicies = @()
@@ -261,10 +261,69 @@ function Get-WinADDomainInformation {
             }
             return Format-TransposeTable $GroupPolicies
         }
+
+
+        $Data.GroupPoliciesDetails = Invoke-Command -ScriptBlock {
+            Write-Verbose -Message "Get-WinADDomainInformation - Group Policies Details"
+            $Output = @()
+            ForEach ($GPO in $Data.GroupPoliciesClean) {
+                [xml]$XmlGPReport = $GPO.generatereport('xml')
+                #GPO version
+                if ($XmlGPReport.GPO.Computer.VersionDirectory -eq 0 -and $XmlGPReport.GPO.Computer.VersionSysvol -eq 0) {$ComputerSettings = "NeverModified"}else {$ComputerSettings = "Modified"}
+                if ($XmlGPReport.GPO.User.VersionDirectory -eq 0 -and $XmlGPReport.GPO.User.VersionSysvol -eq 0) {$UserSettings = "NeverModified"}else {$UserSettings = "Modified"}
+                #GPO content
+                if ($XmlGPReport.GPO.User.ExtensionData -eq $null) {$UserSettingsConfigured = $false}else {$UserSettingsConfigured = $true}
+                if ($XmlGPReport.GPO.Computer.ExtensionData -eq $null) {$ComputerSettingsConfigured = $false}else {$ComputerSettingsConfigured = $true}
+                #Output
+                $Output += [ordered] @{
+                    'Name'                   = $XmlGPReport.GPO.Name
+                    'Links'                  = $XmlGPReport.GPO.LinksTo | Select-Object -ExpandProperty SOMPath
+                    'Has Computer Settings'  = $ComputerSettingsConfigured
+                    'Has User Settings'      = $UserSettingsConfigured
+                    'User Enabled'           = $XmlGPReport.GPO.User.Enabled
+                    'Computer Enabled'       = $XmlGPReport.GPO.Computer.Enabled
+                    'Computer Settings'      = $ComputerSettings
+                    'User Settings'          = $UserSettings
+                    'Gpo Status'             = $GPO.GpoStatus
+                    'Creation Time'          = $GPO.CreationTime
+                    'Modification Time'      = $GPO.ModificationTime
+                    'WMI Filter'             = $GPO.WmiFilter.name
+                    'WMI Filter Description' = $GPO.WmiFilter.Description
+                    'Path'                   = $GPO.Path
+                    'GUID'                   = $GPO.Id
+                    'SDDL'                   = $XmlGPReport.GPO.SecurityDescriptor.SDDL.'#text'
+                    #'ACLs'                   = $XmlGPReport.GPO.SecurityDescriptor.Permissions.TrusteePermissions | ForEach-Object -Process {
+                    #    New-Object -TypeName PSObject -Property @{
+                    #        'User'            = $_.trustee.name.'#Text'
+                    #        'Permission Type' = $_.type.PermissionType
+                    #        'Inherited'       = $_.Inherited
+                    #        'Permissions'     = $_.Standard.GPOGroupedAccessEnum
+                    #    }
+                    #}
+                }
+            }
+            return Format-TransposeTable $Output
+        }
+        $Data.GroupPoliciesACL = Invoke-Command -ScriptBlock {
+            Write-Verbose -Message "Get-WinADDomainInformation - Group Policies ACLs"
+            $Output = @()
+            ForEach ($GPO in $Data.GroupPoliciesClean) {
+                [xml]$XmlGPReport = $GPO.generatereport('xml')
+                $ACLs = $XmlGPReport.GPO.SecurityDescriptor.Permissions.TrusteePermissions
+                foreach ($ACL in $ACLS) {
+                    $Output += [ordered] @{
+                        'GPO Name'        = $GPO.DisplayName
+                        'User'            = $ACL.trustee.name.'#Text'
+                        'Permission Type' = $ACL.type.PermissionType
+                        'Inherited'       = $ACL.Inherited
+                        'Permissions'     = $ACL.Standard.GPOGroupedAccessEnum
+                    }
+                }
+            }
+            return Format-TransposeTable $Output
+        }
     }
-    if ($TypesRequired -contains [Domain]::GroupPoliciesDetails) {
-        $Data.GroupPoliciesDetails = Format-TransposeTable (Get-GPOInfo -DomainName $Domain)
-    }
+
     if ($TypesRequired -contains [Domain]::DefaultPasswordPolicy) {
         $Data.DefaultPassWordPoLicy = Invoke-Command -ScriptBlock {
             $DefaultPasswordPolicy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)

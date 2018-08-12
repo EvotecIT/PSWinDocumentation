@@ -33,6 +33,7 @@ Add-Type -TypeDefinition @"
         DefaultPasswordPoLicy,
         GroupPolicies,
         GroupPoliciesDetails,
+        GroupPoliciesACL,
         OrganizationalUnits,
         PriviligedGroupMembers,
         Users,

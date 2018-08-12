@@ -6,11 +6,7 @@ Function Get-GPOInfo {
     Param(
         [Parameter(Mandatory = $false)][ValidateScript( {Test-Connection $_ -Count 1 -Quiet})][String]$DomainName = $env:USERDNSDOMAIN
     )
-    Begin {
-        Write-Verbose -Message "Importing Group Policy module..."
-        try {Import-Module -Name GroupPolicy -Verbose:$false -ErrorAction stop}
-        catch {Write-Warning -Message "Failed to import GroupPolicy module"; continue}
-    }
+    Begin {}
     Process {
         ForEach ($GPO in (Get-GPO -All -Domain $DomainName )) {
             Write-Verbose -Message "Processing $($GPO.DisplayName)..."

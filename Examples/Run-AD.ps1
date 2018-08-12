@@ -13,7 +13,7 @@ $Document = [ordered]@{
             Language           = 'en-US'
         }
         Options        = @{
-            OpenDocument = $true
+            OpenDocument = $false
             OpenExcel    = $false
         }
         DisplayConsole = @{
