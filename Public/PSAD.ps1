@@ -21,23 +21,25 @@ function Start-Documentation {
         ### Start Sections
 
         foreach ($Section in $ADSectionsForest) {
-            Write-Verbose "Generating WORD Section for [$Section]"
+            #Write-Verbose "Processing section for [$Section]"
             $WordDocument = New-ADDocumentBlock `
                 -WordDocument $WordDocument `
                 -Section $Document.DocumentAD.Sections.SectionForest.$Section `
                 -Forest $Forest `
-                -Excel $ExcelDocument
+                -Excel $ExcelDocument `
+                -SectionName $Section
             #$ExcelDocument = $ExcelDocument | New-ExportExcelBlock -Section $Document.DocumentAD.Sections.SectionDomain.$Section -Forest $Forest -Domain $Domain
         }
         foreach ($Domain in $Forest.Domains) {
             foreach ($Section in $ADSectionsDomain) {
-                Write-Verbose "Generating WORD Section for [$Domain - $Section]"
+                #Write-Verbose "Processing section for [$Domain - $Section]"
                 $WordDocument = New-ADDocumentBlock `
                     -WordDocument $WordDocument `
                     -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
                     -Forest $Forest `
                     -Domain $Domain `
-                    -Excel $ExcelDocument
+                    -Excel $ExcelDocument `
+                    -SectionName $Section
             }
         }
         ### End Sections

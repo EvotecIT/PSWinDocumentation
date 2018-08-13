@@ -38,9 +38,16 @@ function New-ADDocumentBlock {
         [Object] $Section,
         [Object] $Forest,
         [string] $Domain,
-        [string] $Excel
+        [string] $Excel,
+        [string] $SectionName
     )
     if ($Section.Use) {
+        if ($Domain) {
+            $SectionDetails = "$Domain - $SectionName"
+        } else {
+            $SectionDetails = $SectionName
+        }
+
         #Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.TableData)]"
         $TableData = (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain)
         $ListData = (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain)
@@ -62,9 +69,9 @@ function New-ADDocumentBlock {
         $TableTitleText = (Get-WinDocumentationText -Text $Section.TableTitleText -Forest $Forest -Domain $Domain)
         $Text = (Get-WinDocumentationText -Text $Section.Text -Forest $Forest -Domain $Domain)
         $ChartTitle = (Get-WinDocumentationText -Text $Section.ChartTitle -Forest $Forest -Domain $Domain)
-
         $ListBuilderContent = (Get-WinDocumentationText -Text $Section.ListBuilderContent -Forest $Forest -Domain $Domain)
 
+        Write-Verbose "Generating WORD Section for [$SectionDetails]"
         $WordDocument | New-WordBlock `
             -TocGlobalDefinition $Section.TocGlobalDefinition`
             -TocGlobalTitle $Section.TocGlobalTitle `
@@ -97,9 +104,16 @@ function New-ADDocumentBlock {
             -ListBuilderType $Section.ListBuilderType `
             -ListBuilderLevel $Section.ListBuilderLevel
 
-        if ($TableData) {
-            #$WorkSheetName = [System.IO.Path]::GetRandomFileName()
-            #$TableData | Convert-ToExcel -Path $Excel -AutoSize -AutoFilter -WorksheetName $WorkSheetName -ClearSheet -NoNumberConversion * #SSDL, GUID, ID, ACLs
+        if ($Section.ExcelExport) {
+            if ($ExcelWorkSheet -eq '') {
+                $WorkSheetName = $SectionDetails
+            } else {
+                $WorkSheetName = (Get-WinDocumentationText -Text $Section.ExcelWorkSheet -Forest $Forest -Domain $Domain)
+            }
+            if ($TableData) {
+                Write-Verbose "Generating EXCEL Section for [$SectionDetails]"
+                $TableData | Convert-ToExcel -Path $Excel -AutoSize -AutoFilter -WorksheetName $WorkSheetName -ClearSheet -NoNumberConversion SSDL, GUID, ID, ACLs
+            }
         }
     }
     return $WordDocument
