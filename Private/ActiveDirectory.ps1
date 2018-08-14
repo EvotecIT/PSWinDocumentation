@@ -169,6 +169,21 @@ function Get-WinADDomainInformation {
     $Data = [ordered] @{}
     $Data.RootDSE = $(Get-ADRootDSE -Server $Domain)
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
+
+    $Data.DomainGUIDS = Invoke-Command -ScriptBlock {
+        $GUID = @{}
+        Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID | ForEach-Object {
+            if ($GUID.Keys -notcontains $_.schemaIDGUID ) {
+                $GUID.add([System.GUID]$_.schemaIDGUID, $_.name)
+            }
+        }
+        Get-ADObject -SearchBase "CN=Extended-Rights,$((Get-ADRootDSE).configurationNamingContext)" -LDAPFilter '(objectClass=controlAccessRight)' -Properties name, rightsGUID | ForEach-Object {
+            if ($GUID.Keys -notcontains $_.rightsGUID ) {
+                $GUID.add([System.GUID]$_.rightsGUID, $_.name)
+            }
+        }
+        return $GUID
+    }
     if ($TypesRequired -contains [Domain]::AuthenticationPolicies) {
         $Data.AuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
     }
@@ -342,9 +357,8 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $Output
         }
     }
-
     if ($TypesRequired -contains [Domain]::DefaultPasswordPolicy) {
-        $Data.DefaultPassWordPoLicy = Invoke-Command -ScriptBlock {
+        $Data.DefaultPasswordPolicy = Invoke-Command -ScriptBlock {
             $DefaultPasswordPolicy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
             $Data = [ordered] @{
                 'Complexity Enabled'            = $DefaultPasswordPolicy.ComplexityEnabled
@@ -366,10 +380,82 @@ function Get-WinADDomainInformation {
         $Data.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
     }
     if ($TypesRequired -contains [Domain]::OrganizationalUnits) {
+        #CanonicalName, ManagedBy, ProtectedFromAccidentalDeletion, Created, Modified, Deleted, PostalCode, City, Country, State, StreetAddress, ProtectedFromAccidentalDeletion, DistinguishedName, ObjectGUID
+        $Data.Containers = Get-ADObject -SearchBase $Data.DomainInformation.DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' -Properties *
         $Data.OrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
         $Data.OrganizationalUnits = Invoke-Command -ScriptBlock {
-            return $Data.OrganizationalUnitsClean | Select-Object CanonicalName, Created | Sort-Object CanonicalName
+            return $Data.OrganizationalUnitsClean | Select-Object `
+            @{ n = 'Canonical Name'; e = { $_.CanonicalName }},
+            @{ n = 'Managed By'; e = { $_.ManagedBy }},
+            @{ n = 'Protected'; e = { $_.ProtectedFromAccidentalDeletion }},
+            Created,
+            Modified,
+            Deleted,
+            @{ n = 'Postal Code'; e = { $_.PostalCode }},
+            City,
+            Country,
+            State,
+            @{ n = 'Street Address'; e = { $_.StreetAddress }},
+            DistinguishedName,
+            ObjectGUID | Sort-Object CanonicalName
         }
+        $Data.OrganizationalUnitsDN = Invoke-Command -ScriptBlock {
+            $OUs = @()
+            $OUs += $Data.DomainInformation.DistinguishedName
+            $OUS += $Data.OrganizationalUnitsClean.DistinguishedName
+            $OUs += $Data.Containers.DistinguishedName
+            return $OUs
+        }
+        $Data.OrganizationalUnitsACL = Invoke-Command -ScriptBlock {
+            $ReportBasic = @()
+            $ReportExtented = @()
+            $OUs = @()
+            $OUs += @{ Name = 'Root'; Value = $Data.DomainInformation.DistinguishedName }
+            foreach ($OU in $Data.OrganizationalUnitsClean) {
+                $OUs += @{ Name = 'Organizational Unit'; Value = $OU.DistinguishedName }
+                Write-Verbose "1. $($Ou.DistinguishedName)"
+            }
+            foreach ($OU in $Data.Containers) {
+                $OUs += @{ Name = 'Container'; Value = $OU.DistinguishedName }
+                Write-Verbose "2. $($Ou.DistinguishedName)"
+            }
+            ForEach ($OU in $OUs) {
+                Write-Verbose "3. $($Ou.Value)"
+                $ReportBasic += Get-Acl -Path "AD:\$($OU.Value)" | Select-Object `
+                @{name = 'Distinguished Name'; expression = { $OU.Value}},
+                @{name = 'Type'; expression = { $OU.Name }},
+                @{name = 'Owner'; expression = {$_.Owner}},
+                @{name = 'Group'; expression = {$_.Group}},
+                @{name = 'Are AccessRules Protected'; expression = { $_.AreAccessRulesProtected}},
+                @{name = 'Are AuditRules Protected'; expression = {$_.AreAuditRulesProtected}},
+                @{name = 'Are AccessRules Canonical'; expression = { $_.AreAccessRulesCanonical}},
+                @{name = 'Are AuditRules Canonical'; expression = { $_.AreAuditRulesCanonical}},
+                @{name = 'Sddl'; expression = {$_.Sddl}}
+
+                $ReportExtented += Get-Acl -Path "AD:\$($OU.Value)" | `
+                    Select-Object -ExpandProperty Access | `
+                    Select-Object `
+                @{name = 'Distinguished Name'; expression = {$OU.Value}},
+                @{name = 'Type'; expression = {$OU.Name}},
+                @{name = 'AccessControlType'; expression = {$_.AccessControlType }},
+                @{name = 'ObjectType Name'; expression = {if ($_.objectType.ToString() -eq '00000000-0000-0000-0000-000000000000') {'All'} Else {$GUID.Item($_.objectType)}}},
+                @{name = 'Inherited ObjectType Name'; expression = {$GUID.Item($_.inheritedObjectType)}},
+                @{name = 'ActiveDirectoryRights'; expression = {$_.ActiveDirectoryRights}},
+                @{name = 'InheritanceType'; expression = {$_.InheritanceType}},
+                @{name = 'ObjectType'; expression = {$_.ObjectType}},
+                @{name = 'InheritedObjectType'; expression = {$_.InheritedObjectType}},
+                @{name = 'ObjectFlags'; expression = {$_.ObjectFlags}},
+                @{name = 'IdentityReference'; expression = {$_.IdentityReference}},
+                @{name = 'IsInherited'; expression = {$_.IsInherited}},
+                @{name = 'InheritanceFlags'; expression = {$_.InheritanceFlags}},
+                @{name = 'PropagationFlags'; expression = {$_.PropagationFlags}}
+
+
+            }
+            return @{ Basic = $ReportBasic; Extended = $ReportExtented }
+        }
+        $Data.OrganizationalUnitsBasicACL = $Data.OrganizationalUnitsACL.Basic
+        $Data.OrganizationalUnitsExtended = $Data.OrganizationalUnitsACL.Extended
     }
     if ($TypesRequired -contains [Domain]::DomainAdministrators) {
         $Data.DomainAdministratorsClean = $( Get-ADGroup -Server $Domain -Identity $('{0}-512' -f $Data.DomainInformation.DomainSID) | Get-ADGroupMember -Server $Domain -Recursive | Get-ADUser -Server $Domain)
