@@ -6,9 +6,9 @@ function Get-WinDocumentationData {
     )
     $Type = Get-ObjectType $Data
     #Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl"
-    if ($Type.ObjectTypeName -eq 'Forest') {
+    if ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data -like 'Forest*') {
         return $Forest."$Data"
-    } elseif ($Type.ObjectTypeName -eq 'Domain' ) {
+    } elseif ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data -like 'Domain*' ) {
         return $Forest.FoundDomains.$Domain."$Data"
         # DomainControllers { return $Forest.FoundDomains.$Domain.DomainControllers }
     }

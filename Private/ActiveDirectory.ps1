@@ -16,13 +16,12 @@ function Get-WinADForestInformation {
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
     $Data.Domains = $Data.Forest.Domains
 
+    if ($TypesRequired -contains [ActiveDirectory]::ForestSites -or $TypesRequired -contains [ActiveDirectory]::ForestSites1 -or $TypesRequired -contains [ActiveDirectory]::ForestSites2) {
+        $Data.ForestSites = $(Get-ADReplicationSite -Filter * -Properties * )
 
-    if ($TypesRequired -contains [Forest]::Sites -or $TypesRequired -contains [Forest]::Sites1 -or $TypesRequired -contains [Forest]::Sites2) {
-        $Data.Sites = $(Get-ADReplicationSite -Filter * -Properties * )
-
-        $Data.Sites1 = Invoke-Command -ScriptBlock {
+        $Data.ForestSites1 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
-            foreach ($Sites in $Data.Sites) {
+            foreach ($Sites in $Data.ForestSites) {
                 $ReturnData += [ordered] @{
                     'Name'                               = $Sites.Name
                     'Description'                        = $Sites.Description
@@ -35,9 +34,9 @@ function Get-WinADForestInformation {
             }
             return Format-TransposeTable $ReturnData
         }
-        $Data.Sites2 = Invoke-Command -ScriptBlock {
+        $Data.ForestSites2 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
-            foreach ($Sites in $Data.Sites) {
+            foreach ($Sites in $Data.ForestSites) {
                 $ReturnData += [ordered] @{
                     'Name'                                = $Sites.Name
                     'Topology Cleanup Enabled'            = $Sites.TopologyCleanupEnabled
@@ -50,12 +49,12 @@ function Get-WinADForestInformation {
             return Format-TransposeTable $ReturnData
         }
     }
-    if ($TypesRequired -contains [Forest]::Subnets -or $TypesRequired -contains [Forest]::Subnets1 -or $TypesRequired -contains [Forest]::Subnets2) {
-        $Data.Subnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
+    if ($TypesRequired -contains [ActiveDirectory]::ForestSubnets -or $TypesRequired -contains [ActiveDirectory]::ForestSubnets1 -or $TypesRequired -contains [ActiveDirectory]::ForestSubnets2) {
+        $Data.ForestSubnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
                 Select-Object  Name, DisplayName, Description, Site, ProtectedFromAccidentalDeletion, Created, Modified, Deleted )
-        $Data.Subnets1 = Invoke-Command -ScriptBlock {
+        $Data.ForestSubnets1 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
-            foreach ($Subnets in $Data.Subnets) {
+            foreach ($Subnets in $Data.ForestSubnets) {
                 $ReturnData += [ordered] @{
                     'Name'                               = $Subnets.Name
                     'Description'                        = $Subnets.Description
@@ -67,9 +66,9 @@ function Get-WinADForestInformation {
             }
             return Format-TransposeTable $ReturnData
         }
-        $Data.Subnets2 = Invoke-Command -ScriptBlock {
+        $Data.ForestSubnets2 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
-            foreach ($Subnets in $Data.Subnets) {
+            foreach ($Subnets in $Data.ForestSubnets) {
                 $ReturnData += [ordered] @{
                     'Name' = $Subnets.Name
                     'Site' = $Subnets.Site
@@ -78,14 +77,14 @@ function Get-WinADForestInformation {
             return Format-TransposeTable $ReturnData
         }
     }
-    if ($TypesRequired -contains [Forest]::SiteLinks) {
-        $Data.SiteLinks = $(
+    if ($TypesRequired -contains [ActiveDirectory]::ForestSiteLinks) {
+        $Data.ForestSiteLinks = $(
             Get-ADReplicationSiteLink -Filter * -Properties `
                 Name, Cost, ReplicationFrequencyInMinutes, replInterval, ReplicationSchedule, Created, Modified, Deleted, IsDeleted, ProtectedFromAccidentalDeletion | `
                 Select-Object Name, Cost, ReplicationFrequencyInMinutes, ReplInterval, Modified
         )
     }
-    if ($TypesRequired -contains [Forest]::ForestInformation) {
+    if ($TypesRequired -contains [ActiveDirectory]::ForestForestInformation) {
         $Data.ForestInformation = [ordered] @{
             'Name'                    = $Data.Forest.Name
             'Root Domain'             = $Data.Forest.RootDomain
@@ -96,22 +95,22 @@ function Get-WinADForestInformation {
             'Sites'                   = ($Data.Forest.Sites) -join ", "
         }
     }
-    if ($TypesRequired -contains [Forest]::UPNSuffixes) {
-        $Data.UPNSuffixes = Invoke-Command -ScriptBlock {
+    if ($TypesRequired -contains [ActiveDirectory]::ForestUPNSuffixes) {
+        $Data.ForestUPNSuffixes = Invoke-Command -ScriptBlock {
             $UPNSuffixList = @()
             $UPNSuffixList += $Data.Forest.RootDomain + ' (Primary / Default UPN)'
             $UPNSuffixList += $Data.Forest.UPNSuffixes
             return $UPNSuffixList
         }
     }
-    if ($TypesRequired -contains [Forest]::GlobalCatalogs) {
-        $Data.GlobalCatalogs = $Data.Forest.GlobalCatalogs
+    if ($TypesRequired -contains [ActiveDirectory]::ForestGlobalCatalogs) {
+        $Data.ForestGlobalCatalogs = $Data.Forest.GlobalCatalogs
     }
-    if ($TypesRequired -contains [Forest]::SPNSuffixes) {
-        $Data.SPNSuffixes = $Data.Forest.SPNSuffixes
+    if ($TypesRequired -contains [ActiveDirectory]::ForestSPNSuffixes) {
+        $Data.ForestSPNSuffixes = $Data.Forest.SPNSuffixes
     }
-    if ($TypesRequired -contains [Forest]::FSMO) {
-        $Data.FSMO = Invoke-Command -ScriptBlock {
+    if ($TypesRequired -contains [ActiveDirectory]::ForestFSMO) {
+        $Data.ForestFSMO = Invoke-Command -ScriptBlock {
             $FSMO = [ordered] @{
                 'Domain Naming Master' = $Data.Forest.DomainNamingMaster
                 'Schema Master'        = $Data.Forest.SchemaMaster
@@ -119,8 +118,8 @@ function Get-WinADForestInformation {
             return $FSMO
         }
     }
-    if ($TypesRequired -contains [Forest]::OptionalFeatures) {
-        $Data.OptionalFeatures = Invoke-Command -ScriptBlock {
+    if ($TypesRequired -contains [ActiveDirectory]::ForestOptionalFeatures) {
+        $Data.ForestOptionalFeatures = Invoke-Command -ScriptBlock {
             $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
             $Optional = [ordered]@{
                 'Recycle Bin Enabled'                          = ''
@@ -170,40 +169,42 @@ function Get-WinADDomainInformation {
     $Data.RootDSE = $(Get-ADRootDSE -Server $Domain)
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
 
-    $Data.DomainGUIDS = Invoke-Command -ScriptBlock {
-        $GUID = @{}
-        Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID | ForEach-Object {
-            if ($GUID.Keys -notcontains $_.schemaIDGUID ) {
-                $GUID.add([System.GUID]$_.schemaIDGUID, $_.name)
+    if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
+        $Data.DomainGUIDS = Invoke-Command -ScriptBlock {
+            $GUID = @{}
+            Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID | ForEach-Object {
+                if ($GUID.Keys -notcontains $_.schemaIDGUID ) {
+                    $GUID.add([System.GUID]$_.schemaIDGUID, $_.name)
+                }
             }
-        }
-        Get-ADObject -SearchBase "CN=Extended-Rights,$((Get-ADRootDSE).configurationNamingContext)" -LDAPFilter '(objectClass=controlAccessRight)' -Properties name, rightsGUID | ForEach-Object {
-            if ($GUID.Keys -notcontains $_.rightsGUID ) {
-                $GUID.add([System.GUID]$_.rightsGUID, $_.name)
+            Get-ADObject -SearchBase "CN=Extended-Rights,$((Get-ADRootDSE).configurationNamingContext)" -LDAPFilter '(objectClass=controlAccessRight)' -Properties name, rightsGUID | ForEach-Object {
+                if ($GUID.Keys -notcontains $_.rightsGUID ) {
+                    $GUID.add([System.GUID]$_.rightsGUID, $_.name)
+                }
             }
+            return $GUID
         }
-        return $GUID
     }
-    if ($TypesRequired -contains [Domain]::AuthenticationPolicies) {
-        $Data.AuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
+    if ($TypesRequired -contains [ActiveDirectory]::DomainAuthenticationPolicies) {
+        $Data.DomainAuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
     }
-    if ($TypesRequired -contains [Domain]::AuthenticationPolicySilos) {
-        $Data.AuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Server $Domain -Filter 'Name -like "*AuthenticationPolicySilo*"')
+    if ($TypesRequired -contains [ActiveDirectory]::DomainAuthenticationPolicySilos) {
+        $Data.DomainAuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Server $Domain -Filter 'Name -like "*AuthenticationPolicySilo*"')
     }
-    if ($TypesRequired -contains [Domain]::CentralAccessPolicies) {
-        $Data.CentralAccessPolicies = $(Get-ADCentralAccessPolicy -Server $Domain -Filter * )
+    if ($TypesRequired -contains [ActiveDirectory]::DomainCentralAccessPolicies) {
+        $Data.DomainCentralAccessPolicies = $(Get-ADCentralAccessPolicy -Server $Domain -Filter * )
     }
-    if ($TypesRequired -contains [Domain]::CentralAccessRules) {
-        $Data.CentralAccessRules = $(Get-ADCentralAccessRule -Server $Domain -Filter * )
+    if ($TypesRequired -contains [ActiveDirectory]::DomainCentralAccessRules) {
+        $Data.DomainCentralAccessRules = $(Get-ADCentralAccessRule -Server $Domain -Filter * )
     }
-    if ($TypesRequired -contains [Domain]::ClaimTransformPolicies) {
-        $Data.ClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Server $Domain -Filter * )
+    if ($TypesRequired -contains [ActiveDirectory]::DomainClaimTransformPolicies) {
+        $Data.DomainClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Server $Domain -Filter * )
     }
-    if ($TypesRequired -contains [Domain]::ClaimTypes) {
-        $Data.ClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
+    if ($TypesRequired -contains [ActiveDirectory]::DomainClaimTypes) {
+        $Data.DomainClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
     }
-    if ($TypesRequired -contains [Domain]::DNSSRV -or $TypesRequired -contains [Domain]::DNSA) {
-        $Data.DNSData = Invoke-Command -ScriptBlock {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainDNSSRV -or $TypesRequired -contains [ActiveDirectory]::DomainDNSA) {
+        $Data.DomainDNSData = Invoke-Command -ScriptBlock {
             $DnsSrv = @()
             $DnsA = @()
 
@@ -226,22 +227,22 @@ function Get-WinADDomainInformation {
             }
             return $ReturnData
         }
-        $Data.DNSSrv = $Data.DNSData.SRV
-        $Data.DNSA = $Data.DNSData.A
+        $Data.DomainDNSSrv = $Data.DomainDNSData.SRV
+        $Data.DomainDNSA = $Data.DomainDNSData.A
     }
-    if ($TypesRequired -contains [Domain]::FSMO -or $TypesRequired -contains [Domain]::DomainTrusts) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainFSMO -or $TypesRequired -contains [ActiveDirectory]::DomainDomainTrusts) {
         # required for multiple use cases FSMO/DomainTrusts
-        $Data.FSMO = [ordered] @{
+        $Data.DomainFSMO = [ordered] @{
             'PDC Emulator'          = $Data.DomainInformation.PDCEmulator
             'RID Master'            = $Data.DomainInformation.RIDMaster
             'Infrastructure Master' = $Data.DomainInformation.InfrastructureMaster
         }
     }
-    if ($TypesRequired -contains [Domain]::DomainTrusts) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainDomainTrusts) {
         ## requires both DomainTrusts and FSMO.
         $Data.DomainTrustsClean = (Get-ADTrust -Server $Domain -Filter * -Properties *)
         $Data.DomainTrusts = Invoke-Command -ScriptBlock {
-            $DomainPDC = $Data.FSMO.'PDC Emulator'
+            $DomainPDC = $Data.DomainFSMO.'PDC Emulator'
             $Trust = $Data.DomainTrustsClean
             $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
 
@@ -280,11 +281,11 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $ReturnData
         }
     }
-    if ($TypesRequired -contains [Domain]::GroupPolicies -or $TypesRequired -contains [Domain]::GroupPoliciesDetails -or $TypesRequired -contains [Domain]::GroupPoliciesACL) {
-        $Data.GroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
-        $Data.GroupPolicies = Invoke-Command -ScriptBlock {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupPolicies -or $TypesRequired -contains [ActiveDirectory]::DomainGroupPoliciesDetails -or $TypesRequired -contains [ActiveDirectory]::DomainGroupPoliciesACL) {
+        $Data.DomainGroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
+        $Data.DomainGroupPolicies = Invoke-Command -ScriptBlock {
             $GroupPolicies = @()
-            foreach ($gpo in $Data.GroupPoliciesClean) {
+            foreach ($gpo in $Data.DomainGroupPoliciesClean) {
                 $GroupPolicy = [ordered] @{
                     'Display Name'      = $gpo.DisplayName
                     'Gpo Status'        = $gpo.GPOStatus
@@ -297,10 +298,10 @@ function Get-WinADDomainInformation {
             }
             return Format-TransposeTable $GroupPolicies
         }
-        $Data.GroupPoliciesDetails = Invoke-Command -ScriptBlock {
+        $Data.DomainGroupPoliciesDetails = Invoke-Command -ScriptBlock {
             Write-Verbose -Message "Get-WinADDomainInformation - Group Policies Details"
             $Output = @()
-            ForEach ($GPO in $Data.GroupPoliciesClean) {
+            ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
                 #GPO version
                 if ($XmlGPReport.GPO.Computer.VersionDirectory -eq 0 -and $XmlGPReport.GPO.Computer.VersionSysvol -eq 0) {$ComputerSettings = "NeverModified"}else {$ComputerSettings = "Modified"}
@@ -338,10 +339,10 @@ function Get-WinADDomainInformation {
             }
             return Format-TransposeTable $Output
         }
-        $Data.GroupPoliciesACL = Invoke-Command -ScriptBlock {
+        $Data.DomainGroupPoliciesACL = Invoke-Command -ScriptBlock {
             Write-Verbose -Message "Get-WinADDomainInformation - Group Policies ACLs"
             $Output = @()
-            ForEach ($GPO in $Data.GroupPoliciesClean) {
+            ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
                 $ACLs = $XmlGPReport.GPO.SecurityDescriptor.Permissions.TrusteePermissions
                 foreach ($ACL in $ACLS) {
@@ -357,8 +358,8 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $Output
         }
     }
-    if ($TypesRequired -contains [Domain]::DefaultPasswordPolicy) {
-        $Data.DefaultPasswordPolicy = Invoke-Command -ScriptBlock {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainDefaultPasswordPolicy) {
+        $Data.DomainDefaultPasswordPolicy = Invoke-Command -ScriptBlock {
             $DefaultPasswordPolicy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
             $Data = [ordered] @{
                 'Complexity Enabled'            = $DefaultPasswordPolicy.ComplexityEnabled
@@ -375,16 +376,16 @@ function Get-WinADDomainInformation {
             return $Data
         }
     }
-    if ($TypesRequired -contains [Domain]::PriviligedGroupMembers) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainPriviligedGroupMembers) {
         Write-Verbose "Get-WinADDomainInformation - TypesRequired: PriviligedGroupMembers"
-        $Data.PriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
+        $Data.DomainPriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
     }
-    if ($TypesRequired -contains [Domain]::OrganizationalUnits) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainOrganizationalUnits -or $TypesRequired -contains [ActiveDirectory]::DomainContainers) {
         #CanonicalName, ManagedBy, ProtectedFromAccidentalDeletion, Created, Modified, Deleted, PostalCode, City, Country, State, StreetAddress, ProtectedFromAccidentalDeletion, DistinguishedName, ObjectGUID
-        $Data.Containers = Get-ADObject -SearchBase $Data.DomainInformation.DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' -Properties *
-        $Data.OrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
-        $Data.OrganizationalUnits = Invoke-Command -ScriptBlock {
-            return $Data.OrganizationalUnitsClean | Select-Object `
+        $Data.DomainContainers = Get-ADObject -SearchBase $Data.DomainInformation.DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' -Properties *
+        $Data.DomainOrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
+        $Data.DomainOrganizationalUnits = Invoke-Command -ScriptBlock {
+            return $Data.DomainOrganizationalUnitsClean | Select-Object `
             @{ n = 'Canonical Name'; e = { $_.CanonicalName }},
             @{ n = 'Managed By'; e = { $_.ManagedBy }},
             @{ n = 'Protected'; e = { $_.ProtectedFromAccidentalDeletion }},
@@ -399,23 +400,23 @@ function Get-WinADDomainInformation {
             DistinguishedName,
             ObjectGUID | Sort-Object CanonicalName
         }
-        $Data.OrganizationalUnitsDN = Invoke-Command -ScriptBlock {
+        $Data.DomainOrganizationalUnitsDN = Invoke-Command -ScriptBlock {
             $OUs = @()
             $OUs += $Data.DomainInformation.DistinguishedName
-            $OUS += $Data.OrganizationalUnitsClean.DistinguishedName
-            $OUs += $Data.Containers.DistinguishedName
+            $OUS += $Data.DomainOrganizationalUnitsClean.DistinguishedName
+            $OUs += $Data.DomainContainers.DistinguishedName
             return $OUs
         }
-        $Data.OrganizationalUnitsACL = Invoke-Command -ScriptBlock {
+        $Data.DomainOrganizationalUnitsACL = Invoke-Command -ScriptBlock {
             $ReportBasic = @()
             $ReportExtented = @()
             $OUs = @()
             $OUs += @{ Name = 'Root'; Value = $Data.DomainInformation.DistinguishedName }
-            foreach ($OU in $Data.OrganizationalUnitsClean) {
+            foreach ($OU in $Data.DomainOrganizationalUnitsClean) {
                 $OUs += @{ Name = 'Organizational Unit'; Value = $OU.DistinguishedName }
                 Write-Verbose "1. $($Ou.DistinguishedName)"
             }
-            foreach ($OU in $Data.Containers) {
+            foreach ($OU in $Data.DomainContainers) {
                 $OUs += @{ Name = 'Container'; Value = $OU.DistinguishedName }
                 Write-Verbose "2. $($Ou.DistinguishedName)"
             }
@@ -454,16 +455,16 @@ function Get-WinADDomainInformation {
             }
             return @{ Basic = $ReportBasic; Extended = $ReportExtented }
         }
-        $Data.OrganizationalUnitsBasicACL = $Data.OrganizationalUnitsACL.Basic
-        $Data.OrganizationalUnitsExtended = $Data.OrganizationalUnitsACL.Extended
+        $Data.DomainOrganizationalUnitsBasicACL = $Data.DomainOrganizationalUnitsACL.Basic
+        $Data.DomainOrganizationalUnitsExtended = $Data.DomainOrganizationalUnitsACL.Extended
     }
-    if ($TypesRequired -contains [Domain]::DomainAdministrators) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainAdministrators) {
         $Data.DomainAdministratorsClean = $( Get-ADGroup -Server $Domain -Identity $('{0}-512' -f $Data.DomainInformation.DomainSID) | Get-ADGroupMember -Server $Domain -Recursive | Get-ADUser -Server $Domain)
         $Data.DomainAdministrators = $Data.DomainAdministratorsClean | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
     }
-    if ($TypesRequired -contains [Domain]::Users -or $TypesRequired -contains [Domain]::UsersCount) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainUsers -or $TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
         Write-Verbose 'Get-WinDomainInformation - Getting All Users'
-        $Data.Users = Invoke-Command -ScriptBlock {
+        $Data.DomainUsers = Invoke-Command -ScriptBlock {
             param(
                 $Domain
             )
@@ -491,9 +492,9 @@ function Get-WinADDomainInformation {
             }
         } -ArgumentList $Domain
     }
-    if ($TypesRequired -contains [Domain]::UsersCount) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
         Write-Verbose 'Get-WinDomainInformation - Getting All Users Count'
-        $Data.UsersCount = [ordered] @{
+        $Data.DomainUsersCount = [ordered] @{
             'Users Count Incl. System'            = Get-ObjectCount -Object $Data.Users.Users
             'Users Count'                         = Get-ObjectCount -Object $Data.Users.UsersAll
             'Users Expired'                       = Get-ObjectCount -Object $Data.Users.UsersExpiredExclDisabled
@@ -503,7 +504,7 @@ function Get-WinADDomainInformation {
             'Users System Accounts'               = Get-ObjectCount -Object $Data.Users.UsersSystemAccounts
         }
     }
-    if ($TypesRequired -contains [Domain]::DomainControllers) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainDomainControllers) {
         $Data.DomainControllersClean = $(Get-ADDomainController -Server $Domain -Filter * )
         $Data.DomainControllers = Invoke-Command -ScriptBlock {
             $DCs = @()
@@ -525,32 +526,4 @@ function Get-WinADDomainInformation {
         }
     }
     return $Data
-}
-function Get-DomainSummary {
-    [CmdletBinding()]
-    param(
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$WordDocument,
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline)]$Paragraph,
-        $ActiveDirectorySnapshot,
-        $Domain
-    )
-
-    $ForestName = $($ActiveDirectorySnapshot.ForestInformation.Name)
-    $ForestNameDN = $($ActiveDirectorySnapshot.RootDSE.defaultNamingContext)
-    $DomainNetBios = $ActiveDirectorySnapshot.DomainInformation.NetBIOSName
-    $DomainName = $ActiveDirectorySnapshot.DomainInformation.DNSRoot
-    $DomainDistinguishedName = $ActiveDirectorySnapshot.DomainInformation.DistinguishedName
-
-    $Text = "Following domains exists within forest $ForestName"
-    $Text0 = "Domain $DomainDistinguishedName"
-    $Text1 = "Name for fully qualified domain name (FQDN): $DomainName"
-    $Text2 = "Name for NetBIOS: $DomainNetBios"
-
-    $Paragraph = Add-WordText -WordDocument $WordDocument -Paragraph $Paragraph -Text $Text
-
-    $ListDomainInformation = $null
-    $ListDomainInformation = $ListDomainInformation | New-WordListItem -WordDocument $WordDocument -ListLevel 0 -ListItemType Bulleted -ListValue $Text0
-    $ListDomainInformation = $ListDomainInformation | New-WordListItem -WordDocument $WordDocument -ListLevel 1 -ListItemType Bulleted -ListValue $Text1
-    $ListDomainInformation = $ListDomainInformation | New-WordListItem -WordDocument $WordDocument -ListLevel 1 -ListItemType Bulleted -ListValue $Text2
-    Add-WordListItem -WordDocument $WordDocument -Paragraph $Paragraph -List $ListDomainInformation -Supress $true
 }
