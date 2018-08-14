@@ -248,6 +248,21 @@ $Document = [ordered]@{
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - DefaultPasswordPolicy'
                 }
+                SectionDomainFineGrainedPolicies    = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Fine Grained Password Policies'
+                    TocListLevel    = 1
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::DomainFineGrainedPolicies
+                    TableDesign     = [TableDesign]::ColorfulGridAccent5
+                    TableTitleMerge = $True
+                    TableTitleText  = "Fine Grained Password Policy for <Domain>"
+                    Text            = 'Following table contains fine grained password policies'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - Password Policy (Grained)'
+                }
                 SectionDomainGroupPolicies          = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
@@ -390,6 +405,18 @@ $Document = [ordered]@{
                     ChartValues     = 'Values'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - UsersCount'
+                }
+                SectionExcelOnly1                   = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    TableData      = [ActiveDirectory]::DomainOrganizationalUnitsBasicACL
+                    ExcelWorkSheet = '<Domain> - UsersCount'
+                }
+                SectionExcelOnly2                   = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    TableData      = [ActiveDirectory]::DomainOrganizationalUnitsExtended
+                    ExcelWorkSheet = '<Domain> - UsersCount'
                 }
             }
         }

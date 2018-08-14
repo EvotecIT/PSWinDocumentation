@@ -19,6 +19,7 @@ Add-Type -TypeDefinition @"
         DomainCentralAccessRules, // Not yet tested
         DomainClaimTransformPolicies, // Not yet tested
         DomainClaimTypes, // Not yet tested
+        DomainFineGrainedPolicies,
         DomainGUIDS,
         DomainDNSSRV,
         DomainDNSA,

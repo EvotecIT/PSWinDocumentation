@@ -166,7 +166,7 @@ function Get-WinADDomainInformation {
         $TypesRequired = Get-Types
     } # Gets all types
     $Data = [ordered] @{}
-    $Data.RootDSE = $(Get-ADRootDSE -Server $Domain)
+    $Data.DomainRootDSE = $(Get-ADRootDSE -Server $Domain)
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
@@ -238,7 +238,7 @@ function Get-WinADDomainInformation {
             'Infrastructure Master' = $Data.DomainInformation.InfrastructureMaster
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainDomainTrusts) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainTrusts) {
         ## requires both DomainTrusts and FSMO.
         $Data.DomainTrustsClean = (Get-ADTrust -Server $Domain -Filter * -Properties *)
         $Data.DomainTrusts = Invoke-Command -ScriptBlock {
@@ -360,18 +360,18 @@ function Get-WinADDomainInformation {
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainDefaultPasswordPolicy) {
         $Data.DomainDefaultPasswordPolicy = Invoke-Command -ScriptBlock {
-            $DefaultPasswordPolicy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
+            $Policy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
             $Data = [ordered] @{
-                'Complexity Enabled'            = $DefaultPasswordPolicy.ComplexityEnabled
-                'Lockout Duration'              = $DefaultPasswordPolicy.LockoutDuration
-                'Lockout Observation Window'    = $DefaultPasswordPolicy.LockoutObservationWindow
-                'Lockout Threshold'             = $DefaultPasswordPolicy.LockoutThreshold
-                'Max Password Age'              = $DefaultPasswordPolicy.MaxPasswordAge
-                'Min Password Length'           = $DefaultPasswordPolicy.MinPasswordLength
-                'Min Password Age'              = $DefaultPasswordPolicy.MinPasswordAge
-                'Password History Count'        = $DefaultPasswordPolicy.PasswordHistoryCount
-                'Reversible Encryption Enabled' = $DefaultPasswordPolicy.ReversibleEncryptionEnabled
-                'Distinguished Name'            = $DefaultPasswordPolicy.DistinguishedName
+                'Complexity Enabled'            = $Policy.ComplexityEnabled
+                'Lockout Duration'              = $Policy.LockoutDuration
+                'Lockout Observation Window'    = $Policy.LockoutObservationWindow
+                'Lockout Threshold'             = $Policy.LockoutThreshold
+                'Max Password Age'              = $Policy.MaxPasswordAge
+                'Min Password Length'           = $Policy.MinPasswordLength
+                'Min Password Age'              = $Policy.MinPasswordAge
+                'Password History Count'        = $Policy.PasswordHistoryCount
+                'Reversible Encryption Enabled' = $Policy.ReversibleEncryptionEnabled
+                'Distinguished Name'            = $Policy.DistinguishedName
             }
             return $Data
         }
@@ -382,7 +382,7 @@ function Get-WinADDomainInformation {
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainOrganizationalUnits -or $TypesRequired -contains [ActiveDirectory]::DomainContainers) {
         #CanonicalName, ManagedBy, ProtectedFromAccidentalDeletion, Created, Modified, Deleted, PostalCode, City, Country, State, StreetAddress, ProtectedFromAccidentalDeletion, DistinguishedName, ObjectGUID
-        $Data.DomainContainers = Get-ADObject -SearchBase $Data.DomainInformation.DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' -Properties *
+        # $Data.DomainContainers = Get-ADObject -SearchBase $Data.DomainInformation.DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' -Properties *
         $Data.DomainOrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
         $Data.DomainOrganizationalUnits = Invoke-Command -ScriptBlock {
             return $Data.DomainOrganizationalUnitsClean | Select-Object `
@@ -411,18 +411,21 @@ function Get-WinADDomainInformation {
             $ReportBasic = @()
             $ReportExtented = @()
             $OUs = @()
-            $OUs += @{ Name = 'Root'; Value = $Data.DomainInformation.DistinguishedName }
+            #$OUs += @{ Name = 'Root'; Value = $Data.DomainRootDSE.rootDomainNamingContext }
             foreach ($OU in $Data.DomainOrganizationalUnitsClean) {
                 $OUs += @{ Name = 'Organizational Unit'; Value = $OU.DistinguishedName }
                 Write-Verbose "1. $($Ou.DistinguishedName)"
             }
-            foreach ($OU in $Data.DomainContainers) {
-                $OUs += @{ Name = 'Container'; Value = $OU.DistinguishedName }
-                Write-Verbose "2. $($Ou.DistinguishedName)"
-            }
+            #foreach ($OU in $Data.DomainContainers) {
+            #    $OUs += @{ Name = 'Container'; Value = $OU.DistinguishedName }
+            #    Write-Verbose "2. $($Ou.DistinguishedName)"
+            #}
+            $PSDriveName = $Data.DomainInformation.NetBIOSName
+            New-PSDrive -Name $PSDriveName -Root "" -PsProvider ActiveDirectory -Server $Domain
+
             ForEach ($OU in $OUs) {
                 Write-Verbose "3. $($Ou.Value)"
-                $ReportBasic += Get-Acl -Path "AD:\$($OU.Value)" | Select-Object `
+                $ReportBasic += Get-Acl -Path "$PSDriveName`:\$($OU.Value)" | Select-Object `
                 @{name = 'Distinguished Name'; expression = { $OU.Value}},
                 @{name = 'Type'; expression = { $OU.Name }},
                 @{name = 'Owner'; expression = {$_.Owner}},
@@ -433,7 +436,7 @@ function Get-WinADDomainInformation {
                 @{name = 'Are AuditRules Canonical'; expression = { $_.AreAuditRulesCanonical}},
                 @{name = 'Sddl'; expression = {$_.Sddl}}
 
-                $ReportExtented += Get-Acl -Path "AD:\$($OU.Value)" | `
+                $ReportExtented += Get-Acl -Path "$PSDriveName`:\$($OU.Value)" | `
                     Select-Object -ExpandProperty Access | `
                     Select-Object `
                 @{name = 'Distinguished Name'; expression = {$OU.Value}},
@@ -495,34 +498,76 @@ function Get-WinADDomainInformation {
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
         Write-Verbose 'Get-WinDomainInformation - Getting All Users Count'
         $Data.DomainUsersCount = [ordered] @{
-            'Users Count Incl. System'            = Get-ObjectCount -Object $Data.Users.Users
-            'Users Count'                         = Get-ObjectCount -Object $Data.Users.UsersAll
-            'Users Expired'                       = Get-ObjectCount -Object $Data.Users.UsersExpiredExclDisabled
-            'Users Expired Incl. Disabled'        = Get-ObjectCount -Object $Data.Users.UsersExpiredInclDisabled
-            'Users Never Expiring'                = Get-ObjectCount -Object $Data.Users.UsersNeverExpiring
-            'Users Never Expiring Incl. Disabled' = Get-ObjectCount -Object $Data.Users.UsersNeverExpiringInclDisabled
-            'Users System Accounts'               = Get-ObjectCount -Object $Data.Users.UsersSystemAccounts
+            'Users Count Incl. System'            = Get-ObjectCount -Object $Data.DomainUsers.Users
+            'Users Count'                         = Get-ObjectCount -Object $Data.DomainUsers.UsersAll
+            'Users Expired'                       = Get-ObjectCount -Object $Data.DomainUsers.UsersExpiredExclDisabled
+            'Users Expired Incl. Disabled'        = Get-ObjectCount -Object $Data.DomainUsers.UsersExpiredInclDisabled
+            'Users Never Expiring'                = Get-ObjectCount -Object $Data.DomainUsers.UsersNeverExpiring
+            'Users Never Expiring Incl. Disabled' = Get-ObjectCount -Object $Data.DomainUsers.UsersNeverExpiringInclDisabled
+            'Users System Accounts'               = Get-ObjectCount -Object $Data.DomainUsers.UsersSystemAccounts
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainDomainControllers) {
         $Data.DomainControllersClean = $(Get-ADDomainController -Server $Domain -Filter * )
         $Data.DomainControllers = Invoke-Command -ScriptBlock {
             $DCs = @()
-            foreach ($DC in $Data.DomainControllersClean) {
+            foreach ($Policy in $Data.DomainControllersClean) {
                 $DCs += [ordered] @{
-                    'Name'               = $DC.Name
-                    'Host Name'          = $DC.HostName
-                    'Operating System'   = $DC.OperatingSystem
-                    'Site'               = $DC.Site
-                    'Ipv4 Address'       = $DC.Ipv4Address
-                    'Ipv6 Address'       = $DC.Ipv6Address
-                    'Is Global Catalog?' = $DC.IsGlobalCatalog
-                    'Is Read Only?'      = $DC.IsReadOnly
-                    'Ldap Port'          = $DC.LdapPort
-                    'SSL Port'           = $DC.SSLPort
+                    'Name'               = $Policy.Name
+                    'Host Name'          = $Policy.HostName
+                    'Operating System'   = $Policy.OperatingSystem
+                    'Site'               = $Policy.Site
+                    'Ipv4 Address'       = $Policy.Ipv4Address
+                    'Ipv6 Address'       = $Policy.Ipv6Address
+                    'Is Global Catalog?' = $Policy.IsGlobalCatalog
+                    'Is Read Only?'      = $Policy.IsReadOnly
+                    'Ldap Port'          = $Policy.LdapPort
+                    'SSL Port'           = $Policy.SSLPort
                 }
             }
             return Format-TransposeTable $DCs
+        }
+    }
+    if ($TypesRequired -contains [ActiveDirectory]::DomainFineGrainedPolicies) {
+        <#
+
+        AppliesTo                   : {CN=GDS-FineGrainedPolicy-Test,OU=Groups,OU=Production,DC=ad,DC=evotec,DC=pl}
+        ComplexityEnabled           : False
+        DistinguishedName           : CN=Fine Policy Test,CN=Password Settings Container,CN=System,DC=ad,DC=evotec,DC=pl
+        LockoutDuration             : 00:30:00
+        LockoutObservationWindow    : 00:30:00
+        LockoutThreshold            : 0
+        MaxPasswordAge              : 00:00:00
+        MinPasswordAge              : 00:00:00
+        MinPasswordLength           : 4
+        Name                        : Fine Policy Test
+        ObjectClass                 : msDS-PasswordSettings
+        ObjectGUID                  : db28647d-d5c1-45b0-8671-4b56228e0c18
+        PasswordHistoryCount        : 0
+        Precedence                  : 200
+        ReversibleEncryptionEnabled : True
+        #>
+        $Data.FineGrainedPolicies = Invoke-Command -ScriptBlock {
+            $FineGrainedPoliciesData = Get-ADFineGrainedPasswordPolicy -Filter * -Server $Domain
+            $FineGrainedPolicies = @()
+            foreach ($Policy in $FineGrainedPoliciesData) {
+                $FineGrainedPolicies += [ordered] @{
+                    'Name'                          = $Policy.Name
+                    'Complexity Enabled'            = $Policy.ComplexityEnabled
+                    'Lockout Duration'              = $Policy.LockoutDuration
+                    'Lockout Observation Window'    = $Policy.LockoutObservationWindow
+                    'Lockout Threshold'             = $Policy.LockoutThreshold
+                    'Max Password Age'              = $Policy.MaxPasswordAge
+                    'Min Password Length'           = $Policy.MinPasswordLength
+                    'Min Password Age'              = $Policy.MinPasswordAge
+                    'Password History Count'        = $Policy.PasswordHistoryCount
+                    'Reversible Encryption Enabled' = $Policy.ReversibleEncryptionEnabled
+                    'Precedence'                    = $Policy.Precedence
+                    'Applies To'                    = $Policy.AppliesTo # get all groups / usrs and convert to data TODO
+                    'Distinguished Name'            = $Policy.DistinguishedName
+                }
+            }
+            return Format-TransposeTable $FineGrainedPolicies
         }
     }
     return $Data
