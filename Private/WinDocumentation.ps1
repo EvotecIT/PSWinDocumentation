@@ -127,9 +127,11 @@ function Start-ActiveDirectoryDocumentation {
     [CmdletBinding()]
     param (
         [string] $FilePath,
+        [string] $FilePathExcel,
         [switch] $CleanDocument,
         [string] $CompanyName = 'Evotec',
-        [switch] $OpenDocument
+        [switch] $OpenDocument,
+        [switch] $OpenExcel
     )
     # Left here for legacy reasons.
     $Document = $Script:Document
@@ -138,7 +140,14 @@ function Start-ActiveDirectoryDocumentation {
         $Document.Configuration.Prettify.UseBuiltinTemplate = $false
     }
     $Document.Configuration.Options.OpenDocument = $OpenDocument
+    $Document.Configuration.Options.OpenExcel = $OpenExcel
     $Document.DocumentAD.FilePathWord = $FilePath
+    if ($FilePathExcel) {
+        $Document.DocumentAD.ExportExcel = $true
+        $Document.DocumentAD.FilePathExcel = $FilePathExcel
+    } else {
+        $Document.DocumentAD.ExportExcel = $false
+    }
 
     Start-Documentation -Document $Document
 }

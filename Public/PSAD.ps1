@@ -19,23 +19,18 @@ function Start-Documentation {
         if ($Document.DocumentAD.ExportExcel) {
             $ExcelDocument = New-ExcelDocument
         }
-        #
 
         ### Start Sections
-
         foreach ($Section in $ADSectionsForest) {
-            #Write-Verbose "Processing section for [$Section]"
             $WordDocument = New-ADDocumentBlock `
                 -WordDocument $WordDocument `
                 -Section $Document.DocumentAD.Sections.SectionForest.$Section `
                 -Forest $Forest `
                 -Excel $ExcelDocument `
                 -SectionName $Section
-            #$ExcelDocument = $ExcelDocument | New-ExportExcelBlock -Section $Document.DocumentAD.Sections.SectionDomain.$Section -Forest $Forest -Domain $Domain
         }
         foreach ($Domain in $Forest.Domains) {
             foreach ($Section in $ADSectionsDomain) {
-                #Write-Verbose "Processing section for [$Domain - $Section]"
                 $WordDocument = New-ADDocumentBlock `
                     -WordDocument $WordDocument `
                     -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
@@ -57,22 +52,6 @@ function Start-Documentation {
         ### Ending EXCEL
         if ($Document.DocumentAD.ExportExcel) {
             Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAD.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenWorkbook
-        }
-    }
-    return
-
-    Write-Verbose 'Start-ActiveDirectoryDocumentation - Working...2'
-    foreach ($Domain in $ForestInformation.Domains) {
-        if ($FilePathExcel) {
-            $ForestInformation.ForestInformation | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -Verbose -WorkSheetname 'Forest Information' -ClearSheet -FreezeTopRow
-            $ForestInformation.FSMO | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname 'Forest FSMO' -FreezeTopRow
-            foreach ($Domain in $ForestInformation.Domains) {
-                $DomainInformation = Get-WinADDomainInformation -Domain $Domain
-                $DomainInformation.DomainControllers  | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorkSheetname "$Domain DCs" -ClearSheet -FreezeTopRow
-                $DomainInformation.GroupPoliciesDetails | Export-Excel -AutoSize -Path $FilePathExcel -AutoFilter -WorksheetName "$Domain GPOs Details" -ClearSheet -FreezeTopRow -NoNumberConversion SSDL, GUID, ID, ACLs
-                $DomainInformation.GroupPoliciesDetails | fl *
-            }
-
         }
     }
 }
