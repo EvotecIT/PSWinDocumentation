@@ -230,7 +230,7 @@ function Get-WinADDomainInformation {
         $Data.DomainDNSSrv = $Data.DomainDNSData.SRV
         $Data.DomainDNSA = $Data.DomainDNSData.A
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainFSMO -or $TypesRequired -contains [ActiveDirectory]::DomainDomainTrusts) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainFSMO -or $TypesRequired -contains [ActiveDirectory]::DomainTrusts) {
         # required for multiple use cases FSMO/DomainTrusts
         $Data.DomainFSMO = [ordered] @{
             'PDC Emulator'          = $Data.DomainInformation.PDCEmulator
@@ -507,7 +507,7 @@ function Get-WinADDomainInformation {
             'Users System Accounts'               = Get-ObjectCount -Object $Data.DomainUsers.UsersSystemAccounts
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainDomainControllers) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainControllers) {
         $Data.DomainControllersClean = $(Get-ADDomainController -Server $Domain -Filter * )
         $Data.DomainControllers = Invoke-Command -ScriptBlock {
             $DCs = @()

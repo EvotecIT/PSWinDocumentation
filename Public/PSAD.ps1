@@ -16,7 +16,10 @@ function Start-Documentation {
 
         ### Starting WORD
         $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
-        $ExcelDocument = $Document.DocumentAD.FilePathExcel
+        if ($Document.DocumentAD.ExportExcel) {
+            $ExcelDocument = New-ExcelDocument
+        }
+        #
 
         ### Start Sections
 
@@ -50,6 +53,11 @@ function Start-Documentation {
             -FilePath $Document.DocumentAD.FilePathWord `
             -Supress $True `
             -OpenDocument:$Document.Configuration.Options.OpenDocument
+
+        ### Ending EXCEL
+        if ($Document.DocumentAD.ExportExcel) {
+            Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAD.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenWorkbook
+        }
     }
     return
 

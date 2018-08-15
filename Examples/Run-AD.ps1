@@ -1,5 +1,5 @@
 Import-Module PSWriteWord -Force
-Import-Module PSWriteExcel -Force # Import-Module Import-Excel
+Import-Module PSWriteExcel -Force
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
@@ -80,6 +80,7 @@ $Document = [ordered]@{
                         + " Following table contains forest summary with important information:"
                     ExcelExport     = $true
                     ExcelWorkSheet  = 'Forest Summary'
+                    ExcelData       = [ActiveDirectory]::ForestForestInformation
                 }
                 SectionForestFSMO             = [ordered] @{
                     Use                   = $true
@@ -91,6 +92,7 @@ $Document = [ordered]@{
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest FSMO'
+                    ExcelData             = [ActiveDirectory]::ForestFSMO
                 }
                 SectionForestOptionalFeatures = [ordered] @{
                     Use                   = $true
@@ -99,29 +101,33 @@ $Document = [ordered]@{
                     TableTitleMerge       = $true
                     TableTitleText        = 'Optional Features'
                     Text                  = 'Following table contains optional forest features'
+                    TextNoData            = "Following section should have table containing forest features. However no data was provided."
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest Optional Features'
+                    ExcelData             = [ActiveDirectory]::ForestOptionalFeatures
                 }
                 SectionForestUPNSuffixes      = [ordered] @{
                     Use                   = $true
                     Text                  = "Following UPN suffixes were created in this forest:"
-                    ListTextEmpty         = "No UPN suffixes were created in this forest."
+                    TextNoData            = "No UPN suffixes were created in this forest."
                     ListType              = 'Bulleted'
                     ListData              = [ActiveDirectory]::ForestUPNSuffixes
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest UPN Suffixes'
+                    ExcelData             = [ActiveDirectory]::ForestUPNSuffixes
                 }
                 SectionForesSPNSuffixes       = [ordered] @{
                     Use                   = $true
                     Text                  = "Following SPN suffixes were created in this forest:"
-                    ListTextEmpty         = "No SPN suffixes were created in this forest."
+                    TextNoData            = "No SPN suffixes were created in this forest."
                     ListType              = 'Bulleted'
                     ListData              = [ActiveDirectory]::ForestSPNSuffixes
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest SPN Suffixes'
+                    ExcelData             = [ActiveDirectory]::ForestSPNSuffixes
                 }
                 SectionForestSites1           = [ordered] @{
                     Use             = $true
@@ -135,6 +141,7 @@ $Document = [ordered]@{
                     Text            = "Forest Sites list can be found below"
                     ExcelExport     = $true
                     ExcelWorkSheet  = 'Forest Sites 1'
+                    ExcelData       = [ActiveDirectory]::ForestSites1
                 }
                 SectionForestSites2           = [ordered] @{
                     Use                   = $true
@@ -144,6 +151,7 @@ $Document = [ordered]@{
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest Sites 2'
+                    ExcelData             = [ActiveDirectory]::ForestSites2
                 }
                 SectionForestSubnets1         = [ordered] @{
                     Use                   = $true
@@ -158,6 +166,7 @@ $Document = [ordered]@{
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest Subnets 1'
+                    ExcelData             = [ActiveDirectory]::ForestSubnets1
                 }
                 SectionForestSubnets2         = [ordered] @{
                     Use                   = $true
@@ -167,6 +176,7 @@ $Document = [ordered]@{
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest Subnets 2'
+                    ExcelData             = [ActiveDirectory]::ForestSubnets2
                 }
                 SectionForestSiteLinks        = [ordered] @{
                     Use             = $true
@@ -180,6 +190,7 @@ $Document = [ordered]@{
                     Text            = "Forest Site Links information is available in table below"
                     ExcelExport     = $true
                     ExcelWorkSheet  = 'Forest Site Links'
+                    ExcelData       = [ActiveDirectory]::ForestSiteLinks
                 }
             }
             SectionDomain = [ordered] @{
@@ -215,12 +226,14 @@ $Document = [ordered]@{
                     TocListLevel        = 1
                     TocListItemType     = 'Numbered'
                     TocHeadingType      = 'Heading2'
-                    TableData           = [ActiveDirectory]::DomainDomainControllers
+                    TableData           = [ActiveDirectory]::DomainControllers
                     TableDesign         = 'ColorfulGridAccent5'
                     TableMaximumColumns = 8
                     Text                = 'Following table contains domain controllers'
+                    TextNoData          = ''
                     ExcelExport         = $true
                     ExcelWorkSheet      = '<Domain> - DCs'
+                    ExcelData           = [ActiveDirectory]::DomainControllers
                 }
                 SectionDomainFSMO                   = [ordered] @{
                     Use                   = $true
@@ -232,6 +245,7 @@ $Document = [ordered]@{
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = '<Domain> - FSMO'
+                    ExcelData             = [ActiveDirectory]::DomainFSMO
                 }
                 SectionDomainDefaultPasswordPolicy  = [ordered] @{
                     Use             = $true
@@ -244,9 +258,10 @@ $Document = [ordered]@{
                     TableDesign     = 'ColorfulGridAccent5'
                     TableTitleMerge = $True
                     TableTitleText  = "Default Password Policy for <Domain>"
-                    Text            = 'Following table contains password policies'
+                    Text            = 'Following table contains password policies for all users within <Domain>'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - DefaultPasswordPolicy'
+                    ExcelData       = [ActiveDirectory]::DomainDefaultPasswordPolicy
                 }
                 SectionDomainFineGrainedPolicies    = [ordered] @{
                     Use             = $true
@@ -260,8 +275,12 @@ $Document = [ordered]@{
                     TableTitleMerge = $True
                     TableTitleText  = "Fine Grained Password Policy for <Domain>"
                     Text            = 'Following table contains fine grained password policies'
+                    TextNoData      = "Following section should cover fine grained password policies. " `
+                        + "There were no fine grained password polices defined in <Domain>. There was no formal requirement to have " `
+                        + "them set up."
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - Password Policy (Grained)'
+                    ExcelData       = [ActiveDirectory]::DomainFineGrainedPolicies
                 }
                 SectionDomainGroupPolicies          = [ordered] @{
                     Use             = $true
@@ -275,6 +294,7 @@ $Document = [ordered]@{
                     Text            = "Following table contains group policies for <Domain>"
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - GroupPolicies'
+                    ExcelData       = [ActiveDirectory]::DomainGroupPolicies
                 }
                 SectionDomainGroupPoliciesDetails   = [ordered] @{
                     Use                 = $true
@@ -288,7 +308,8 @@ $Document = [ordered]@{
                     TableDesign         = 'ColorfulGridAccent5'
                     Text                = "Following table contains group policies for <Domain>"
                     ExcelExport         = $true
-                    ExcelWorkSheet      = '<Domain> - GroupPolicies'
+                    ExcelWorkSheet      = '<Domain> - GroupPolicies Details'
+                    ExcelData           = [ActiveDirectory]::DomainGroupPoliciesDetails
                 }
                 SectionDomainGroupPoliciesACL       = [ordered] @{
                     Use                 = $true
@@ -303,6 +324,7 @@ $Document = [ordered]@{
                     Text                = "Following table contains group policies ACL for <Domain>"
                     ExcelExport         = $true
                     ExcelWorkSheet      = '<Domain> - GroupPoliciesACL'
+                    ExcelData           = [ActiveDirectory]::DomainGroupPoliciesACL
                 }
                 SectionDomainDNSSrv                 = [ordered] @{
                     Use                  = $true
@@ -318,6 +340,7 @@ $Document = [ordered]@{
                     EmptyParagraphsAfter = 1
                     ExcelExport          = $true
                     ExcelWorkSheet       = '<Domain> - DNSSRV'
+                    ExcelData            = [ActiveDirectory]::DomainDNSSRV
                 }
                 SectionDomainDNSA                   = [ordered] @{
                     Use                 = $true
@@ -327,6 +350,7 @@ $Document = [ordered]@{
                     Text                = "Following table contains A records for Kerberos and LDAP"
                     ExcelExport         = $true
                     ExcelWorkSheet      = '<Domain> - DNSA'
+                    ExcelData           = [ActiveDirectory]::DomainDNSA
                 }
                 SectionDomainTrusts                 = [ordered] @{
                     Use                 = $true
@@ -335,12 +359,13 @@ $Document = [ordered]@{
                     TocListLevel        = 1
                     TocListItemType     = 'Numbered'
                     TocHeadingType      = 'Heading2'
-                    TableData           = [ActiveDirectory]::DomainDomainTrusts
+                    TableData           = [ActiveDirectory]::DomainTrusts
                     TableMaximumColumns = 6
                     TableDesign         = 'ColorfulGridAccent5'
                     Text                = "Following table contains trusts established with domains..."
                     ExcelExport         = $true
                     ExcelWorkSheet      = '<Domain> - DomainTrusts'
+                    ExcelData           = [ActiveDirectory]::DomainTrusts
                 }
                 SectionDomainOrganizationalUnits    = [ordered] @{
                     Use             = $true
@@ -354,6 +379,7 @@ $Document = [ordered]@{
                     Text            = "Following table contains all OU's created in <Domain>"
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - OrganizationalUnits'
+                    ExcelData       = [ActiveDirectory]::DomainOrganizationalUnits
                 }
                 SectionDomainPriviligedGroupMembers = [ordered] @{
                     Use             = $False
@@ -372,6 +398,7 @@ $Document = [ordered]@{
                     ChartValues     = 'Members Count'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - PriviligedGroupMembers'
+                    ExcelData       = [ActiveDirectory]::DomainPriviligedGroupMembers
                 }
                 SectionDomainAdministrators         = [ordered] @{
                     Use             = $true
@@ -380,11 +407,12 @@ $Document = [ordered]@{
                     TocListLevel    = 1
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainDomainAdministrators
+                    TableData       = [ActiveDirectory]::DomainAdministrators
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = 'Following users have highest domain priviliges and are able to control a lot of Windows resources.'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - DomainAdministrators'
+                    ExcelData       = [ActiveDirectory]::DomainAdministrators
                 }
                 SectionDomainUsersCount             = [ordered] @{
                     Use             = $true
@@ -405,18 +433,19 @@ $Document = [ordered]@{
                     ChartValues     = 'Values'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - UsersCount'
+                    ExcelData       = [ActiveDirectory]::DomainUsersCount
                 }
                 SectionExcelOnly1                   = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    TableData      = [ActiveDirectory]::DomainOrganizationalUnitsBasicACL
-                    ExcelWorkSheet = '<Domain> - UsersCount'
+                    ExcelWorkSheet = '<Domain> - OU ACL Basic'
+                    ExcelData      = [ActiveDirectory]::DomainOrganizationalUnitsBasicACL
                 }
                 SectionExcelOnly2                   = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    TableData      = [ActiveDirectory]::DomainOrganizationalUnitsExtended
-                    ExcelWorkSheet = '<Domain> - UsersCount'
+                    ExcelWorkSheet = '<Domain> - OU ACL Extended'
+                    ExcelData      = [ActiveDirectory]::DomainOrganizationalUnitsExtended
                 }
             }
         }
