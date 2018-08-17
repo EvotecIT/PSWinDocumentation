@@ -169,6 +169,16 @@ function Get-WinADDomainInformation {
     $Data.DomainRootDSE = $(Get-ADRootDSE -Server $Domain)
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
 
+    if ($TypesRequired -contains [ActiveDirectory]::DomainUsersFullList) {
+        $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 5000000 -Filter * -Properties | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates
+    }
+    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsFullList) {
+        $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 50000000 -Properties *
+    }
+    if ($TypesRequired -contains [ActiveDirectory]::DomainComputersFullList) {
+        $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 5000000 -Properties * | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates
+    }
+
     if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
         $Data.DomainGUIDS = Invoke-Command -ScriptBlock {
             $GUID = @{}

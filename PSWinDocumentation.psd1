@@ -4,7 +4,7 @@
     RootModule        = 'PSWinDocumentation.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.5'
+    ModuleVersion     = '0.0.6'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -85,9 +85,9 @@
     PrivateData       = @{
 
         PSData = @{
-
+            Prerelease = '-alpha'
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = @('documentation', 'windows', 'word', 'workstation', 'active directory')
+            Tags       = @('documentation', 'windows', 'word', 'workstation', 'activedirectory', 'ad')
 
             # A URL to the license for this module.
             # LicenseUri = ''

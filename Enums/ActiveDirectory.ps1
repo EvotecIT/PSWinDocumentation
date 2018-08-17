@@ -38,6 +38,9 @@ Add-Type -TypeDefinition @"
         DomainPriviligedGroupMembers,
         DomainUsers,
         DomainUsersCount,
-        DomainTrusts
+        DomainTrusts,
+        DomainUsersFullList,
+        DomainGroupsFullList,
+        DomainComputersFullList
     }
 "@
