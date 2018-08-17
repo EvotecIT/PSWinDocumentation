@@ -115,7 +115,7 @@ function New-ADDocumentBlock {
             }
             if ($ExcelData) {
                 Write-Verbose "Generating EXCEL Section for [$SectionDetails]"
-                Add-ExcelWorksheetData -ExcelDocument $Excel -ExcelWorksheetName $WorkSheetName -DataTable $TableData -AutoFit -AutoFilter -Verbose
+                Add-ExcelWorksheetData -ExcelDocument $Excel -ExcelWorksheetName $WorkSheetName -DataTable $ExcelData -AutoFit -AutoFilter #-Verbose
                 #| Convert-ToExcel -Path $Excel -AutoSize -AutoFilter -WorksheetName $WorkSheetName -ClearSheet -NoNumberConversion SSDL, GUID, ID, ACLs
             }
         }

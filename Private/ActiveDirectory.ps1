@@ -175,7 +175,7 @@ function Get-WinADDomainInformation {
     Write-Verbose 'Getting domain information - DomainGroupsFullList'
     $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 5000000 -Properties *
     Write-Verbose 'Getting domain information - DomainComputersFullList'
-    $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates
+    $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
         Write-Verbose 'Getting domain information - DomainGUIDS'
