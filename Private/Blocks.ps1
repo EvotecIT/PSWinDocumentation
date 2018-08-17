@@ -90,19 +90,19 @@ function Get-DocumentPath {
         [string] $FinalDocumentLocation
     )
     if ($Document.Configuration.Prettify.UseBuiltinTemplate) {
-        Write-Verbose 'Get-DocumentPath - Option 1'
+        #Write-Verbose 'Get-DocumentPath - Option 1'
         $WordDocument = Get-WordDocument -FilePath "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
     } else {
         if ($Document.Configuration.Prettify.CustomTemplatePath) {
             if (Test-File -File $Document.Configuration.Prettify.CustomTemplatePath -FileName 'CustomTemplatePath' -eq 0) {
-                Write-Verbose 'Get-DocumentPath - Option 2'
+                # Write-Verbose 'Get-DocumentPath - Option 2'
                 $WordDocument = Get-WordDocument -FilePath $Document.Configuration.Prettify.CustomTemplatePath
             } else {
-                Write-Verbose 'Get-DocumentPath - Option 3'
+                #Write-Verbose 'Get-DocumentPath - Option 3'
                 $WordDocument = New-WordDocument -FilePath $FinalDocumentLocation
             }
         } else {
-            Write-Verbose 'Get-DocumentPath - Option 4'
+            #Write-Verbose 'Get-DocumentPath - Option 4'
             $WordDocument = New-WordDocument -FilePath $FinalDocumentLocation
         }
     }

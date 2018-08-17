@@ -255,7 +255,7 @@ function Get-WinADDomainInformation {
         $Data.DomainTrusts = Invoke-Command -ScriptBlock {
             $DomainPDC = $Data.DomainFSMO.'PDC Emulator'
             $Trust = $Data.DomainTrustsClean
-            $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
+            $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue -Verbose:$false | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
 
             $ReturnData = [ordered] @{
                 'Trust Source'               = $Domain
@@ -310,7 +310,7 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $GroupPolicies
         }
         $Data.DomainGroupPoliciesDetails = Invoke-Command -ScriptBlock {
-            Write-Verbose -Message "Get-WinADDomainInformation - Group Policies Details"
+            Write-Verbose -Message "Getting domain information - Group Policies Details"
             $Output = @()
             ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
@@ -351,7 +351,7 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $Output
         }
         $Data.DomainGroupPoliciesACL = Invoke-Command -ScriptBlock {
-            Write-Verbose -Message "Get-WinADDomainInformation - Group Policies ACLs"
+            Write-Verbose -Message "Getting domain information - Group Policies ACLs"
             $Output = @()
             ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
@@ -388,7 +388,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainPriviligedGroupMembers) {
-        Write-Verbose "Get-WinADDomainInformation - TypesRequired: PriviligedGroupMembers"
+        Write-Verbose "Getting domain information - PriviligedGroupMembers"
         $Data.DomainPriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainOrganizationalUnits -or $TypesRequired -contains [ActiveDirectory]::DomainContainers) {
@@ -432,7 +432,7 @@ function Get-WinADDomainInformation {
             #$OUs += @{ Name = 'Root'; Value = $Data.DomainRootDSE.rootDomainNamingContext }
             foreach ($OU in $Data.DomainOrganizationalUnitsClean) {
                 $OUs += @{ Name = 'Organizational Unit'; Value = $OU.DistinguishedName }
-                Write-Verbose "1. $($Ou.DistinguishedName)"
+                #Write-Verbose "1. $($Ou.DistinguishedName)"
             }
             #foreach ($OU in $Data.DomainContainers) {
             #    $OUs += @{ Name = 'Container'; Value = $OU.DistinguishedName }
@@ -442,7 +442,7 @@ function Get-WinADDomainInformation {
             New-PSDrive -Name $PSDriveName -Root "" -PsProvider ActiveDirectory -Server $Domain
 
             ForEach ($OU in $OUs) {
-                Write-Verbose "3. $($Ou.Value)"
+                #Write-Verbose "3. $($Ou.Value)"
                 $ReportBasic += Get-Acl -Path "$PSDriveName`:\$($OU.Value)" | Select-Object `
                 @{name = 'Distinguished Name'; expression = { $OU.Value}},
                 @{name = 'Type'; expression = { $OU.Name }},
@@ -484,45 +484,70 @@ function Get-WinADDomainInformation {
         $Data.DomainAdministrators = $Data.DomainAdministratorsClean | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsers -or $TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
-        Write-Verbose 'Get-WinDomainInformation - Getting All Users'
         $Data.DomainUsers = Invoke-Command -ScriptBlock {
-            param(
-                $Domain
-            )
-            function Find-AllUsers {
-                param (
-                    $Domain
-                )
-                $users = Get-ADUser -Server $Domain -ResultPageSize 5000000 -filter * -Properties Name, Manager, DisplayName, GivenName, Surname, SamAccountName, EmailAddress, msDS-UserPasswordExpiryTimeComputed, PasswordExpired, PasswordLastSet, PasswordNotRequired, PasswordNeverExpires
-                $users = $users | Select-Object Name, UserPrincipalName, SamAccountName, DisplayName, GivenName, Surname, EmailAddress, PasswordExpired, PasswordLastSet, PasswordNotRequired, PasswordNeverExpires, Enabled,
-                @{Name = "Manager"; Expression = { (Get-ADUser -Server $Domain $_.Manager).Name }},
-                @{Name = "ManagerEmail"; Expression = { (Get-ADUser -Server $Domain -Properties Mail $_.Manager).Mail  }},
-                @{Name = "DateExpiry"; Expression = { ([datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed")) }},
-                @{Name = "DaysToExpire"; Expression = { (NEW-TIMESPAN -Start (GET-DATE) -End ([datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed"))).Days }}
-                return $users
+            Write-Verbose 'Getting domain information - DomainUsers'
+            $UserList = @()
+            foreach ($U in $Data.DomainUsersFullList) {
+                $UserList += [ordered] @{
+                    'Name'                              = $U.Name
+                    'UserPrincipalName'                 = $U.UserPrincipalName
+                    'SamAccountName'                    = $U.SamAccountName
+                    'DisplayName'                       = $U.DisplayName
+                    'GivenName'                         = $U.GivenName
+                    'Surname'                           = $U.Surname
+                    'EmailAddress'                      = $U.EmailAddress
+                    'PasswordExpired'                   = $U.PasswordExpired
+                    'PasswordLastSet'                   = $U.PasswordLastSet
+                    'PasswordNotRequired'               = $U.PasswordNotRequired
+                    'PasswordNeverExpires'              = $U.PasswordNeverExpires
+                    'Enabled'                           = $U.Enabled
+                    'Manager'                           = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $U.Manager).Name
+                    'ManagerEmail'                      = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $U.Manager).EmailAddress
+                    'DateExpiry'                        = Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed") -Verbose
+                    "DaysToExpire"                      = (Convert-TimeToDays -StartTime GET-DATE -EndTime (Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed")))
+                    "Primary Group"                     = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $U.PrimaryGroup -Type 'SamAccountName')
+                    "Member Of"                         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $U.MemberOf -Type 'SamAccountName' -Splitter ', ')
+                    "AccountExpirationDate"             = $U.AccountExpirationDate
+                    "AccountLockoutTime"                = $U.AccountLockoutTime
+                    "AllowReversiblePasswordEncryption" = $U.AllowReversiblePasswordEncryption
+                    "BadLogonCount"                     = $U.BadLogonCount
+                    "CannotChangePassword"              = $U.CannotChangePassword
+                    "CanonicalName"                     = $U.CanonicalName
+
+                    "Description"                       = $U.Description
+                    "DistinguishedName"                 = $U.DistinguishedName
+                    "EmployeeID"                        = $U.EmployeeID
+                    "EmployeeNumber"                    = $U.EmployeeNumber
+                    "LastBadPasswordAttempt"            = $U.LastBadPasswordAttempt
+                    "LastLogonDate"                     = $U.LastLogonDate
+
+                    "Created"                           = $U.Created
+                    "Modified"                          = $U.Modified
+                    "ProtectedFromAccidentalDeletion"   = $U.ProtectedFromAccidentalDeletion
+
+                }
+
             }
-            $Users = Find-AllUsers -Domain $Domain
-            return [ordered] @{
-                Users                          = $Users
-                UsersAll                       = $Users | Where { $_.PasswordNotRequired -eq $False } | Select Name, SamAccountName, UserPrincipalName, Enabled
-                UsersSystemAccounts            = $Users | Where { $_.PasswordNotRequired -eq $true } | Select Name, SamAccountName, UserPrincipalName, Enabled
-                UsersNeverExpiring             = $Users | Where { $_.PasswordNeverExpires -eq $true -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } | Select Name, SamAccountName, UserPrincipalName, Enabled
-                UsersNeverExpiringInclDisabled = $Users | Where { $_.PasswordNeverExpires -eq $true -and $_.PasswordNotRequired -eq $false } | Select Name, SamAccountName, UserPrincipalName, Enabled
-                UsersExpiredInclDisabled       = $Users | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.PasswordNotRequired -eq $false } | Select Name, SamAccountName, UserPrincipalName, Enabled
-                UsersExpiredExclDisabled       = $Users | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } | Select Name, SamAccountName, UserPrincipalName, Enabled
-            }
-        } -ArgumentList $Domain
+            return Format-TransposeTable -Object $UserList #| ft -AutoSize Name, Password*, Da*, 'Primary Group', 'Member Of'
+        }
+        $Data.DomainUsersAll = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $False } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersSystemAccounts = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $true } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersNeverExpiring = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersNeverExpiringInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersExpiredInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersExpiredExclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false }| Select-Object * # Name, SamAccountName, UserPrincipalName, Enabled
     }
+
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
-        Write-Verbose 'Get-WinDomainInformation - Getting All Users Count'
+        Write-Verbose 'Getting domain information - Getting All Users Count'
         $Data.DomainUsersCount = [ordered] @{
-            'Users Count Incl. System'            = Get-ObjectCount -Object $Data.DomainUsers.Users
-            'Users Count'                         = Get-ObjectCount -Object $Data.DomainUsers.UsersAll
-            'Users Expired'                       = Get-ObjectCount -Object $Data.DomainUsers.UsersExpiredExclDisabled
-            'Users Expired Incl. Disabled'        = Get-ObjectCount -Object $Data.DomainUsers.UsersExpiredInclDisabled
-            'Users Never Expiring'                = Get-ObjectCount -Object $Data.DomainUsers.UsersNeverExpiring
-            'Users Never Expiring Incl. Disabled' = Get-ObjectCount -Object $Data.DomainUsers.UsersNeverExpiringInclDisabled
-            'Users System Accounts'               = Get-ObjectCount -Object $Data.DomainUsers.UsersSystemAccounts
+            'Users Count Incl. System'            = Get-ObjectCount -Object $Data.DomainUsers
+            'Users Count'                         = Get-ObjectCount -Object $Data.DomainUsersAll
+            'Users Expired'                       = Get-ObjectCount -Object $Data.DomainUsersExpiredExclDisabled
+            'Users Expired Incl. Disabled'        = Get-ObjectCount -Object $Data.DomainUsersExpiredInclDisabled
+            'Users Never Expiring'                = Get-ObjectCount -Object $Data.DomainUsersNeverExpiring
+            'Users Never Expiring Incl. Disabled' = Get-ObjectCount -Object $Data.DomainUsersNeverExpiringInclDisabled
+            'Users System Accounts'               = Get-ObjectCount -Object $Data.DomainUsersSystemAccounts
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainControllers) {

@@ -36,10 +36,16 @@ Add-Type -TypeDefinition @"
         DomainOrganizationalUnitsExtended,
         DomainContainers,
         DomainPriviligedGroupMembers,
+        DomainUsersFullList,
         DomainUsers,
+        DomainUsersAll,
+        DomainUsersSystemAccounts,
+        DomainUsersNeverExpiring,
+        DomainUsersNeverExpiringInclDisabled,
+        DomainUsersExpiredInclDisabled,
+        DomainUsersExpiredExclDisabled,
         DomainUsersCount,
         DomainTrusts,
-        DomainUsersFullList,
         DomainGroupsFullList,
         DomainComputersFullList
     }
