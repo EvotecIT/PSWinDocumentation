@@ -171,7 +171,7 @@ function Get-WinADDomainInformation {
     Write-Verbose 'Getting domain information - DomainRootDSE'
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
     Write-Verbose 'Getting domain information - DomainUsersFullList'
-    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates
+    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
     Write-Verbose 'Getting domain information - DomainGroupsFullList'
     $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 5000000 -Properties *
     Write-Verbose 'Getting domain information - DomainComputersFullList'
