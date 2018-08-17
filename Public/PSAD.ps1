@@ -51,7 +51,7 @@ function Start-Documentation {
 
         ### Ending EXCEL
         if ($Document.DocumentAD.ExportExcel) {
-            Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAD.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenWorkbook
+            Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAD.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenExcel
         }
     }
 }

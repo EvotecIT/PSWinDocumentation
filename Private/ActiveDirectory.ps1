@@ -166,20 +166,19 @@ function Get-WinADDomainInformation {
         $TypesRequired = Get-Types
     } # Gets all types
     $Data = [ordered] @{}
+    Write-Verbose 'Getting domain information - DomainRootDSE'
     $Data.DomainRootDSE = $(Get-ADRootDSE -Server $Domain)
+    Write-Verbose 'Getting domain information - DomainRootDSE'
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
-
-    if ($TypesRequired -contains [ActiveDirectory]::DomainUsersFullList) {
-        $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 5000000 -Filter * -Properties | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates
-    }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsFullList) {
-        $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 50000000 -Properties *
-    }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainComputersFullList) {
-        $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 5000000 -Properties * | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates
-    }
+    Write-Verbose 'Getting domain information - DomainUsersFullList'
+    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates
+    Write-Verbose 'Getting domain information - DomainGroupsFullList'
+    $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 5000000 -Properties *
+    Write-Verbose 'Getting domain information - DomainComputersFullList'
+    $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
+        Write-Verbose 'Getting domain information - DomainGUIDS'
         $Data.DomainGUIDS = Invoke-Command -ScriptBlock {
             $GUID = @{}
             Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID | ForEach-Object {
@@ -214,13 +213,14 @@ function Get-WinADDomainInformation {
         $Data.DomainClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainDNSSRV -or $TypesRequired -contains [ActiveDirectory]::DomainDNSA) {
+        Write-Verbose 'Getting domain information - DomainDNSSRV / DomainDNSA'
         $Data.DomainDNSData = Invoke-Command -ScriptBlock {
             $DnsSrv = @()
             $DnsA = @()
 
             $DnsRecords = "_kerberos._tcp.$Domain", "_ldap._tcp.$Domain"
             foreach ($DnsRecord in $DnsRecords) {
-                $Value = Resolve-DnsName -Name $DnsRecord -Type SRV | Select *
+                $Value = Resolve-DnsName -Name $DnsRecord -Type SRV -Verbose:$false | Select *
                 foreach ($V in $Value) {
                     if ($V.QueryType -eq 'SRV') {
                         $DnsSrv += $V
@@ -241,6 +241,7 @@ function Get-WinADDomainInformation {
         $Data.DomainDNSA = $Data.DomainDNSData.A
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainFSMO -or $TypesRequired -contains [ActiveDirectory]::DomainTrusts) {
+        Write-Verbose 'Getting domain information - DomainFSMO'
         # required for multiple use cases FSMO/DomainTrusts
         $Data.DomainFSMO = [ordered] @{
             'PDC Emulator'          = $Data.DomainInformation.PDCEmulator
@@ -397,7 +398,14 @@ function Get-WinADDomainInformation {
         $Data.DomainOrganizationalUnits = Invoke-Command -ScriptBlock {
             return $Data.DomainOrganizationalUnitsClean | Select-Object `
             @{ n = 'Canonical Name'; e = { $_.CanonicalName }},
-            @{ n = 'Managed By'; e = { $_.ManagedBy }},
+            @{ n = 'Managed By'; e = {
+                    (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $_.ManagedBy -Verbose).Name
+                }
+            },
+            @{ n = 'Manager Email'; e = {
+                    (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $_.ManagedBy -Verbose).EmailAddress
+                }
+            },
             @{ n = 'Protected'; e = { $_.ProtectedFromAccidentalDeletion }},
             Created,
             Modified,

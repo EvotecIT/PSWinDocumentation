@@ -39,7 +39,7 @@ function Convert-ToDateTime {
     } catch {
         $DateTime = $null
     }
-    Write-Verbose "Convert-ToDateTime: $DateTime"
+    #Write-Verbose "Convert-ToDateTime: $DateTime"
     if ($DateTime -eq $null -or $DateTime -like $Ignore) {
         return 'N/A'
     } else {
