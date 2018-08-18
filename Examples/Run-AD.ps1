@@ -18,7 +18,7 @@ $Document = [ordered]@{
         }
         DisplayConsole = @{
             ShowTime   = $false
-            LogFile    = 'C:\Testing.log'
+            LogFile    = "$ENV:TEMP\PSWinDocumentationTesting.log"
             TimeFormat = 'yyyy-MM-dd HH:mm:ss'
         }
         Debug          = @{
