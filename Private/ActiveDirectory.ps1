@@ -26,13 +26,13 @@ function Get-WinADForestInformation {
             $ReturnData = @()
             foreach ($Sites in $Data.ForestSites) {
                 $ReturnData += [ordered] @{
-                    'Name'                               = $Sites.Name
-                    'Description'                        = $Sites.Description
-                    'sD Rights Effective'                = $Sites.sDRightsEffective
-                    'Protected From Accidental Deletion' = $Sites.ProtectedFromAccidentalDeletion
-                    'Modified'                           = $Sites.Modified
-                    'Created'                            = $Sites.Created
-                    'Deleted'                            = $Sites.Deleted
+                    'Name'        = $Sites.Name
+                    'Description' = $Sites.Description
+                    #'sD Rights Effective'                = $Sites.sDRightsEffective
+                    'Protected'   = $Sites.ProtectedFromAccidentalDeletion
+                    'Modified'    = $Sites.Modified
+                    'Created'     = $Sites.Created
+                    'Deleted'     = $Sites.Deleted
                 }
             }
             return Format-TransposeTable $ReturnData
@@ -60,12 +60,12 @@ function Get-WinADForestInformation {
             $ReturnData = @()
             foreach ($Subnets in $Data.ForestSubnets) {
                 $ReturnData += [ordered] @{
-                    'Name'                               = $Subnets.Name
-                    'Description'                        = $Subnets.Description
-                    'Protected From Accidental Deletion' = $Subnets.ProtectedFromAccidentalDeletion
-                    'Modified'                           = $Subnets.Modified
-                    'Created'                            = $Subnets.Created
-                    'Deleted'                            = $Subnets.Deleted
+                    'Name'        = $Subnets.Name
+                    'Description' = $Subnets.Description
+                    'Protected'   = $Subnets.ProtectedFromAccidentalDeletion
+                    'Modified'    = $Subnets.Modified
+                    'Created'     = $Subnets.Created
+                    'Deleted'     = $Subnets.Deleted
                 }
             }
             return Format-TransposeTable $ReturnData
@@ -206,21 +206,27 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainAuthenticationPolicies) {
+        Write-Verbose 'Getting domain information - DomainAuthenticationPolicies'
         $Data.DomainAuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainAuthenticationPolicySilos) {
+        Write-Verbose 'Getting domain information - DomainAuthenticationPolicySilos'
         $Data.DomainAuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Server $Domain -Filter 'Name -like "*AuthenticationPolicySilo*"')
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainCentralAccessPolicies) {
+        Write-Verbose 'Getting domain information - DomainCentralAccessPolicies'
         $Data.DomainCentralAccessPolicies = $(Get-ADCentralAccessPolicy -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainCentralAccessRules) {
+        Write-Verbose 'Getting domain information - DomainCentralAccessRules'
         $Data.DomainCentralAccessRules = $(Get-ADCentralAccessRule -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainClaimTransformPolicies) {
+        Write-Verbose 'Getting domain information - DomainClaimTransformPolicies'
         $Data.DomainClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainClaimTypes) {
+        Write-Verbose 'Getting domain information - DomainClaimTypes'
         $Data.DomainClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainDNSSRV -or $TypesRequired -contains [ActiveDirectory]::DomainDNSA) {
@@ -261,6 +267,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainTrusts) {
+        Write-Verbose 'Getting domain information - DomainTrusts'
         ## requires both DomainTrusts and FSMO.
         $Data.DomainTrustsClean = (Get-ADTrust -Server $Domain -Filter * -Properties *)
         $Data.DomainTrusts = Invoke-Command -ScriptBlock {
@@ -282,8 +289,8 @@ function Get-WinADDomainInformation {
                 'SID Filtering Quarantined'  = $Trust.SIDFilteringQuarantined
                 'Disallow Transivity'        = $Trust.DisallowTransivity
                 'Intra Forest'               = $Trust.IntraForest
-                'Is Tree Parent'             = $Trust.IsTreeParent
-                'Is Tree Root'               = $Trust.IsTreeRoot
+                'Tree Parent?'               = $Trust.IsTreeParent
+                'Tree Root?'                 = $Trust.IsTreeRoot
                 'TGTDelegation'              = $Trust.TGTDelegation
                 'TrustedPolicy'              = $Trust.TrustedPolicy
                 'TrustingPolicy'             = $Trust.TrustingPolicy
@@ -304,6 +311,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupPolicies -or $TypesRequired -contains [ActiveDirectory]::DomainGroupPoliciesDetails -or $TypesRequired -contains [ActiveDirectory]::DomainGroupPoliciesACL) {
+        Write-Verbose 'Getting domain information - DomainGroupPolicies'
         $Data.DomainGroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
         $Data.DomainGroupPolicies = Invoke-Command -ScriptBlock {
             $GroupPolicies = @()
@@ -381,6 +389,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainDefaultPasswordPolicy) {
+        Write-Verbose -Message "Getting domain information - DomainDefaultPasswordPolicy"
         $Data.DomainDefaultPasswordPolicy = Invoke-Command -ScriptBlock {
             $Policy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
             $Data = [ordered] @{
@@ -567,16 +576,16 @@ function Get-WinADDomainInformation {
             $DCs = @()
             foreach ($Policy in $Data.DomainControllersClean) {
                 $DCs += [ordered] @{
-                    'Name'               = $Policy.Name
-                    'Host Name'          = $Policy.HostName
-                    'Operating System'   = $Policy.OperatingSystem
-                    'Site'               = $Policy.Site
-                    'Ipv4 Address'       = $Policy.Ipv4Address
-                    'Ipv6 Address'       = $Policy.Ipv6Address
-                    'Is Global Catalog?' = $Policy.IsGlobalCatalog
-                    'Is Read Only?'      = $Policy.IsReadOnly
-                    'Ldap Port'          = $Policy.LdapPort
-                    'SSL Port'           = $Policy.SSLPort
+                    'Name'             = $Policy.Name
+                    'Host Name'        = $Policy.HostName
+                    'Operating System' = $Policy.OperatingSystem
+                    'Site'             = $Policy.Site
+                    'Ipv4'             = $Policy.Ipv4Address
+                    'Ipv6'             = $Policy.Ipv6Address
+                    'Global Catalog?'  = $Policy.IsGlobalCatalog
+                    'Read Only?'       = $Policy.IsReadOnly
+                    'Ldap Port'        = $Policy.LdapPort
+                    'SSL Port'         = $Policy.SSLPort
                 }
             }
             return Format-TransposeTable $DCs
