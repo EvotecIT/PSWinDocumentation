@@ -451,19 +451,19 @@ $Script:Document = [ordered]@{
                 SectionExcelDomainUsers                          = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users List'
+                    ExcelWorkSheet = '<Domain> - Users'
                     ExcelData      = [ActiveDirectory]::DomainUsers
                 }
                 SectionExcelDomainUsersAll                       = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users List All'
+                    ExcelWorkSheet = '<Domain> - Users All'
                     ExcelData      = [ActiveDirectory]::DomainUsersAll
                 }
                 SectionExcelDomainUsersSystemAccounts            = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users System Accounts'
+                    ExcelWorkSheet = '<Domain> - Users System'
                     ExcelData      = [ActiveDirectory]::DomainUsersSystemAccounts
                 }
                 SectionExcelDomainUsersNeverExpiring             = [ordered] @{
@@ -475,13 +475,13 @@ $Script:Document = [ordered]@{
                 SectionExcelDomainUsersNeverExpiringInclDisabled = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users Expiring with Disabled'
+                    ExcelWorkSheet = '<Domain> - Users Never Expiring incl Disabled'
                     ExcelData      = [ActiveDirectory]::DomainUsersNeverExpiringInclDisabled
                 }
                 SectionExcelDomainUsersExpiredInclDisabled       = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users Expired with Disabled'
+                    ExcelWorkSheet = '<Domain> - Users Expired incl Disabled'
                     ExcelData      = [ActiveDirectory]::DomainUsersExpiredInclDisabled
                 }
                 SectionExcelDomainUsersExpiredExclDisabled       = [ordered] @{

@@ -10,15 +10,18 @@ function Get-WinADForestInformation {
     } # Gets all types
 
     $Data = [ordered] @{}
+    Write-Verbose 'Getting domain information - Forest'
     $Data.Forest = $(Get-ADForest)
+    Write-Verbose 'Getting domain information - RootDSE'
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
+    Write-Verbose 'Getting domain information - ForestName/ForestNameDN'
     $Data.ForestName = $Data.Forest.Name
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
     $Data.Domains = $Data.Forest.Domains
 
     if ($TypesRequired -contains [ActiveDirectory]::ForestSites -or $TypesRequired -contains [ActiveDirectory]::ForestSites1 -or $TypesRequired -contains [ActiveDirectory]::ForestSites2) {
+        Write-Verbose 'Getting domain information - Forest Sites'
         $Data.ForestSites = $(Get-ADReplicationSite -Filter * -Properties * )
-
         $Data.ForestSites1 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
             foreach ($Sites in $Data.ForestSites) {
@@ -50,6 +53,7 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestSubnets -or $TypesRequired -contains [ActiveDirectory]::ForestSubnets1 -or $TypesRequired -contains [ActiveDirectory]::ForestSubnets2) {
+        Write-Verbose 'Getting domain information - Forest Subnets'
         $Data.ForestSubnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
                 Select-Object  Name, DisplayName, Description, Site, ProtectedFromAccidentalDeletion, Created, Modified, Deleted )
         $Data.ForestSubnets1 = Invoke-Command -ScriptBlock {
@@ -78,6 +82,7 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestSiteLinks) {
+        Write-Verbose 'Getting domain information - Forest SiteLinks'
         $Data.ForestSiteLinks = $(
             Get-ADReplicationSiteLink -Filter * -Properties `
                 Name, Cost, ReplicationFrequencyInMinutes, replInterval, ReplicationSchedule, Created, Modified, Deleted, IsDeleted, ProtectedFromAccidentalDeletion | `
@@ -85,6 +90,7 @@ function Get-WinADForestInformation {
         )
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestForestInformation) {
+        Write-Verbose 'Getting domain information - Forest Information'
         $Data.ForestInformation = [ordered] @{
             'Name'                    = $Data.Forest.Name
             'Root Domain'             = $Data.Forest.RootDomain
@@ -96,6 +102,7 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestUPNSuffixes) {
+        Write-Verbose 'Getting domain information - Forest UPNSuffixes'
         $Data.ForestUPNSuffixes = Invoke-Command -ScriptBlock {
             $UPNSuffixList = @()
             $UPNSuffixList += $Data.Forest.RootDomain + ' (Primary / Default UPN)'
@@ -104,9 +111,11 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestGlobalCatalogs) {
+        Write-Verbose 'Getting domain information - Forest GlobalCatalogs'
         $Data.ForestGlobalCatalogs = $Data.Forest.GlobalCatalogs
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestSPNSuffixes) {
+        Write-Verbose 'Getting domain information - Forest SPNSuffixes'
         $Data.ForestSPNSuffixes = $Data.Forest.SPNSuffixes
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestFSMO) {
@@ -168,7 +177,7 @@ function Get-WinADDomainInformation {
     $Data = [ordered] @{}
     Write-Verbose 'Getting domain information - DomainRootDSE'
     $Data.DomainRootDSE = $(Get-ADRootDSE -Server $Domain)
-    Write-Verbose 'Getting domain information - DomainRootDSE'
+    Write-Verbose 'Getting domain information - DomainInformation'
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
     Write-Verbose 'Getting domain information - DomainUsersFullList'
     $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor

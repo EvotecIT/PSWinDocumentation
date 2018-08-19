@@ -85,7 +85,7 @@
     PrivateData       = @{
 
         PSData = @{
-            Prerelease = '-alpha'
+            Prerelease = '-alpha2'
             # Tags applied to this module. These help with module discovery in online galleries.
             Tags       = @('documentation', 'windows', 'word', 'workstation', 'activedirectory', 'ad')
 
