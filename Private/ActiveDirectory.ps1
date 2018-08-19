@@ -10,17 +10,17 @@ function Get-WinADForestInformation {
     } # Gets all types
 
     $Data = [ordered] @{}
-    Write-Verbose 'Getting domain information - Forest'
+    Write-Verbose 'Getting forest information - Forest'
     $Data.Forest = $(Get-ADForest)
-    Write-Verbose 'Getting domain information - RootDSE'
+    Write-Verbose 'Getting forest information - RootDSE'
     $Data.RootDSE = $(Get-ADRootDSE -Properties *)
-    Write-Verbose 'Getting domain information - ForestName/ForestNameDN'
+    Write-Verbose 'Getting forest information - ForestName/ForestNameDN'
     $Data.ForestName = $Data.Forest.Name
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
     $Data.Domains = $Data.Forest.Domains
 
     if ($TypesRequired -contains [ActiveDirectory]::ForestSites -or $TypesRequired -contains [ActiveDirectory]::ForestSites1 -or $TypesRequired -contains [ActiveDirectory]::ForestSites2) {
-        Write-Verbose 'Getting domain information - Forest Sites'
+        Write-Verbose 'Getting forest information - Forest Sites'
         $Data.ForestSites = $(Get-ADReplicationSite -Filter * -Properties * )
         $Data.ForestSites1 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
@@ -53,7 +53,7 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestSubnets -or $TypesRequired -contains [ActiveDirectory]::ForestSubnets1 -or $TypesRequired -contains [ActiveDirectory]::ForestSubnets2) {
-        Write-Verbose 'Getting domain information - Forest Subnets'
+        Write-Verbose 'Getting forest information - Forest Subnets'
         $Data.ForestSubnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
                 Select-Object  Name, DisplayName, Description, Site, ProtectedFromAccidentalDeletion, Created, Modified, Deleted )
         $Data.ForestSubnets1 = Invoke-Command -ScriptBlock {
@@ -82,7 +82,7 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestSiteLinks) {
-        Write-Verbose 'Getting domain information - Forest SiteLinks'
+        Write-Verbose 'Getting forest information - Forest SiteLinks'
         $Data.ForestSiteLinks = $(
             Get-ADReplicationSiteLink -Filter * -Properties `
                 Name, Cost, ReplicationFrequencyInMinutes, replInterval, ReplicationSchedule, Created, Modified, Deleted, IsDeleted, ProtectedFromAccidentalDeletion | `
@@ -90,7 +90,7 @@ function Get-WinADForestInformation {
         )
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestForestInformation) {
-        Write-Verbose 'Getting domain information - Forest Information'
+        Write-Verbose 'Getting forest information - Forest Information'
         $Data.ForestInformation = [ordered] @{
             'Name'                    = $Data.Forest.Name
             'Root Domain'             = $Data.Forest.RootDomain
@@ -102,7 +102,7 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestUPNSuffixes) {
-        Write-Verbose 'Getting domain information - Forest UPNSuffixes'
+        Write-Verbose 'Getting forest information - Forest UPNSuffixes'
         $Data.ForestUPNSuffixes = Invoke-Command -ScriptBlock {
             $UPNSuffixList = @()
             $UPNSuffixList += $Data.Forest.RootDomain + ' (Primary / Default UPN)'
@@ -111,14 +111,15 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestGlobalCatalogs) {
-        Write-Verbose 'Getting domain information - Forest GlobalCatalogs'
+        Write-Verbose 'Getting forest information - Forest GlobalCatalogs'
         $Data.ForestGlobalCatalogs = $Data.Forest.GlobalCatalogs
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestSPNSuffixes) {
-        Write-Verbose 'Getting domain information - Forest SPNSuffixes'
+        Write-Verbose 'Getting forest information - Forest SPNSuffixes'
         $Data.ForestSPNSuffixes = $Data.Forest.SPNSuffixes
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestFSMO) {
+        Write-Verbose 'Getting forest information - Forest FSMO'
         $Data.ForestFSMO = Invoke-Command -ScriptBlock {
             $FSMO = [ordered] @{
                 'Domain Naming Master' = $Data.Forest.DomainNamingMaster
@@ -128,6 +129,7 @@ function Get-WinADForestInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::ForestOptionalFeatures) {
+        Write-Verbose 'Getting forest information - Forest Optional Features'
         $Data.ForestOptionalFeatures = Invoke-Command -ScriptBlock {
             $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
             $Optional = [ordered]@{

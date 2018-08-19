@@ -139,7 +139,7 @@ $Document = [ordered]@{
                     TableData       = [ActiveDirectory]::ForestSites1
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = "Forest Sites list can be found below"
-                    ExcelExport     = $true
+                    ExcelExport     = $false  ## Exported as one below
                     ExcelWorkSheet  = 'Forest Sites 1'
                     ExcelData       = [ActiveDirectory]::ForestSites1
                 }
@@ -149,9 +149,15 @@ $Document = [ordered]@{
                     TableDesign           = 'ColorfulGridAccent5'
                     Text                  = "Forest Sites list can be found below"
                     EmptyParagraphsBefore = 1
-                    ExcelExport           = $true
+                    ExcelExport           = $false ## Exported as one below
                     ExcelWorkSheet        = 'Forest Sites 2'
                     ExcelData             = [ActiveDirectory]::ForestSites2
+                }
+                SectionForestSites            = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = 'Forest Sites'
+                    ExcelData      = [ActiveDirectory]::ForestSites
                 }
                 SectionForestSubnets1         = [ordered] @{
                     Use                   = $true
