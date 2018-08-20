@@ -46,7 +46,15 @@ Add-Type -TypeDefinition @"
         DomainUsersExpiredExclDisabled,
         DomainUsersCount,
         DomainTrusts,
+
         DomainGroupsFullList,
+        DomainGroupsRest,
+        DomainGroupsSpecial,
+        DomainGroupsPriviliged,
+        DomainGroupMembersRecursiveRest,
+        DomainGroupMembersRecursiveSpecial,
+        DomainGroupMembersRecursivePriviliged,
+
         DomainComputersFullList
     }
 "@

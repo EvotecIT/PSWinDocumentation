@@ -237,7 +237,8 @@ function Get-WinADDomainInformation {
 
             $DnsRecords = "_kerberos._tcp.$Domain", "_ldap._tcp.$Domain"
             foreach ($DnsRecord in $DnsRecords) {
-                $Value = Resolve-DnsName -Name $DnsRecord -Type SRV -Verbose:$false | Select *
+                $Value = Resolve-DnsName -Name $DnsRecord -Type SRV -Verbose:$false -ErrorAction SilentlyContinue | Select *
+                if ($Value -eq $null) { Write-Warning 'Getting domain information - DomainDNSSRV / DomainDNSA - Failed!'}
                 foreach ($V in $Value) {
                     if ($V.QueryType -eq 'SRV') {
                         $DnsSrv += $V
@@ -407,10 +408,10 @@ function Get-WinADDomainInformation {
             return $Data
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainPriviligedGroupMembers) {
-        Write-Verbose "Getting domain information - PriviligedGroupMembers"
-        $Data.DomainPriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
-    }
+    #if ($TypesRequired -contains [ActiveDirectory]::DomainPriviligedGroupMembers) {
+    #Write-Verbose "Getting domain information - PriviligedGroupMembers"
+    #$Data.DomainPriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
+    #}
     if ($TypesRequired -contains [ActiveDirectory]::DomainOrganizationalUnits -or $TypesRequired -contains [ActiveDirectory]::DomainContainers) {
         #CanonicalName, ManagedBy, ProtectedFromAccidentalDeletion, Created, Modified, Deleted, PostalCode, City, Country, State, StreetAddress, ProtectedFromAccidentalDeletion, DistinguishedName, ObjectGUID
         # $Data.DomainContainers = Get-ADObject -SearchBase $Data.DomainInformation.DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' -Properties *
@@ -525,8 +526,6 @@ function Get-WinADDomainInformation {
                     'ManagerEmail'                      = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $U.Manager).EmailAddress
                     'DateExpiry'                        = Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed") -Verbose
                     "DaysToExpire"                      = (Convert-TimeToDays -StartTime GET-DATE -EndTime (Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed")))
-                    "Primary Group"                     = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $U.PrimaryGroup -Type 'SamAccountName')
-                    "Member Of"                         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $U.MemberOf -Type 'SamAccountName' -Splitter ', ')
                     "AccountExpirationDate"             = $U.AccountExpirationDate
                     "AccountLockoutTime"                = $U.AccountLockoutTime
                     "AllowReversiblePasswordEncryption" = $U.AllowReversiblePasswordEncryption
@@ -543,7 +542,11 @@ function Get-WinADDomainInformation {
 
                     "Created"                           = $U.Created
                     "Modified"                          = $U.Modified
-                    "ProtectedFromAccidentalDeletion"   = $U.ProtectedFromAccidentalDeletion
+                    "Protected"                         = $U.ProtectedFromAccidentalDeletion
+
+                    "Primary Group"                     = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $U.PrimaryGroup -Type 'SamAccountName')
+                    "Member Of"                         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $U.MemberOf -Type 'SamAccountName' -Splitter ', ')
+
 
                 }
 
@@ -610,7 +613,7 @@ function Get-WinADDomainInformation {
         Precedence                  : 200
         ReversibleEncryptionEnabled : True
         #>
-        $Data.FineGrainedPolicies = Invoke-Command -ScriptBlock {
+        $Data.DomainFineGrainedPolicies = Invoke-Command -ScriptBlock {
             $FineGrainedPoliciesData = Get-ADFineGrainedPasswordPolicy -Filter * -Server $Domain
             $FineGrainedPolicies = @()
             foreach ($Policy in $FineGrainedPoliciesData) {
@@ -633,5 +636,82 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $FineGrainedPolicies
         }
     }
+
+    $Data.DomainGroupsPriviliged = Invoke-Command -ScriptBlock {
+        $PrivilegedGroupsSID = "S-1-5-32-544", "S-1-5-32-548", "S-1-5-32-549", "S-1-5-32-550", "S-1-5-32-551", "S-1-5-32-552", "S-1-5-32-556", "S-1-5-32-557", "S-1-5-32-573", "S-1-5-32-578", "S-1-5-32-580", "$($Data.DomainInformation.DomainSID)-512", "$($Data.DomainInformation.DomainSID)-518", "$($Data.DomainInformation.DomainSID)D-519", "$($Data.DomainInformation.DomainSID)-520"
+        $PrivilegedGroupsList = @()
+        foreach ($Group in $PrivilegedGroupsSID) {
+            $PrivilegedGroupsList += $Data.DomainGroupsFullList | Where { $_.SID.Value -eq $Group } #| Select Name, SID
+        }
+        $PrivilegedGroups = @()
+        foreach ($Group in $PrivilegedGroupsList) {
+            $User = $Data.DomainUsersFullList | Where { $_.DistinguishedName -eq $Group.ManagedBy }
+            $PrivilegedGroups += [ordered] @{
+                'Group Name'            = $Group.Name
+                #'Group Display Name' = $Group.DisplayName
+                'Group Category'        = $Group.GroupCategory
+                'Group Scope'           = $Group.GroupScope
+                'Group SID'             = $Group.SID.Value
+                'High Privileged Group' = if ($Group.adminCount -eq 1) { $True } else { $False }
+                'Member Count'          = $Group.Members.Count
+                'MemberOf Count'        = $Group.MemberOf.Count
+                'Manager'               = $User.Name
+                'Manager Email'         = $User.EmailAddress
+                'Group Members'         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $Group.Members -Type 'SamAccountName')
+                'Group Members DN'      = $Group.Members
+            }
+        }
+        return Format-TransposeTable -Object $PrivilegedGroups
+    }
+
+    $Data.DomainGroupsSpecial = Invoke-Command -ScriptBlock {
+        $SpecialGroups = $Data.DomainGroupsFullList | Where { ($_.SID.Value).Length -eq 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
+        $GroupsSpecial = @()
+        foreach ($Group in $SpecialGroups) {
+            $User = $Data.DomainUsersFullList | Where { $_.DistinguishedName -eq $Group.ManagedBy }
+            $GroupsSpecial += [ordered] @{
+                'Group Name'            = $Group.Name
+                #'Group Display Name' = $Group.DisplayName
+                'Group Category'        = $Group.GroupCategory
+                'Group Scope'           = $Group.GroupScope
+                'Group SID'             = $Group.SID.Value
+                'High Privileged Group' = if ($Group.adminCount -eq 1) { $True } else { $False }
+                'Member Count'          = $Group.Members.Count
+                'MemberOf Count'        = $Group.MemberOf.Count
+                'Manager'               = $User.Name
+                'Manager Email'         = $User.EmailAddress
+                'Group Members'         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $Group.Members -Type 'SamAccountName')
+                'Group Members DN'      = $Group.Members
+            }
+        }
+        return Format-TransposeTable -Object $GroupsSpecial
+    }
+    $Data.DomainGroupsRest = Invoke-Command -ScriptBlock {
+        $OtherGroups = $Data.DomainGroupsFullList  | Where { ($_.SID.Value).Length -ne 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
+        $GroupsOther = @()
+        foreach ($Group in $OtherGroups) {
+            $User = $Data.DomainUsersFullList | Where { $_.DistinguishedName -eq $Group.ManagedBy }
+            $GroupsOther += [ordered] @{
+                'Group Name'            = $Group.Name
+                #'Group Display Name' = $Group.DisplayName
+                'Group Category'        = $Group.GroupCategory
+                'Group Scope'           = $Group.GroupScope
+                'Group SID'             = $Group.SID.Value
+                'High Privileged Group' = if ($Group.adminCount -eq 1) { $True } else { $False }
+                'Member Count'          = $Group.Members.Count
+                'MemberOf Count'        = $Group.MemberOf.Count
+                'Manager'               = $User.Name
+                'Manager Email'         = $User.EmailAddress
+                'Group Members'         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $Group.Members -Type 'SamAccountName')
+                'Group Members DN'      = $Group.Members
+            }
+        }
+        return Format-TransposeTable -Object $GroupsOther
+    }
+
+    $Data.DomainGroupMembersRecursiveRest = Get-WinGroupMembers -Groups $Data.DomainGroupsRest -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
+    $Data.DomainGroupMembersRecursiveSpecial = Get-WinGroupMembers -Groups $Data.DomainGroupsSpecial -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
+    $Data.DomainGroupMembersRecursivePriviliged = Get-WinGroupMembers -Groups $Data.DomainGroupsPriviliged -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
+
     return $Data
 }
