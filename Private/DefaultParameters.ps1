@@ -201,11 +201,11 @@ $Script:Document = [ordered]@{
                 }
             }
             SectionDomain = [ordered] @{
-                SectionPageBreak                                 = [ordered] @{
+                SectionPageBreak                                  = [ordered] @{
                     Use              = $True
                     PageBreaksBefore = 1
                 }
-                SectionDomainStarter                             = [ordered] @{
+                SectionDomainStarter                              = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Domain <Domain>'
@@ -213,7 +213,7 @@ $Script:Document = [ordered]@{
                     TocListItemType = [ListItemType]::Numbered
                     TocHeadingType  = [HeadingType]::Heading1
                 }
-                SectionDomainIntroduction                        = [ordered] @{
+                SectionDomainIntroduction                         = [ordered] @{
                     Use                   = $true
                     TocEnable             = $True
                     TocText               = 'General Information - Domain Summary'
@@ -226,7 +226,7 @@ $Script:Document = [ordered]@{
                     ListBuilderType       = [ListItemType]::Bulleted, [ListItemType]::Bulleted, [ListItemType]::Bulleted
                     EmptyParagraphsBefore = 0
                 }
-                SectionDomainControllers                         = [ordered] @{
+                SectionDomainControllers                          = [ordered] @{
                     Use                 = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Domain Controllers'
@@ -242,7 +242,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet      = '<Domain> - DCs'
                     ExcelData           = [ActiveDirectory]::DomainControllers
                 }
-                SectionDomainFSMO                                = [ordered] @{
+                SectionDomainFSMO                                 = [ordered] @{
                     Use                   = $true
                     TableData             = [ActiveDirectory]::DomainFSMO
                     TableDesign           = 'ColorfulGridAccent5'
@@ -254,7 +254,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet        = '<Domain> - FSMO'
                     ExcelData             = [ActiveDirectory]::DomainFSMO
                 }
-                SectionDomainDefaultPasswordPolicy               = [ordered] @{
+                SectionDomainDefaultPasswordPolicy                = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Password Policies'
@@ -270,26 +270,27 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - DefaultPasswordPolicy'
                     ExcelData       = [ActiveDirectory]::DomainDefaultPasswordPolicy
                 }
-                SectionDomainFineGrainedPolicies                 = [ordered] @{
-                    Use             = $true
-                    TocEnable       = $True
-                    TocText         = 'General Information - Fine Grained Password Policies'
-                    TocListLevel    = 1
-                    TocListItemType = 'Numbered'
-                    TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainFineGrainedPolicies
-                    TableDesign     = [TableDesign]::ColorfulGridAccent5
-                    TableTitleMerge = $True
-                    TableTitleText  = "Fine Grained Password Policy for <Domain>"
-                    Text            = 'Following table contains fine grained password policies'
-                    TextNoData      = "Following section should cover fine grained password policies. " `
+                SectionDomainFineGrainedPolicies                  = [ordered] @{
+                    Use                 = $true
+                    TocEnable           = $True
+                    TocText             = 'General Information - Fine Grained Password Policies'
+                    TocListLevel        = 1
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [ActiveDirectory]::DomainFineGrainedPolicies
+                    TableDesign         = [TableDesign]::ColorfulGridAccent5
+                    TableMaximumColumns = 8
+                    TableTitleMerge     = $false
+                    TableTitleText      = "Fine Grained Password Policy for <Domain>"
+                    Text                = 'Following table contains fine grained password policies'
+                    TextNoData          = "Following section should cover fine grained password policies. " `
                         + "There were no fine grained password polices defined in <Domain>. There was no formal requirement to have " `
                         + "them set up."
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - Password Policy (Grained)'
-                    ExcelData       = [ActiveDirectory]::DomainFineGrainedPolicies
+                    ExcelExport         = $true
+                    ExcelWorkSheet      = '<Domain> - Password Policy (Grained)'
+                    ExcelData           = [ActiveDirectory]::DomainFineGrainedPolicies
                 }
-                SectionDomainGroupPolicies                       = [ordered] @{
+                SectionDomainGroupPolicies                        = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Group Policies'
@@ -303,7 +304,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - GroupPolicies'
                     ExcelData       = [ActiveDirectory]::DomainGroupPolicies
                 }
-                SectionDomainGroupPoliciesDetails                = [ordered] @{
+                SectionDomainGroupPoliciesDetails                 = [ordered] @{
                     Use                 = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Group Policies Details'
@@ -318,7 +319,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet      = '<Domain> - GroupPolicies Details'
                     ExcelData           = [ActiveDirectory]::DomainGroupPoliciesDetails
                 }
-                SectionDomainGroupPoliciesACL                    = [ordered] @{
+                SectionDomainGroupPoliciesACL                     = [ordered] @{
                     Use                 = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Group Policies ACL'
@@ -333,7 +334,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet      = '<Domain> - GroupPoliciesACL'
                     ExcelData           = [ActiveDirectory]::DomainGroupPoliciesACL
                 }
-                SectionDomainDNSSrv                              = [ordered] @{
+                SectionDomainDNSSrv                               = [ordered] @{
                     Use                  = $true
                     TocEnable            = $True
                     TocText              = 'General Information - DNS A/SRV Records'
@@ -349,7 +350,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet       = '<Domain> - DNSSRV'
                     ExcelData            = [ActiveDirectory]::DomainDNSSRV
                 }
-                SectionDomainDNSA                                = [ordered] @{
+                SectionDomainDNSA                                 = [ordered] @{
                     Use                 = $true
                     TableData           = [ActiveDirectory]::DomainDNSA
                     TableMaximumColumns = 10
@@ -359,7 +360,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet      = '<Domain> - DNSA'
                     ExcelData           = [ActiveDirectory]::DomainDNSA
                 }
-                SectionDomainTrusts                              = [ordered] @{
+                SectionDomainTrusts                               = [ordered] @{
                     Use                 = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Trusts'
@@ -374,7 +375,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet      = '<Domain> - DomainTrusts'
                     ExcelData           = [ActiveDirectory]::DomainTrusts
                 }
-                SectionDomainOrganizationalUnits                 = [ordered] @{
+                SectionDomainOrganizationalUnits                  = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Organizational Units'
@@ -388,7 +389,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - OrganizationalUnits'
                     ExcelData       = [ActiveDirectory]::DomainOrganizationalUnits
                 }
-                SectionDomainPriviligedGroupMembers              = [ordered] @{
+                SectionDomainPriviligedGroupMembers               = [ordered] @{
                     Use             = $False
                     TocEnable       = $True
                     TocText         = 'General Information - Priviliged Members'
@@ -407,7 +408,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PriviligedGroupMembers'
                     ExcelData       = [ActiveDirectory]::DomainPriviligedGroupMembers
                 }
-                SectionDomainAdministrators                      = [ordered] @{
+                SectionDomainAdministrators                       = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Domain Administrators'
@@ -421,7 +422,7 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - DomainAdministrators'
                     ExcelData       = [ActiveDirectory]::DomainAdministrators
                 }
-                SectionDomainUsersCount                          = [ordered] @{
+                SectionDomainUsersCount                           = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Users Count'
@@ -442,77 +443,113 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - UsersCount'
                     ExcelData       = [ActiveDirectory]::DomainUsersCount
                 }
-                SectionExcelDomainOrganizationalUnitsBasicACL    = [ordered] @{
+                SectionExcelDomainOrganizationalUnitsBasicACL     = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - OU ACL Basic'
                     ExcelData      = [ActiveDirectory]::DomainOrganizationalUnitsBasicACL
                 }
-                SectionExcelDomainOrganizationalUnitsExtended    = [ordered] @{
+                SectionExcelDomainOrganizationalUnitsExtended     = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - OU ACL Extended'
                     ExcelData      = [ActiveDirectory]::DomainOrganizationalUnitsExtended
                 }
-                SectionExcelDomainUsers                          = [ordered] @{
+                SectionExcelDomainUsers                           = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Users'
                     ExcelData      = [ActiveDirectory]::DomainUsers
                 }
-                SectionExcelDomainUsersAll                       = [ordered] @{
+                SectionExcelDomainUsersAll                        = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Users All'
                     ExcelData      = [ActiveDirectory]::DomainUsersAll
                 }
-                SectionExcelDomainUsersSystemAccounts            = [ordered] @{
+                SectionExcelDomainUsersSystemAccounts             = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Users System'
                     ExcelData      = [ActiveDirectory]::DomainUsersSystemAccounts
                 }
-                SectionExcelDomainUsersNeverExpiring             = [ordered] @{
+                SectionExcelDomainUsersNeverExpiring              = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users Never Expiring'
+                    ExcelWorkSheet = '<Domain> - Never Expiring'
                     ExcelData      = [ActiveDirectory]::DomainUsersNeverExpiring
                 }
-                SectionExcelDomainUsersNeverExpiringInclDisabled = [ordered] @{
+                SectionExcelDomainUsersNeverExpiringInclDisabled  = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users Never Expiring incl Disabled'
+                    ExcelWorkSheet = '<Domain> - Never Expiring incl Disabled'
                     ExcelData      = [ActiveDirectory]::DomainUsersNeverExpiringInclDisabled
                 }
-                SectionExcelDomainUsersExpiredInclDisabled       = [ordered] @{
+                SectionExcelDomainUsersExpiredInclDisabled        = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users Expired incl Disabled'
+                    ExcelWorkSheet = '<Domain> - Expired incl Disabled'
                     ExcelData      = [ActiveDirectory]::DomainUsersExpiredInclDisabled
                 }
-                SectionExcelDomainUsersExpiredExclDisabled       = [ordered] @{
+                SectionExcelDomainUsersExpiredExclDisabled        = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Users Expired excl disabled'
+                    ExcelWorkSheet = '<Domain> - Expired excl Disabled'
                     ExcelData      = [ActiveDirectory]::DomainUsersExpiredExclDisabled
                 }
-                SectionExcelDomainUsersFullList                  = [ordered] @{
+                SectionExcelDomainUsersFullList                   = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Users List Full'
                     ExcelData      = [ActiveDirectory]::DomainUsersFullList
                 }
-                SectionExcelDomainComputersFullList              = [ordered] @{
+                SectionExcelDomainComputersFullList               = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Computers List'
                     ExcelData      = [ActiveDirectory]::DomainComputersFullList
                 }
-                SectionExcelDomainGroupsFullList                 = [ordered] @{
+                SectionExcelDomainGroupsFullList                  = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Groups List'
                     ExcelData      = [ActiveDirectory]::DomainGroupsFullList
+                }
+                SectionExcelDomainGroupsRest                      = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Groups Rest'
+                    ExcelData      = [ActiveDirectory]::DomainGroupsRest
+                }
+                SectionExcelDomainGroupsSpecial                   = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Groups Special'
+                    ExcelData      = [ActiveDirectory]::DomainGroupsSpecial
+                }
+                SectionExcelDomainGroupsPriviliged                = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Groups Priv'
+                    ExcelData      = [ActiveDirectory]::DomainGroupsPriviliged
+                }
+                SectionExcelDomainGroupMembersRecursiveRest       = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Members Rest'
+                    ExcelData      = [ActiveDirectory]::DomainGroupMembersRecursiveRest
+                }
+                SectionExcelDomainGroupMembersRecursiveSpecial    = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Members Special'
+                    ExcelData      = [ActiveDirectory]::DomainGroupMembersRecursiveSpecial
+                }
+                SectionExcelDomainGroupMembersRecursivePriviliged = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Members Priv'
+                    ExcelData      = [ActiveDirectory]::DomainGroupMembersRecursivePriviliged
                 }
             }
         }

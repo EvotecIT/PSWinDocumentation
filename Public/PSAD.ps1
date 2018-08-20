@@ -3,6 +3,7 @@ function Start-Documentation {
     param (
         [System.Object] $Document
     )
+    $TimeTotal = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     Test-ModuleAvailability
     Test-ForestConnectivity
     Test-Configuration -Document $Document
@@ -11,9 +12,11 @@ function Start-Documentation {
         $TypesRequired = Get-TypesRequired -Document $Document
         $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
         $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
+        $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
         $Forest = Get-WinADForestInformation -TypesRequired $TypesRequired
+        $TimeDataOnly.Stop()
 
-
+        $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
         ### Starting WORD
         $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
         if ($Document.DocumentAD.ExportExcel) {
@@ -53,5 +56,10 @@ function Start-Documentation {
         if ($Document.DocumentAD.ExportExcel) {
             Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAD.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenExcel
         }
+        $TimeDocuments.Stop()
+        $TimeTotal.Stop()
+        Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"
+        Write-Verbose "Time to create documents: $($TimeDocuments.Elapsed)"
+        Write-Verbose "Time total: $($TimeTotal.Elapsed)"
     }
 }
