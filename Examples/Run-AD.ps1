@@ -270,23 +270,24 @@ $Document = [ordered]@{
                     ExcelData       = [ActiveDirectory]::DomainDefaultPasswordPolicy
                 }
                 SectionDomainFineGrainedPolicies                  = [ordered] @{
-                    Use             = $true
-                    TocEnable       = $True
-                    TocText         = 'General Information - Fine Grained Password Policies'
-                    TocListLevel    = 1
-                    TocListItemType = 'Numbered'
-                    TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainFineGrainedPolicies
-                    TableDesign     = [TableDesign]::ColorfulGridAccent5
-                    TableTitleMerge = $True
-                    TableTitleText  = "Fine Grained Password Policy for <Domain>"
-                    Text            = 'Following table contains fine grained password policies'
-                    TextNoData      = "Following section should cover fine grained password policies. " `
+                    Use                 = $true
+                    TocEnable           = $True
+                    TocText             = 'General Information - Fine Grained Password Policies'
+                    TocListLevel        = 1
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [ActiveDirectory]::DomainFineGrainedPolicies
+                    TableDesign         = [TableDesign]::ColorfulGridAccent5
+                    TableMaximumColumns = 8
+                    TableTitleMerge     = $false
+                    TableTitleText      = "Fine Grained Password Policy for <Domain>"
+                    Text                = 'Following table contains fine grained password policies'
+                    TextNoData          = "Following section should cover fine grained password policies. " `
                         + "There were no fine grained password polices defined in <Domain>. There was no formal requirement to have " `
                         + "them set up."
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - Password Policy (Grained)'
-                    ExcelData       = [ActiveDirectory]::DomainFineGrainedPolicies
+                    ExcelExport         = $true
+                    ExcelWorkSheet      = '<Domain> - Password Policy (Grained)'
+                    ExcelData           = [ActiveDirectory]::DomainFineGrainedPolicies
                 }
                 SectionDomainGroupPolicies                        = [ordered] @{
                     Use             = $true

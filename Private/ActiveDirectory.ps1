@@ -506,7 +506,7 @@ function Get-WinADDomainInformation {
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsers -or $TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
         $Data.DomainUsers = Invoke-Command -ScriptBlock {
-            Write-Verbose 'Getting domain information - DomainUsers'
+            Write-Verbose "Getting domain information - $Domain DomainUsers"
             $UserList = @()
             foreach ($U in $Data.DomainUsersFullList) {
                 $UserList += [ordered] @{
@@ -562,7 +562,7 @@ function Get-WinADDomainInformation {
     }
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
-        Write-Verbose 'Getting domain information - Getting All Users Count'
+        Write-Verbose "Getting domain information - Getting $Domain All Users Count"
         $Data.DomainUsersCount = [ordered] @{
             'Users Count Incl. System'            = Get-ObjectCount -Object $Data.DomainUsers
             'Users Count'                         = Get-ObjectCount -Object $Data.DomainUsersAll
@@ -574,7 +574,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainControllers) {
-        Write-Verbose 'Getting domain information - Getting DomainControllers'
+        Write-Verbose "Getting domain information - Getting $Domain DomainControllers"
         $Data.DomainControllersClean = $(Get-ADDomainController -Server $Domain -Filter * )
         $Data.DomainControllers = Invoke-Command -ScriptBlock {
             $DCs = @()
@@ -596,7 +596,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainFineGrainedPolicies) {
-        Write-Verbose 'Getting domain information - Getting DomainFineGrainedPolicies'
+        Write-Verbose "Getting domain information - Getting $Domain DomainFineGrainedPolicies"
         <#
 
         AppliesTo                   : {CN=GDS-FineGrainedPolicy-Test,OU=Groups,OU=Production,DC=ad,DC=evotec,DC=pl}
@@ -639,7 +639,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsPriviliged -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged) {
-        Write-Verbose 'Getting domain information - Getting DomainGroupsPriviliged'
+        Write-Verbose "Getting domain information - Getting $Domain DomainGroupsPriviliged"
         $Data.DomainGroupsPriviliged = Invoke-Command -ScriptBlock {
             $PrivilegedGroupsSID = "S-1-5-32-544", "S-1-5-32-548", "S-1-5-32-549", "S-1-5-32-550", "S-1-5-32-551", "S-1-5-32-552", "S-1-5-32-556", "S-1-5-32-557", "S-1-5-32-573", "S-1-5-32-578", "S-1-5-32-580", "$($Data.DomainInformation.DomainSID)-512", "$($Data.DomainInformation.DomainSID)-518", "$($Data.DomainInformation.DomainSID)D-519", "$($Data.DomainInformation.DomainSID)-520"
             $PrivilegedGroupsList = @()
@@ -668,7 +668,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsSpecial -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveSpecial) {
-        Write-Verbose 'Getting domain information - Getting DomainGroupsSpecial'
+        Write-Verbose "Getting domain information - Getting $Domain DomainGroupsSpecial"
         $Data.DomainGroupsSpecial = Invoke-Command -ScriptBlock {
             $SpecialGroups = $Data.DomainGroupsFullList | Where { ($_.SID.Value).Length -eq 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
             $GroupsSpecial = @()
@@ -693,7 +693,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsRest -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveRest) {
-        Write-Verbose 'Getting domain information - Getting DomainGroupsRest'
+        Write-Verbose "Getting domain information - Getting $Domain DomainGroupsRest"
         $Data.DomainGroupsRest = Invoke-Command -ScriptBlock {
             $OtherGroups = $Data.DomainGroupsFullList  | Where { ($_.SID.Value).Length -ne 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
             $GroupsOther = @()
@@ -718,15 +718,15 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveRest) {
-        Write-Verbose 'Getting domain information - Getting DomainGroupMembersRecursiveRest'
+        Write-Verbose "Getting domain information - Getting $Domain DomainGroupMembersRecursiveRest"
         $Data.DomainGroupMembersRecursiveRest = Get-WinGroupMembers -Groups $Data.DomainGroupsRest -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveSpecial) {
-        Write-Verbose 'Getting domain information - Getting DomainGroupMembersRecursiveSpecial'
+        Write-Verbose "Getting domain information - Getting $Domain DomainGroupMembersRecursiveSpecial"
         $Data.DomainGroupMembersRecursiveSpecial = Get-WinGroupMembers -Groups $Data.DomainGroupsSpecial -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged) {
-        Write-Verbose 'Getting domain information - Getting DomainGroupMembersRecursivePriviliged'
+        Write-Verbose "Getting domain information - Getting $Domain DomainGroupMembersRecursivePriviliged"
         $Data.DomainGroupMembersRecursivePriviliged = Get-WinGroupMembers -Groups $Data.DomainGroupsPriviliged -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
     return $Data
