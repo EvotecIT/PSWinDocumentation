@@ -177,19 +177,19 @@ function Get-WinADDomainInformation {
         $TypesRequired = Get-Types
     } # Gets all types
     $Data = [ordered] @{}
-    Write-Verbose 'Getting domain information - DomainRootDSE'
+    Write-Verbose "Getting domain information - $Domain DomainRootDSE"
     $Data.DomainRootDSE = $(Get-ADRootDSE -Server $Domain)
-    Write-Verbose 'Getting domain information - DomainInformation'
+    Write-Verbose "Getting domain information - $Domain DomainInformation"
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
-    Write-Verbose 'Getting domain information - DomainUsersFullList'
+    Write-Verbose "Getting domain information - $Domain DomainUsersFullList"
     $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
-    Write-Verbose 'Getting domain information - DomainGroupsFullList'
+    Write-Verbose "Getting domain information - $Domain DomainGroupsFullList"
     $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 5000000 -Properties *
-    Write-Verbose 'Getting domain information - DomainComputersFullList'
+    Write-Verbose "Getting domain information - $Domain DomainComputersFullList"
     $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
-        Write-Verbose 'Getting domain information - DomainGUIDS'
+        Write-Verbose "Getting domain information - $Domain DomainGUIDS"
         $Data.DomainGUIDS = Invoke-Command -ScriptBlock {
             $GUID = @{}
             Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID | ForEach-Object {
@@ -206,31 +206,31 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainAuthenticationPolicies) {
-        Write-Verbose 'Getting domain information - DomainAuthenticationPolicies'
+        Write-Verbose "Getting domain information - $Domain DomainAuthenticationPolicies"
         $Data.DomainAuthenticationPolicies = $(Get-ADAuthenticationPolicy -Server $Domain -LDAPFilter '(name=AuthenticationPolicy*)')
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainAuthenticationPolicySilos) {
-        Write-Verbose 'Getting domain information - DomainAuthenticationPolicySilos'
+        Write-Verbose "Getting domain information - $Domain DomainAuthenticationPolicySilos"
         $Data.DomainAuthenticationPolicySilos = $(Get-ADAuthenticationPolicySilo -Server $Domain -Filter 'Name -like "*AuthenticationPolicySilo*"')
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainCentralAccessPolicies) {
-        Write-Verbose 'Getting domain information - DomainCentralAccessPolicies'
+        Write-Verbose "Getting domain information - $Domain DomainCentralAccessPolicies"
         $Data.DomainCentralAccessPolicies = $(Get-ADCentralAccessPolicy -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainCentralAccessRules) {
-        Write-Verbose 'Getting domain information - DomainCentralAccessRules'
+        Write-Verbose "Getting domain information - $Domain DomainCentralAccessRules"
         $Data.DomainCentralAccessRules = $(Get-ADCentralAccessRule -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainClaimTransformPolicies) {
-        Write-Verbose 'Getting domain information - DomainClaimTransformPolicies'
+        Write-Verbose "Getting domain information - $Domain DomainClaimTransformPolicies"
         $Data.DomainClaimTransformPolicies = $(Get-ADClaimTransformPolicy -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainClaimTypes) {
-        Write-Verbose 'Getting domain information - DomainClaimTypes'
+        Write-Verbose "Getting domain information - $Domain DomainClaimTypes"
         $Data.DomainClaimTypes = $(Get-ADClaimType -Server $Domain -Filter * )
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainDNSSRV -or $TypesRequired -contains [ActiveDirectory]::DomainDNSA) {
-        Write-Verbose 'Getting domain information - DomainDNSSRV / DomainDNSA'
+        Write-Verbose "Getting domain information - $Domain DomainDNSSRV / DomainDNSA"
         $Data.DomainDNSData = Invoke-Command -ScriptBlock {
             $DnsSrv = @()
             $DnsA = @()
@@ -259,7 +259,7 @@ function Get-WinADDomainInformation {
         $Data.DomainDNSA = $Data.DomainDNSData.A
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainFSMO -or $TypesRequired -contains [ActiveDirectory]::DomainTrusts) {
-        Write-Verbose 'Getting domain information - DomainFSMO'
+        Write-Verbose "Getting domain information - $Domain DomainFSMO"
         # required for multiple use cases FSMO/DomainTrusts
         $Data.DomainFSMO = [ordered] @{
             'PDC Emulator'          = $Data.DomainInformation.PDCEmulator
@@ -268,7 +268,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainTrusts) {
-        Write-Verbose 'Getting domain information - DomainTrusts'
+        Write-Verbose "Getting domain information - $Domain DomainTrusts"
         ## requires both DomainTrusts and FSMO.
         $Data.DomainTrustsClean = (Get-ADTrust -Server $Domain -Filter * -Properties *)
         $Data.DomainTrusts = Invoke-Command -ScriptBlock {
@@ -312,7 +312,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupPolicies -or $TypesRequired -contains [ActiveDirectory]::DomainGroupPoliciesDetails -or $TypesRequired -contains [ActiveDirectory]::DomainGroupPoliciesACL) {
-        Write-Verbose 'Getting domain information - DomainGroupPolicies'
+        Write-Verbose "Getting domain information - $Domain DomainGroupPolicies"
         $Data.DomainGroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
         $Data.DomainGroupPolicies = Invoke-Command -ScriptBlock {
             $GroupPolicies = @()
@@ -330,7 +330,7 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $GroupPolicies
         }
         $Data.DomainGroupPoliciesDetails = Invoke-Command -ScriptBlock {
-            Write-Verbose -Message "Getting domain information - Group Policies Details"
+            Write-Verbose -Message "Getting domain information - $Domain Group Policies Details"
             $Output = @()
             ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
@@ -371,7 +371,7 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $Output
         }
         $Data.DomainGroupPoliciesACL = Invoke-Command -ScriptBlock {
-            Write-Verbose -Message "Getting domain information - Group Policies ACLs"
+            Write-Verbose -Message "Getting domain information - $Domain Group Policies ACLs"
             $Output = @()
             ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
@@ -390,7 +390,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainDefaultPasswordPolicy) {
-        Write-Verbose -Message "Getting domain information - DomainDefaultPasswordPolicy"
+        Write-Verbose -Message "Getting domain information - $Domain DomainDefaultPasswordPolicy"
         $Data.DomainDefaultPasswordPolicy = Invoke-Command -ScriptBlock {
             $Policy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
             $Data = [ordered] @{
@@ -413,6 +413,7 @@ function Get-WinADDomainInformation {
     #$Data.DomainPriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
     #}
     if ($TypesRequired -contains [ActiveDirectory]::DomainOrganizationalUnits -or $TypesRequired -contains [ActiveDirectory]::DomainContainers) {
+        Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnits"
         #CanonicalName, ManagedBy, ProtectedFromAccidentalDeletion, Created, Modified, Deleted, PostalCode, City, Country, State, StreetAddress, ProtectedFromAccidentalDeletion, DistinguishedName, ObjectGUID
         # $Data.DomainContainers = Get-ADObject -SearchBase $Data.DomainInformation.DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' -Properties *
         $Data.DomainOrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
@@ -439,6 +440,7 @@ function Get-WinADDomainInformation {
             DistinguishedName,
             ObjectGUID | Sort-Object CanonicalName
         }
+        Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnitsDN"
         $Data.DomainOrganizationalUnitsDN = Invoke-Command -ScriptBlock {
             $OUs = @()
             $OUs += $Data.DomainInformation.DistinguishedName
@@ -446,6 +448,7 @@ function Get-WinADDomainInformation {
             $OUs += $Data.DomainContainers.DistinguishedName
             return $OUs
         }
+        Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnitsACL"
         $Data.DomainOrganizationalUnitsACL = Invoke-Command -ScriptBlock {
             $ReportBasic = @()
             $ReportExtented = @()
@@ -497,12 +500,10 @@ function Get-WinADDomainInformation {
             }
             return @{ Basic = $ReportBasic; Extended = $ReportExtented }
         }
+        Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnitsBasicACL"
         $Data.DomainOrganizationalUnitsBasicACL = $Data.DomainOrganizationalUnitsACL.Basic
+        Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnitsExtended"
         $Data.DomainOrganizationalUnitsExtended = $Data.DomainOrganizationalUnitsACL.Extended
-    }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainAdministrators) {
-        $Data.DomainAdministratorsClean = $( Get-ADGroup -Server $Domain -Identity $('{0}-512' -f $Data.DomainInformation.DomainSID) | Get-ADGroupMember -Server $Domain -Recursive | Get-ADUser -Server $Domain)
-        $Data.DomainAdministrators = $Data.DomainAdministratorsClean | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsers -or $TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
         $Data.DomainUsers = Invoke-Command -ScriptBlock {
@@ -553,16 +554,22 @@ function Get-WinADDomainInformation {
             }
             return Format-TransposeTable -Object $UserList #| ft -AutoSize Name, Password*, Da*, 'Primary Group', 'Member Of'
         }
+        Write-Verbose "Getting domain information - $Domain DomainUsersAll"
         $Data.DomainUsersAll = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $False } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        Write-Verbose "Getting domain information - $Domain DomainUsersSystemAccounts"
         $Data.DomainUsersSystemAccounts = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $true } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        Write-Verbose "Getting domain information - $Domain DomainUsersNeverExpiring"
         $Data.DomainUsersNeverExpiring = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        Write-Verbose "Getting domain information - $Domain DomainUsersNeverExpiringInclDisabled"
         $Data.DomainUsersNeverExpiringInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        Write-Verbose "Getting domain information - $Domain DomainUsersExpiredInclDisabled"
         $Data.DomainUsersExpiredInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        Write-Verbose "Getting domain information - $Domain DomainUsersExpiredExclDisabled"
         $Data.DomainUsersExpiredExclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false }| Select-Object * # Name, SamAccountName, UserPrincipalName, Enabled
     }
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
-        Write-Verbose "Getting domain information - Getting $Domain All Users Count"
+        Write-Verbose "Getting domain information - $Domain All Users Count"
         $Data.DomainUsersCount = [ordered] @{
             'Users Count Incl. System'            = Get-ObjectCount -Object $Data.DomainUsers
             'Users Count'                         = Get-ObjectCount -Object $Data.DomainUsersAll
@@ -574,7 +581,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainControllers) {
-        Write-Verbose "Getting domain information - Getting $Domain DomainControllers"
+        Write-Verbose "Getting domain information - $Domain DomainControllers"
         $Data.DomainControllersClean = $(Get-ADDomainController -Server $Domain -Filter * )
         $Data.DomainControllers = Invoke-Command -ScriptBlock {
             $DCs = @()
@@ -596,7 +603,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainFineGrainedPolicies) {
-        Write-Verbose "Getting domain information - Getting $Domain DomainFineGrainedPolicies"
+        Write-Verbose "Getting domain information - $Domain DomainFineGrainedPolicies"
         <#
 
         AppliesTo                   : {CN=GDS-FineGrainedPolicy-Test,OU=Groups,OU=Production,DC=ad,DC=evotec,DC=pl}
@@ -639,7 +646,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsPriviliged -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged) {
-        Write-Verbose "Getting domain information - Getting $Domain DomainGroupsPriviliged"
+        Write-Verbose "Getting domain information - $Domain DomainGroupsPriviliged"
         $Data.DomainGroupsPriviliged = Invoke-Command -ScriptBlock {
             $PrivilegedGroupsSID = "S-1-5-32-544", "S-1-5-32-548", "S-1-5-32-549", "S-1-5-32-550", "S-1-5-32-551", "S-1-5-32-552", "S-1-5-32-556", "S-1-5-32-557", "S-1-5-32-573", "S-1-5-32-578", "S-1-5-32-580", "$($Data.DomainInformation.DomainSID)-512", "$($Data.DomainInformation.DomainSID)-518", "$($Data.DomainInformation.DomainSID)D-519", "$($Data.DomainInformation.DomainSID)-520"
             $PrivilegedGroupsList = @()
@@ -668,7 +675,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsSpecial -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveSpecial) {
-        Write-Verbose "Getting domain information - Getting $Domain DomainGroupsSpecial"
+        Write-Verbose "Getting domain information - $Domain DomainGroupsSpecial"
         $Data.DomainGroupsSpecial = Invoke-Command -ScriptBlock {
             $SpecialGroups = $Data.DomainGroupsFullList | Where { ($_.SID.Value).Length -eq 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
             $GroupsSpecial = @()
@@ -693,7 +700,7 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsRest -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveRest) {
-        Write-Verbose "Getting domain information - Getting $Domain DomainGroupsRest"
+        Write-Verbose "Getting domain information - $Domain DomainGroupsRest"
         $Data.DomainGroupsRest = Invoke-Command -ScriptBlock {
             $OtherGroups = $Data.DomainGroupsFullList  | Where { ($_.SID.Value).Length -ne 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
             $GroupsOther = @()
@@ -718,16 +725,20 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveRest) {
-        Write-Verbose "Getting domain information - Getting $Domain DomainGroupMembersRecursiveRest"
+        Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursiveRest"
         $Data.DomainGroupMembersRecursiveRest = Get-WinGroupMembers -Groups $Data.DomainGroupsRest -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveSpecial) {
-        Write-Verbose "Getting domain information - Getting $Domain DomainGroupMembersRecursiveSpecial"
+        Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursiveSpecial"
         $Data.DomainGroupMembersRecursiveSpecial = Get-WinGroupMembers -Groups $Data.DomainGroupsSpecial -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged) {
-        Write-Verbose "Getting domain information - Getting $Domain DomainGroupMembersRecursivePriviliged"
+        Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursivePriviliged"
         $Data.DomainGroupMembersRecursivePriviliged = Get-WinGroupMembers -Groups $Data.DomainGroupsPriviliged -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
+    #if ($TypesRequired -contains [ActiveDirectory]::DomainAdministrators) {
+    #    $Data.DomainAdministratorsClean = $( Get-ADGroup -Server $Domain -Identity $('{0}-512' -f $Data.DomainInformation.DomainSID) | Get-ADGroupMember -Server $Domain -Recursive | Get-ADUser -Server $Domain)
+    #    $Data.DomainAdministrators = $Data.DomainAdministratorsClean | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
+    #}
     return $Data
 }
