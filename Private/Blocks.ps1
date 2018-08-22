@@ -124,10 +124,9 @@ function Test-ModuleAvailability {
     }
 }
 function Test-ForestConnectivity {
-    $Test = Test-ComputerSecureChannel
-    if ($Test) {
-        # future use
-    } else {
+    Try {
+        $Test = Get-ADForest
+    } catch {
         Write-Warning 'No connectivity to forest/domain.'
         Exit
     }
