@@ -106,7 +106,9 @@ function Get-WinADForestInformation {
         $Data.ForestUPNSuffixes = Invoke-Command -ScriptBlock {
             $UPNSuffixList = @()
             $UPNSuffixList += $Data.Forest.RootDomain + ' (Primary / Default UPN)'
-            $UPNSuffixList += $Data.Forest.UPNSuffixes
+            if ($Data.Forest.UPNSuffixes) {
+                $UPNSuffixList += $Data.Forest.UPNSuffixes
+            }
             return $UPNSuffixList
         }
     }
@@ -181,12 +183,31 @@ function Get-WinADDomainInformation {
     $Data.DomainRootDSE = $(Get-ADRootDSE -Server $Domain)
     Write-Verbose "Getting domain information - $Domain DomainInformation"
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
+
+    <#
     Write-Verbose "Getting domain information - $Domain DomainUsersFullList"
-    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
+    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties Name, DisplayName, UserPrincipalName, GivenName, Surname, SamAccountName, Title, `
+        Description, LastLogonDate, LockedOut, Manager, PasswordNeverExpires, DistinguishedName, badPwdCount, badPasswordTime, BadLogonCount, CannotChangePassword, CanonicalName, Created, Modified, `
+        msDS-UserPasswordExpiryTimeComputed, SID | Select-Object Name, DisplayName, UserPrincipalName, GivenName, Surname, SamAccountName, Title, `
+        Description, LastLogonDate, LockedOut, Manager, PasswordNeverExpires, DistinguishedName, badPwdCount, badPasswordTime, BadLogonCount, CannotChangePassword, CanonicalName, Created, Modified, `
+        msDS-UserPasswordExpiryTimeComputed, SID -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
     Write-Verbose "Getting domain information - $Domain DomainGroupsFullList"
-    $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 5000000 -Properties *
+    $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 5000000 -Properties SamAccountName, Name, DisplayName, DistinguishedName, GroupCategory, `
+        GroupScope, GroupType, adminCount, CanonicalName, Created, Modified, Deleted, Description, ManagedBy, Members, MemberOf, SID | Select-Object SamAccountName, Name, `
+        DisplayName, DistinguishedName, GroupCategory, GroupScope, GroupType, adminCount, CanonicalName, Created, Modified, Deleted, Description, ManagedBy, Members, MemberOf, SID
     Write-Verbose "Getting domain information - $Domain DomainComputersFullList"
-    $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
+    $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object SamAccountName, UserPrincipalName, Description, DNSHostName, IPv4Address, IPv6Address, OperatingSystem, `
+        OperatingSystemVersion, OperatingSystemServicePack, OperatingSystemHotfix, PasswordExpired, PasswordLastSet, PasswordNeverExpires, PasswordNotRequired, PrimaryGroup, accountExpires, AccountExpirationDate, AccountLockoutTime, `
+        isCriticalSystemObject, Created, Modified, lastLogon, LastLogonDate, lastLogonTimestamp, localPolicyFlags, Location, LockedOut, logonCount, ManagedBy, SID -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, `
+        Certificates, nTSecurityDescriptor
+#>
+
+    Write-Verbose "Getting domain information - $Domain DomainGroupsFullList"
+    $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object *
+    Write-Verbose "Getting domain information - $Domain DomainGroupsFullList"
+    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
+    Write-Verbose "Getting domain information - $Domain DomainComputersFullList"
+    $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
         Write-Verbose "Getting domain information - $Domain DomainGUIDS"
