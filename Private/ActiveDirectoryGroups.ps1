@@ -10,8 +10,8 @@ function Get-WinUsers {
             'Name'                              = $U.Name
             'UserPrincipalName'                 = $U.UserPrincipalName
             'SamAccountName'                    = $U.SamAccountName
-            'DisplayName'                       = $U.DisplayName
-            'GivenName'                         = $U.GivenName
+            'Display Name'                      = $U.DisplayName
+            'Given Name'                        = $U.GivenName
             'Surname'                           = $U.Surname
             'EmailAddress'                      = $U.EmailAddress
             'PasswordExpired'                   = $U.PasswordExpired
@@ -20,7 +20,7 @@ function Get-WinUsers {
             'PasswordNeverExpires'              = $U.PasswordNeverExpires
             'Enabled'                           = $U.Enabled
             'Manager'                           = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).Name
-            'ManagerEmail'                      = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).EmailAddress
+            'Manager Email'                     = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).EmailAddress
             'DateExpiry'                        = Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed") -Verbose
             "DaysToExpire"                      = (Convert-TimeToDays -StartTime GET-DATE -EndTime (Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed")))
             "AccountExpirationDate"             = $U.AccountExpirationDate
@@ -95,19 +95,17 @@ function Get-WinGroupMembers {
                     'Group Category'                    = $Group.'Group Category'
                     'Group Scope'                       = $Group.'Group Scope'
                     'High Privileged Group'             = if ($Group.adminCount -eq 1) { $True } else { $False }
+                    'Display Name'                      = $Object.DisplayName
                     'Name'                              = $Member.Name
-                    'SID'                               = $Member.SID.Value
-                    'UserPrincipalName'                 = $Object.UserPrincipalName
-                    'SamAccountName'                    = $Object.SamAccountName
-                    'DisplayName'                       = $Object.DisplayName
-                    'GivenName'                         = $Object.GivenName
-                    'Surname'                           = $Object.Surname
-                    'EmailAddress'                      = $Object.EmailAddress
+                    'User Principal Name'               = $Object.UserPrincipalName
+                    'Sam Account Name'                  = $Object.SamAccountName
+                    'Email Address'                     = $Object.EmailAddress
                     'PasswordExpired'                   = $Object.PasswordExpired
                     'PasswordLastSet'                   = $Object.PasswordLastSet
                     'PasswordNotRequired'               = $Object.PasswordNotRequired
                     'PasswordNeverExpires'              = $Object.PasswordNeverExpires
                     'Enabled'                           = $Object.Enabled
+                    'SID'                               = $Member.SID.Value
                     'Manager'                           = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $Object.Manager).Name
                     'ManagerEmail'                      = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $Object.Manager).EmailAddress
                     'DateExpiry'                        = Convert-ToDateTime -Timestring $($Object."msDS-UserPasswordExpiryTimeComputed") # -Verbose
@@ -118,6 +116,9 @@ function Get-WinGroupMembers {
                     "BadLogonCount"                     = $Object.BadLogonCount
                     "CannotChangePassword"              = $Object.CannotChangePassword
                     "CanonicalName"                     = $Object.CanonicalName
+
+                    'Given Name'                        = $Object.GivenName
+                    'Surname'                           = $Object.Surname
 
                     "Description"                       = $Object.Description
                     "DistinguishedName"                 = $Object.DistinguishedName

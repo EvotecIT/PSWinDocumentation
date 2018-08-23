@@ -389,24 +389,24 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - OrganizationalUnits'
                     ExcelData       = [ActiveDirectory]::DomainOrganizationalUnits
                 }
-                SectionDomainPriviligedGroupMembers               = [ordered] @{
+                SectionDomainPriviligedGroup                      = [ordered] @{
                     Use             = $False
                     TocEnable       = $True
-                    TocText         = 'General Information - Priviliged Members'
+                    TocText         = 'General Information - Priviliged Groups'
                     TocListLevel    = 1
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainPriviligedGroupMembers
+                    TableData       = [ActiveDirectory]::DomainGroupsPriviliged
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = 'Following table contains list of priviliged groups and count of the members in it.'
                     ChartEnable     = $True
                     ChartTitle      = 'Priviliged Group Members'
-                    ChartData       = [ActiveDirectory]::DomainPriviligedGroupMembers
+                    ChartData       = [ActiveDirectory]::DomainGroupsPriviliged
                     ChartKeys       = 'Group Name', 'Members Count'
                     ChartValues     = 'Members Count'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - PriviligedGroupMembers'
-                    ExcelData       = [ActiveDirectory]::DomainPriviligedGroupMembers
+                    ExcelData       = [ActiveDirectory]::DomainGroupsPriviliged
                 }
                 SectionDomainAdministrators                       = [ordered] @{
                     Use             = $true
@@ -415,12 +415,26 @@ $Script:Document = [ordered]@{
                     TocListLevel    = 1
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainAdministrators
+                    TableData       = [ActiveDirectory]::DomainAdministratorsRecursive
                     TableDesign     = 'ColorfulGridAccent5'
-                    Text            = 'Following users have highest domain priviliges and are able to control a lot of Windows resources.'
+                    Text            = 'Following users have highest priviliges and are able to control a lot of Windows resources.'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - DomainAdministrators'
-                    ExcelData       = [ActiveDirectory]::DomainAdministrators
+                    ExcelData       = [ActiveDirectory]::DomainAdministratorsRecursive
+                }
+                SectionEnterpriseAdministrators                   = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Enterprise Administrators'
+                    TocListLevel    = 1
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::EnterpriseAdministratorsRecursive
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = 'Following users have highest priviliges and are able to control a lot of Windows resources.'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - EnterpriseAdministrators'
+                    ExcelData       = [ActiveDirectory]::EnterpriseAdministratorsRecursive
                 }
                 SectionDomainUsersCount                           = [ordered] @{
                     Use             = $true
@@ -518,8 +532,8 @@ $Script:Document = [ordered]@{
                 SectionExcelDomainGroupsRest                      = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Groups Rest'
-                    ExcelData      = [ActiveDirectory]::DomainGroupsRest
+                    ExcelWorkSheet = '<Domain> - Groups'
+                    ExcelData      = [ActiveDirectory]::DomainGroups
                 }
                 SectionExcelDomainGroupsSpecial                   = [ordered] @{
                     Use            = $true
@@ -533,23 +547,41 @@ $Script:Document = [ordered]@{
                     ExcelWorkSheet = '<Domain> - Groups Priv'
                     ExcelData      = [ActiveDirectory]::DomainGroupsPriviliged
                 }
-                SectionExcelDomainGroupMembersRecursiveRest       = [ordered] @{
+                SectionExcelDomainGroupMembers                    = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
-                    ExcelWorkSheet = '<Domain> - Members Rest'
-                    ExcelData      = [ActiveDirectory]::DomainGroupMembersRecursiveRest
+                    ExcelWorkSheet = '<Domain> - Members'
+                    ExcelData      = [ActiveDirectory]::DomainGroupsMembers
                 }
-                SectionExcelDomainGroupMembersRecursiveSpecial    = [ordered] @{
+                SectionExcelDomainGroupMembersSpecial             = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Members Special'
-                    ExcelData      = [ActiveDirectory]::DomainGroupMembersRecursiveSpecial
+                    ExcelData      = [ActiveDirectory]::DomainGroupsSpecialMembers
                 }
-                SectionExcelDomainGroupMembersRecursivePriviliged = [ordered] @{
+                SectionExcelDomainGroupMembersPriviliged          = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Members Priv'
-                    ExcelData      = [ActiveDirectory]::DomainGroupMembersRecursivePriviliged
+                    ExcelData      = [ActiveDirectory]::DomainGroupsPriviligedMembers
+                }
+                SectionExcelDomainGroupMembersRecursive           = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Members Rec'
+                    ExcelData      = [ActiveDirectory]::DomainGroupsMembersRecursive
+                }
+                SectionExcelDomainGroupMembersSpecialRecursive    = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Members RecSpecial'
+                    ExcelData      = [ActiveDirectory]::DomainGroupsSpecialMembersRecursive
+                }
+                SectionExcelDomainGroupMembersPriviligedRecursive = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - Members RecPriv'
+                    ExcelData      = [ActiveDirectory]::DomainGroupsPriviligedMembersRecursive
                 }
             }
         }

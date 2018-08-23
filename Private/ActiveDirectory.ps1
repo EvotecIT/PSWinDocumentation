@@ -415,14 +415,8 @@ function Get-WinADDomainInformation {
             return $Data
         }
     }
-    #if ($TypesRequired -contains [ActiveDirectory]::DomainPriviligedGroupMembers) {
-    #Write-Verbose "Getting domain information - PriviligedGroupMembers"
-    #$Data.DomainPriviligedGroupMembers = Get-PrivilegedGroupsMembers -Domain $Data.DomainInformation.DNSRoot -DomainSID $Data.DomainInformation.DomainSid
-    #}
     if ($TypesRequired -contains [ActiveDirectory]::DomainOrganizationalUnits -or $TypesRequired -contains [ActiveDirectory]::DomainContainers) {
         Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnits"
-        #CanonicalName, ManagedBy, ProtectedFromAccidentalDeletion, Created, Modified, Deleted, PostalCode, City, Country, State, StreetAddress, ProtectedFromAccidentalDeletion, DistinguishedName, ObjectGUID
-        # $Data.DomainContainers = Get-ADObject -SearchBase $Data.DomainInformation.DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' -Properties *
         $Data.DomainOrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
         $Data.DomainOrganizationalUnits = Invoke-Command -ScriptBlock {
             return $Data.DomainOrganizationalUnitsClean | Select-Object `
@@ -515,53 +509,6 @@ function Get-WinADDomainInformation {
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsers -or $TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
         $Data.DomainUsers = Invoke-Command -ScriptBlock {
             Write-Verbose "Getting domain information - $Domain DomainUsers"
-            <#
-            $UserList = @()
-            foreach ($U in $Data.DomainUsersFullList) {
-                $UserList += [ordered] @{
-                    'Name'                              = $U.Name
-                    'UserPrincipalName'                 = $U.UserPrincipalName
-                    'SamAccountName'                    = $U.SamAccountName
-                    'DisplayName'                       = $U.DisplayName
-                    'GivenName'                         = $U.GivenName
-                    'Surname'                           = $U.Surname
-                    'EmailAddress'                      = $U.EmailAddress
-                    'PasswordExpired'                   = $U.PasswordExpired
-                    'PasswordLastSet'                   = $U.PasswordLastSet
-                    'PasswordNotRequired'               = $U.PasswordNotRequired
-                    'PasswordNeverExpires'              = $U.PasswordNeverExpires
-                    'Enabled'                           = $U.Enabled
-                    'Manager'                           = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $U.Manager).Name
-                    'ManagerEmail'                      = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $U.Manager).EmailAddress
-                    'DateExpiry'                        = Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed") -Verbose
-                    "DaysToExpire"                      = (Convert-TimeToDays -StartTime GET-DATE -EndTime (Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed")))
-                    "AccountExpirationDate"             = $U.AccountExpirationDate
-                    "AccountLockoutTime"                = $U.AccountLockoutTime
-                    "AllowReversiblePasswordEncryption" = $U.AllowReversiblePasswordEncryption
-                    "BadLogonCount"                     = $U.BadLogonCount
-                    "CannotChangePassword"              = $U.CannotChangePassword
-                    "CanonicalName"                     = $U.CanonicalName
-
-                    "Description"                       = $U.Description
-                    "DistinguishedName"                 = $U.DistinguishedName
-                    "EmployeeID"                        = $U.EmployeeID
-                    "EmployeeNumber"                    = $U.EmployeeNumber
-                    "LastBadPasswordAttempt"            = $U.LastBadPasswordAttempt
-                    "LastLogonDate"                     = $U.LastLogonDate
-
-                    "Created"                           = $U.Created
-                    "Modified"                          = $U.Modified
-                    "Protected"                         = $U.ProtectedFromAccidentalDeletion
-
-                    "Primary Group"                     = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $U.PrimaryGroup -Type 'SamAccountName')
-                    "Member Of"                         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $U.MemberOf -Type 'SamAccountName' -Splitter ', ')
-
-
-                }
-
-            }
-            return Format-TransposeTable -Object $UserList #| ft -AutoSize Name, Password*, Da*, 'Primary Group', 'Member Of'
-            #>
             return Get-WinUsers -Users $Data.DomainUsersFullList -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList
         }
         Write-Verbose "Getting domain information - $Domain DomainUsersAll"
