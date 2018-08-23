@@ -429,12 +429,13 @@ $Script:Document = [ordered]@{
                     TocListLevel    = 1
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::EnterpriseAdministratorsRecursive
+                    TableData       = [ActiveDirectory]::DomainEnterpriseAdministratorsRecursive
                     TableDesign     = 'ColorfulGridAccent5'
-                    Text            = 'Following users have highest priviliges and are able to control a lot of Windows resources.'
+                    Text            = 'Following users have highest priviliges across Forest and are able to control a lot of Windows resources.'
+                    TextNoData      = 'No Enterprise Administrators users were defined for this domain.'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - EnterpriseAdministrators'
-                    ExcelData       = [ActiveDirectory]::EnterpriseAdministratorsRecursive
+                    ExcelData       = [ActiveDirectory]::DomainEnterpriseAdministratorsRecursive
                 }
                 SectionDomainUsersCount                           = [ordered] @{
                     Use             = $true

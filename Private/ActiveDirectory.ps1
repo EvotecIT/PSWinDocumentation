@@ -626,13 +626,13 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain information - $Domain DomainAdministratorsRecursive"
         $Data.DomainAdministratorsRecursive = $Data.DomainGroupsMembersRecursive  | Where { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
-    if ($TypesRequired -contains [ActiveDirectory]::EnterpriseAdministrators) {
-        Write-Verbose "Getting domain information - $Domain EnterpriseAdministrators"
-        $Data.EnterpriseAdministrators = $Data.DomainGroupsMembers | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
+    if ($TypesRequired -contains [ActiveDirectory]::DomainEnterpriseAdministrators) {
+        Write-Verbose "Getting domain information - $Domain DomainEnterpriseAdministrators"
+        $Data.DomainEnterpriseAdministrators = $Data.DomainGroupsMembers | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
-    if ($TypesRequired -contains [ActiveDirectory]::EnterpriseAdministratorsRecursive) {
-        Write-Verbose "Getting domain information - $Domain EnterpriseAdministratorsRecursive"
-        $Data.EnterpriseAdministratorsRecursive = $Data.DomainGroupsMembersRecursive | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
+    if ($TypesRequired -contains [ActiveDirectory]::DomainEnterpriseAdministratorsRecursive) {
+        Write-Verbose "Getting domain information - $Domain DomainEnterpriseAdministratorsRecursive"
+        $Data.DomainEnterpriseAdministratorsRecursive = $Data.DomainGroupsMembersRecursive | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
     return $Data
 }

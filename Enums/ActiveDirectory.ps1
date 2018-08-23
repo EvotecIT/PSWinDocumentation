@@ -71,9 +71,9 @@ Add-Type -TypeDefinition @"
 
         DomainAdministrators,
         DomainAdministratorsRecursive,
-        EnterpriseAdministrators,
-        EnterpriseAdministratorsRecursive,
 
+        DomainEnterpriseAdministrators,
+        DomainEnterpriseAdministratorsRecursive,
 
         // Domain Information - Computer Data
         DomainComputersFullList // Contains all data
