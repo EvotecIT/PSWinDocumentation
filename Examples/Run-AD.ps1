@@ -1,6 +1,6 @@
-Import-Module PSWriteWord -Force
-Import-Module PSWriteExcel -Force
-Import-Module PSWinDocumentation -Force
+Import-Module PSWriteWord
+Import-Module PSWriteExcel
+Import-Module PSWinDocumentation
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
 
@@ -13,8 +13,8 @@ $Document = [ordered]@{
             Language           = 'en-US'
         }
         Options        = @{
-            OpenDocument = $false
-            OpenExcel    = $false
+            OpenDocument = $true
+            OpenExcel    = $true
         }
         DisplayConsole = @{
             ShowTime   = $false
