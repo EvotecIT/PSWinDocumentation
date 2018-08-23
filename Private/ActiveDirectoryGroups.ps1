@@ -50,11 +50,38 @@ function Get-WinUsers {
     return Format-TransposeTable -Object $UserList
 }
 
+function Get-WinGroups {
+    param (
+        [System.Object[]] $Groups,
+        [System.Object[]] $Users
+    )
+    $ReturnGroups = @()
+    foreach ($Group in $Groups) {
+        $User = $Users | Where { $_.DistinguishedName -eq $Group.ManagedBy }
+        $ReturnGroups += [ordered] @{
+            'Group Name'            = $Group.Name
+            #'Group Display Name' = $Group.DisplayName
+            'Group Category'        = $Group.GroupCategory
+            'Group Scope'           = $Group.GroupScope
+            'Group SID'             = $Group.SID.Value
+            'High Privileged Group' = if ($Group.adminCount -eq 1) { $True } else { $False }
+            'Member Count'          = $Group.Members.Count
+            'MemberOf Count'        = $Group.MemberOf.Count
+            'Manager'               = $User.Name
+            'Manager Email'         = $User.EmailAddress
+            'Group Members'         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $Group.Members -Type 'SamAccountName')
+            'Group Members DN'      = $Group.Members
+        }
+    }
+    return Format-TransposeTable -Object $ReturnGroups
+}
+
+
 function Get-WinUsersFromGroup {
     param(
-        $Group,
-        $ADCatalog,
-        $ADCatalogUsers
+        [string] $Group,
+        [System.Object[]] $ADCatalog,
+        [System.Object[]] $ADCatalogUsers
     )
     $UserList = @()
     foreach ($U in $Users) {
@@ -103,11 +130,11 @@ function Get-WinUsersFromGroup {
 
 function Get-WinGroupMembers {
     param(
-        $Groups,
-        $Domain,
-        $ADCatalog,
-        $ADCatalogUsers,
-        $Option
+        [System.Object[]] $Groups,
+        [string] $Domain,
+        [System.Object[]] $ADCatalog,
+        [System.Object[]] $ADCatalogUsers,
+        [ValidateSet("Recursive", "Standard")][String] $Option
     )
     if ($Option -eq 'Recursive') {
         $GroupMembersRecursive = @()
@@ -219,8 +246,8 @@ function Get-WinGroupMembers {
 Function Get-PrivilegedGroupsMembers {
     [CmdletBinding()]
     param (
-        $Domain,
-        $DomainSID
+        [string] $Domain,
+        [string] $DomainSID
     )
     $PrivilegedGroups1 = "$DomainSID-512", "$DomainSID-518", "$DomainSID-519", "$DomainSID-520" # will be only on root domain
     $PrivilegedGroups2 = "S-1-5-32-544", "S-1-5-32-548", "S-1-5-32-549", "S-1-5-32-550", "S-1-5-32-551", "S-1-5-32-552", "S-1-5-32-556", "S-1-5-32-557", "S-1-5-32-573", "S-1-5-32-578", "S-1-5-32-580"
