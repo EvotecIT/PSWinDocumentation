@@ -28,8 +28,9 @@ Add-Type -TypeDefinition @"
         DomainDNSA,
 
         DomainAdministrators,
+        DomainAdministratorsRecursive,
         EnterpriseAdministrators,
-
+        EnterpriseAdministratorsRecursive,
         DomainInformation,
         DomainControllers,
         DomainFSMO,
