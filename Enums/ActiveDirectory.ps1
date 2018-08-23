@@ -42,24 +42,22 @@ Add-Type -TypeDefinition @"
         DomainTrusts,
 
         // Domain Information - Group Data
-        DomainGroupsFullList,
+        DomainGroupsFullList, // Contains all data
 
         DomainGroups,
         DomainGroupsMembers,
         DomainGroupsMembersRecursive,
 
-        DomainGroupsRest,
         DomainGroupsSpecial,
+        DomainGroupsSpecialMembers,
+        DomainGroupsSpecialMembersRecursive,
+
         DomainGroupsPriviliged,
-
-        DomainGroupMembersRecursiveRest,
-        DomainGroupMembersRecursiveSpecial,
-        DomainGroupMembersRecursivePriviliged,
-
-        DomainPriviligedGroupMembers,
+        DomainGroupsPriviligedMembers,
+        DomainGroupsPriviligedMembersRecursive,
 
         // Domain Information - User Data
-        DomainUsersFullList,
+        DomainUsersFullList, // Contains all data
 
         DomainUsers,
         DomainUsersAll,
@@ -70,6 +68,7 @@ Add-Type -TypeDefinition @"
         DomainUsersExpiredExclDisabled,
 
         DomainUsersCount,
+
         DomainAdministrators,
         DomainAdministratorsRecursive,
         EnterpriseAdministrators,
@@ -77,7 +76,7 @@ Add-Type -TypeDefinition @"
 
 
         // Domain Information - Computer Data
-        DomainComputersFullList
+        DomainComputersFullList // Contains all data
 
     }
 "@
