@@ -1,5 +1,6 @@
 Add-Type -TypeDefinition @"
     public enum ActiveDirectory {
+        // Forest Information - Section Main
         ForestInformation,
         ForestFSMO,
         ForestGlobalCatalogs,
@@ -14,6 +15,8 @@ Add-Type -TypeDefinition @"
         ForestSubnets2,
         ForestSiteLinks,
 
+        // Domain Information - Section Main
+
         DomainRootDSE,
         DomainAuthenticationPolicies, // Not yet tested
         DomainAuthenticationPolicySilos, // Not yet tested
@@ -21,16 +24,10 @@ Add-Type -TypeDefinition @"
         DomainCentralAccessRules, // Not yet tested
         DomainClaimTransformPolicies, // Not yet tested
         DomainClaimTypes, // Not yet tested
-
         DomainFineGrainedPolicies,
         DomainGUIDS,
         DomainDNSSRV,
         DomainDNSA,
-
-        DomainAdministrators,
-        DomainAdministratorsRecursive,
-        EnterpriseAdministrators,
-        EnterpriseAdministratorsRecursive,
         DomainInformation,
         DomainControllers,
         DomainFSMO,
@@ -42,7 +39,26 @@ Add-Type -TypeDefinition @"
         DomainOrganizationalUnitsBasicACL,
         DomainOrganizationalUnitsExtended,
         DomainContainers,
+        DomainTrusts,
+
+        // Domain Information - Group Data
+        DomainGroupsFullList,
+
+        DomainGroups,
+        DomainGroupsMembers,
+        DomainGroupsMembersRecursive,
+
+        DomainGroupsRest,
+        DomainGroupsSpecial,
+        DomainGroupsPriviliged,
+
+        DomainGroupMembersRecursiveRest,
+        DomainGroupMembersRecursiveSpecial,
+        DomainGroupMembersRecursivePriviliged,
+
         DomainPriviligedGroupMembers,
+
+        // Domain Information - User Data
         DomainUsersFullList,
 
         DomainUsers,
@@ -54,20 +70,14 @@ Add-Type -TypeDefinition @"
         DomainUsersExpiredExclDisabled,
 
         DomainUsersCount,
-        DomainTrusts,
+        DomainAdministrators,
+        DomainAdministratorsRecursive,
+        EnterpriseAdministrators,
+        EnterpriseAdministratorsRecursive,
 
-        DomainGroupsFullList,
-        DomainGroups,
-        DomainGroupsMembers,
-        DomainGroupsMembersRecursive,
 
-        DomainGroupsRest,
-        DomainGroupsSpecial,
-        DomainGroupsPriviliged,
-        DomainGroupMembersRecursiveRest,
-        DomainGroupMembersRecursiveSpecial,
-        DomainGroupMembersRecursivePriviliged,
-
+        // Domain Information - Computer Data
         DomainComputersFullList
+
     }
 "@

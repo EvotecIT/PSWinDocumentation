@@ -649,8 +649,11 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain information - $Domain DomainGroupsMembersRecursive"
         $Data.DomainGroupsMembersRecursive = Get-WinGroupMembers -Groups $Data.DomainGroups -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option Recursive
     }
+
+
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsPriviliged -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsPriviliged"
+        <#
         $Data.DomainGroupsPriviliged = Invoke-Command -ScriptBlock {
             $PrivilegedGroupsSID = "S-1-5-32-544", "S-1-5-32-548", "S-1-5-32-549", "S-1-5-32-550", "S-1-5-32-551", "S-1-5-32-552", "S-1-5-32-556", "S-1-5-32-557", "S-1-5-32-573", "S-1-5-32-578", "S-1-5-32-580", "$($Data.DomainInformation.DomainSID)-512", "$($Data.DomainInformation.DomainSID)-518", "$($Data.DomainInformation.DomainSID)D-519", "$($Data.DomainInformation.DomainSID)-520"
             $Groups = @()
@@ -659,33 +662,34 @@ function Get-WinADDomainInformation {
             }
             return Get-WinGroups -Groups $Groups -Users $Data.DomainUsersFullList
         }
+        #>
+        $PrivilegedGroupsSID = "S-1-5-32-544", "S-1-5-32-548", "S-1-5-32-549", "S-1-5-32-550", "S-1-5-32-551", "S-1-5-32-552", "S-1-5-32-556", "S-1-5-32-557", "S-1-5-32-573", "S-1-5-32-578", "S-1-5-32-580", "$($Data.DomainInformation.DomainSID)-512", "$($Data.DomainInformation.DomainSID)-518", "$($Data.DomainInformation.DomainSID)D-519", "$($Data.DomainInformation.DomainSID)-520"
+        $Data.DomainGroupsPriviliged = $Data.DomainGroups | Where { $PrivilegedGroupsSID -contains $_.'Group SID' }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsSpecial -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveSpecial) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsSpecial"
-        $Data.DomainGroupsSpecial = Invoke-Command -ScriptBlock {
-            $Groups = $Data.DomainGroupsFullList | Where { ($_.SID.Value).Length -eq 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
-            return Get-WinGroups -Groups $Groups -Users $Data.DomainUsersFullList
-        }
-    }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsRest -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveRest) {
-        Write-Verbose "Getting domain information - $Domain DomainGroupsRest"
-        $Data.DomainGroupsRest = Invoke-Command -ScriptBlock {
-            $Groups = $Data.DomainGroupsFullList  | Where { ($_.SID.Value).Length -ne 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
-            return Get-WinGroups -Groups $Groups -Users $Data.DomainUsersFullList
-        }
-    }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveRest) {
-        Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursiveRest"
-        $Data.DomainGroupMembersRecursiveRest = Get-WinGroupMembers -Groups $Data.DomainGroupsRest -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
+        #$Data.DomainGroupsSpecial = Invoke-Command -ScriptBlock {
+        #    $Groups = $Data.DomainGroupsFullList | Where { ($_.SID.Value).Length -eq 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
+        #    return Get-WinGroups -Groups $Groups -Users $Data.DomainUsersFullList
+        #}
+        $Data.DomainGroupsSpecial = $Data.DomainGroups | Where { ($_.'Group SID').Length -eq 12 }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveSpecial) {
         Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursiveSpecial"
-        $Data.DomainGroupMembersRecursiveSpecial = Get-WinGroupMembers -Groups $Data.DomainGroupsSpecial -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
+        #$Data.DomainGroupMembersRecursiveSpecial = Get-WinGroupMembers -Groups $Data.DomainGroupsSpecial -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
+        $Data.DomainGroupMembersSpecialRecursive = $Data.DomainGroupsMembersRecursive  | Where { ($_.'Group SID').Length -eq 12 } | Select-Object * -Exclude Group*, 'High Privileged Group'
+        $Data.DomainGroupMembersSpecial = $Data.DomainGroupsMembers  | Where { ($_.'Group SID').Length -eq 12 } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged -or $TypesRequired -eq [ActiveDirectory]::DomainAdministrators) {
         Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursivePriviliged"
-        $Data.DomainGroupMembersRecursivePriviliged = Get-WinGroupMembers -Groups $Data.DomainGroupsPriviliged -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
+        #$Data.DomainGroupMembersRecursivePriviliged = Get-WinGroupMembers -Groups $Data.DomainGroupsPriviliged -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
+
+        $Data.DomainGroupMembersSpecialRecursive = $Data.DomainGroupsMembersRecursive  | Where { ($_.'Group SID').Length -eq 12 } | Select-Object * -Exclude Group*, 'High Privileged Group'
+        $Data.DomainGroupMembersSpecial = $Data.DomainGroupsMembers  | Where { ($_.'Group SID').Length -eq 12 } | Select-Object * -Exclude Group*, 'High Privileged Group'
+
     }
+
+
     if ($TypesRequired -contains [ActiveDirectory]::DomainAdministrators) {
         Write-Verbose "Getting domain information - $Domain DomainAdministrators"
         $Data.DomainAdministrators = $Data.DomainGroupsMembers  | Where { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
