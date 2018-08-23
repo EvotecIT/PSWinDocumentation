@@ -15,20 +15,21 @@ Add-Type -TypeDefinition @"
         ForestSiteLinks,
 
         DomainRootDSE,
-
-
-
         DomainAuthenticationPolicies, // Not yet tested
         DomainAuthenticationPolicySilos, // Not yet tested
         DomainCentralAccessPolicies, // Not yet tested
         DomainCentralAccessRules, // Not yet tested
         DomainClaimTransformPolicies, // Not yet tested
         DomainClaimTypes, // Not yet tested
+
         DomainFineGrainedPolicies,
         DomainGUIDS,
         DomainDNSSRV,
         DomainDNSA,
+
         DomainAdministrators,
+        EnterpriseAdministrators,
+
         DomainInformation,
         DomainControllers,
         DomainFSMO,
@@ -42,6 +43,7 @@ Add-Type -TypeDefinition @"
         DomainContainers,
         DomainPriviligedGroupMembers,
         DomainUsersFullList,
+
         DomainUsers,
         DomainUsersAll,
         DomainUsersSystemAccounts,
@@ -49,6 +51,7 @@ Add-Type -TypeDefinition @"
         DomainUsersNeverExpiringInclDisabled,
         DomainUsersExpiredInclDisabled,
         DomainUsersExpiredExclDisabled,
+
         DomainUsersCount,
         DomainTrusts,
 

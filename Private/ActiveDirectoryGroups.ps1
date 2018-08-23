@@ -1,4 +1,106 @@
 
+function Get-WinUsers {
+    param(
+        $Users,
+        $ADCatalog,
+        $ADCatalogUsers
+    )
+    $UserList = @()
+    foreach ($U in $Users) {
+        $UserList += [ordered] @{
+            'Name'                              = $U.Name
+            'UserPrincipalName'                 = $U.UserPrincipalName
+            'SamAccountName'                    = $U.SamAccountName
+            'DisplayName'                       = $U.DisplayName
+            'GivenName'                         = $U.GivenName
+            'Surname'                           = $U.Surname
+            'EmailAddress'                      = $U.EmailAddress
+            'PasswordExpired'                   = $U.PasswordExpired
+            'PasswordLastSet'                   = $U.PasswordLastSet
+            'PasswordNotRequired'               = $U.PasswordNotRequired
+            'PasswordNeverExpires'              = $U.PasswordNeverExpires
+            'Enabled'                           = $U.Enabled
+            'Manager'                           = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).Name
+            'ManagerEmail'                      = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).EmailAddress
+            'DateExpiry'                        = Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed") -Verbose
+            "DaysToExpire"                      = (Convert-TimeToDays -StartTime GET-DATE -EndTime (Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed")))
+            "AccountExpirationDate"             = $U.AccountExpirationDate
+            "AccountLockoutTime"                = $U.AccountLockoutTime
+            "AllowReversiblePasswordEncryption" = $U.AllowReversiblePasswordEncryption
+            "BadLogonCount"                     = $U.BadLogonCount
+            "CannotChangePassword"              = $U.CannotChangePassword
+            "CanonicalName"                     = $U.CanonicalName
+
+            "Description"                       = $U.Description
+            "DistinguishedName"                 = $U.DistinguishedName
+            "EmployeeID"                        = $U.EmployeeID
+            "EmployeeNumber"                    = $U.EmployeeNumber
+            "LastBadPasswordAttempt"            = $U.LastBadPasswordAttempt
+            "LastLogonDate"                     = $U.LastLogonDate
+
+            "Created"                           = $U.Created
+            "Modified"                          = $U.Modified
+            "Protected"                         = $U.ProtectedFromAccidentalDeletion
+
+            "Primary Group"                     = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $U.PrimaryGroup -Type 'SamAccountName')
+            "Member Of"                         = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $U.MemberOf -Type 'SamAccountName' -Splitter ', ')
+        }
+
+    }
+    return Format-TransposeTable -Object $UserList
+}
+
+function Get-WinUsersFromGroup {
+    param(
+        $Group,
+        $ADCatalog,
+        $ADCatalogUsers
+    )
+    $UserList = @()
+    foreach ($U in $Users) {
+        $UserList += [ordered] @{
+            'Name'                              = $U.Name
+            'UserPrincipalName'                 = $U.UserPrincipalName
+            'SamAccountName'                    = $U.SamAccountName
+            'DisplayName'                       = $U.DisplayName
+            'GivenName'                         = $U.GivenName
+            'Surname'                           = $U.Surname
+            'EmailAddress'                      = $U.EmailAddress
+            'PasswordExpired'                   = $U.PasswordExpired
+            'PasswordLastSet'                   = $U.PasswordLastSet
+            'PasswordNotRequired'               = $U.PasswordNotRequired
+            'PasswordNeverExpires'              = $U.PasswordNeverExpires
+            'Enabled'                           = $U.Enabled
+            'Manager'                           = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).Name
+            'ManagerEmail'                      = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).EmailAddress
+            'DateExpiry'                        = Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed") -Verbose
+            "DaysToExpire"                      = (Convert-TimeToDays -StartTime GET-DATE -EndTime (Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed")))
+            "AccountExpirationDate"             = $U.AccountExpirationDate
+            "AccountLockoutTime"                = $U.AccountLockoutTime
+            "AllowReversiblePasswordEncryption" = $U.AllowReversiblePasswordEncryption
+            "BadLogonCount"                     = $U.BadLogonCount
+            "CannotChangePassword"              = $U.CannotChangePassword
+            "CanonicalName"                     = $U.CanonicalName
+
+            "Description"                       = $U.Description
+            "DistinguishedName"                 = $U.DistinguishedName
+            "EmployeeID"                        = $U.EmployeeID
+            "EmployeeNumber"                    = $U.EmployeeNumber
+            "LastBadPasswordAttempt"            = $U.LastBadPasswordAttempt
+            "LastLogonDate"                     = $U.LastLogonDate
+
+            "Created"                           = $U.Created
+            "Modified"                          = $U.Modified
+            "Protected"                         = $U.ProtectedFromAccidentalDeletion
+
+            "Primary Group"                     = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $U.PrimaryGroup -Type 'SamAccountName')
+            "Member Of"                         = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $U.MemberOf -Type 'SamAccountName' -Splitter ', ')
+        }
+
+    }
+    return Format-TransposeTable -Object $UserList
+}
+
 function Get-WinGroupMembers {
     param(
         $Groups,
@@ -69,14 +171,10 @@ function Get-WinGroupMembers {
                     'Group SID'                         = $Group.'Group SID'
                     'Group Category'                    = $Group.'Group Category'
                     'Group Scope'                       = $Group.'Group Scope'
+                    'DisplayName'                       = $Object.DisplayName
                     'High Privileged Group'             = if ($Group.adminCount -eq 1) { $True } else { $False }
-                    'Name'                              = $Object.Name
-                    'SID'                               = $Object.SID.Value
                     'UserPrincipalName'                 = $Object.UserPrincipalName
                     'SamAccountName'                    = $Object.SamAccountName
-                    'DisplayName'                       = $Object.DisplayName
-                    'GivenName'                         = $Object.GivenName
-                    'Surname'                           = $Object.Surname
                     'EmailAddress'                      = $Object.EmailAddress
                     'PasswordExpired'                   = $Object.PasswordExpired
                     'PasswordLastSet'                   = $Object.PasswordLastSet
@@ -101,6 +199,11 @@ function Get-WinGroupMembers {
                     "LastBadPasswordAttempt"            = $Object.LastBadPasswordAttempt
                     "LastLogonDate"                     = $Object.LastLogonDate
 
+                    'Name'                              = $Object.Name
+                    'SID'                               = $Object.SID.Value
+                    'GivenName'                         = $Object.GivenName
+                    'Surname'                           = $Object.Surname
+
                     "Created"                           = $Object.Created
                     "Modified"                          = $Object.Modified
                     "Protected"                         = $Object.ProtectedFromAccidentalDeletion
@@ -110,6 +213,8 @@ function Get-WinGroupMembers {
         return Format-TransposeTable -Object $GroupMembersDirect
     }
 }
+
+
 
 Function Get-PrivilegedGroupsMembers {
     [CmdletBinding()]

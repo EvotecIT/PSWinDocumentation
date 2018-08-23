@@ -339,7 +339,7 @@ function Get-WinADDomainInformation {
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupPolicies -or $TypesRequired -contains [ActiveDirectory]::DomainGroupPoliciesDetails -or $TypesRequired -contains [ActiveDirectory]::DomainGroupPoliciesACL) {
         Write-Verbose "Getting domain information - $Domain DomainGroupPolicies"
-        $Data.DomainGroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
+        $Data.DomainGroupPoliciesClean = $(Get-GPO -Domain $Domain -Server $Domain -All)
         $Data.DomainGroupPolicies = Invoke-Command -ScriptBlock {
             $GroupPolicies = @()
             foreach ($gpo in $Data.DomainGroupPoliciesClean) {
@@ -534,6 +534,7 @@ function Get-WinADDomainInformation {
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsers -or $TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
         $Data.DomainUsers = Invoke-Command -ScriptBlock {
             Write-Verbose "Getting domain information - $Domain DomainUsers"
+            <#
             $UserList = @()
             foreach ($U in $Data.DomainUsersFullList) {
                 $UserList += [ordered] @{
@@ -579,19 +580,21 @@ function Get-WinADDomainInformation {
 
             }
             return Format-TransposeTable -Object $UserList #| ft -AutoSize Name, Password*, Da*, 'Primary Group', 'Member Of'
+            #>
+            return Get-WinUsers -Users $Data.DomainUsersFullList -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList
         }
         Write-Verbose "Getting domain information - $Domain DomainUsersAll"
-        $Data.DomainUsersAll = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $False } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersAll = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $False } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersSystemAccounts"
-        $Data.DomainUsersSystemAccounts = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $true } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersSystemAccounts = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $true } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersNeverExpiring"
-        $Data.DomainUsersNeverExpiring = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersNeverExpiring = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersNeverExpiringInclDisabled"
-        $Data.DomainUsersNeverExpiringInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersNeverExpiringInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersExpiredInclDisabled"
-        $Data.DomainUsersExpiredInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.PasswordNotRequired -eq $false } | Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersExpiredInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersExpiredExclDisabled"
-        $Data.DomainUsersExpiredExclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false }| Select-Object * # Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersExpiredExclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * # Name, SamAccountName, UserPrincipalName, Enabled
     }
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainUsersCount) {
@@ -758,13 +761,17 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursiveSpecial"
         $Data.DomainGroupMembersRecursiveSpecial = Get-WinGroupMembers -Groups $Data.DomainGroupsSpecial -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged) {
+    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged -or $TypesRequired -eq [ActiveDirectory]::DomainAdministrators) {
         Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursivePriviliged"
         $Data.DomainGroupMembersRecursivePriviliged = Get-WinGroupMembers -Groups $Data.DomainGroupsPriviliged -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
-    #if ($TypesRequired -contains [ActiveDirectory]::DomainAdministrators) {
-    #    $Data.DomainAdministratorsClean = $( Get-ADGroup -Server $Domain -Identity $('{0}-512' -f $Data.DomainInformation.DomainSID) | Get-ADGroupMember -Server $Domain -Recursive | Get-ADUser -Server $Domain)
-    #    $Data.DomainAdministrators = $Data.DomainAdministratorsClean | Select-Object Name, SamAccountName, UserPrincipalName, Enabled
-    #}
+    if ($TypesRequired -contains [ActiveDirectory]::DomainAdministrators) {
+        $UsersDomainAdmins = $Data.DomainGroupMembersRecursivePriviliged  | Where { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID) }
+        $Data.DomainAdministrators = $UsersDomainAdmins | Select-Object * -Exclude Group*, 'High Privileged Group'
+    }
+    if ($TypesRequired -contains [ActiveDirectory]::EnterpriseAdministrators) {
+        $EnterpriseAdministrators = $Data.DomainGroupMembersRecursivePriviliged  | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID) }
+        $Data.EnterpriseAdministrators = $EnterpriseAdministrators | Select-Object * -Exclude Group*, 'High Privileged Group'
+    }
     return $Data
 }
