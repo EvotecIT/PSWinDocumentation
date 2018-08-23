@@ -5,7 +5,7 @@ function Get-WinADForestInformation {
         [switch] $RequireTypes
     )
     if ($TypesRequired -eq $null) {
-        Write-Verbose ' Get-WinADForestInformation - TypesRequired is null. Getting all.'
+        Write-Verbose 'Get-WinADForestInformation - TypesRequired is null. Getting all.'
         $TypesRequired = Get-Types
     } # Gets all types
 
@@ -175,7 +175,7 @@ function Get-WinADDomainInformation {
         [Object] $TypesRequired
     )
     if ($TypesRequired -eq $null) {
-        Write-Verbose ' Get-WinADDomainInformation - TypesRequired is null. Getting all.'
+        Write-Verbose 'Get-WinADDomainInformation - TypesRequired is null. Getting all.'
         $TypesRequired = Get-Types
     } # Gets all types
     $Data = [ordered] @{}
@@ -674,6 +674,19 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $FineGrainedPolicies
         }
     }
+    if ($TypesRequired -contains [ActiveDirectory]::DomainGroups) {
+        Write-Verbose "Getting domain information - $Domain DomainGroups"
+        $Data.DomainGroups = Get-WinGroups -Groups $Data.DomainGroupsFullList -Users $Data.DomainUsersFullList
+    }
+    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsMembers) {
+        Write-Verbose "Getting domain information - $Domain DomainGroupsMembersRecursive"
+        $Data.DomainGroupsMembers = Get-WinGroupMembers -Groups $Data.DomainGroups -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option Standard
+    }
+    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsMembersRecursive) {
+        Write-Verbose "Getting domain information - $Domain DomainGroupsMembersRecursive"
+        $Data.DomainGroupsMembersRecursive = Get-WinGroupMembers -Groups $Data.DomainGroups -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option Recursive
+    }
+
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsPriviliged -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsPriviliged"
         $Data.DomainGroupsPriviliged = Invoke-Command -ScriptBlock {
@@ -713,12 +726,12 @@ function Get-WinADDomainInformation {
         $Data.DomainGroupMembersRecursivePriviliged = Get-WinGroupMembers -Groups $Data.DomainGroupsPriviliged -Domain $Domain -ADCatalog  $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option 'Recursive'
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainAdministrators) {
-        $UsersDomainAdmins = $Data.DomainGroupMembersRecursivePriviliged  | Where { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID) }
-        $Data.DomainAdministrators = $UsersDomainAdmins | Select-Object * -Exclude Group*, 'High Privileged Group'
+        Write-Verbose "Getting domain information - $Domain DomainAdministrators"
+        $Data.DomainAdministrators = $Data.DomainGroupsMembers  | Where { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
     if ($TypesRequired -contains [ActiveDirectory]::EnterpriseAdministrators) {
-        $EnterpriseAdministrators = $Data.DomainGroupMembersRecursivePriviliged  | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID) }
-        $Data.EnterpriseAdministrators = $EnterpriseAdministrators | Select-Object * -Exclude Group*, 'High Privileged Group'
+        Write-Verbose "Getting domain information - $Domain EnterpriseAdministrators"
+        $Data.EnterpriseAdministrators = $Data.DomainGroupsMembers | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
     return $Data
 }

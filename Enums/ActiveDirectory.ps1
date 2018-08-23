@@ -56,6 +56,10 @@ Add-Type -TypeDefinition @"
         DomainTrusts,
 
         DomainGroupsFullList,
+        DomainGroups,
+        DomainGroupsMembers,
+        DomainGroupsMembersRecursive,
+
         DomainGroupsRest,
         DomainGroupsSpecial,
         DomainGroupsPriviliged,
