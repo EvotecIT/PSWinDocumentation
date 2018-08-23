@@ -633,24 +633,6 @@ function Get-WinADDomainInformation {
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainFineGrainedPolicies) {
         Write-Verbose "Getting domain information - $Domain DomainFineGrainedPolicies"
-        <#
-
-        AppliesTo                   : {CN=GDS-FineGrainedPolicy-Test,OU=Groups,OU=Production,DC=ad,DC=evotec,DC=pl}
-        ComplexityEnabled           : False
-        DistinguishedName           : CN=Fine Policy Test,CN=Password Settings Container,CN=System,DC=ad,DC=evotec,DC=pl
-        LockoutDuration             : 00:30:00
-        LockoutObservationWindow    : 00:30:00
-        LockoutThreshold            : 0
-        MaxPasswordAge              : 00:00:00
-        MinPasswordAge              : 00:00:00
-        MinPasswordLength           : 4
-        Name                        : Fine Policy Test
-        ObjectClass                 : msDS-PasswordSettings
-        ObjectGUID                  : db28647d-d5c1-45b0-8671-4b56228e0c18
-        PasswordHistoryCount        : 0
-        Precedence                  : 200
-        ReversibleEncryptionEnabled : True
-        #>
         $Data.DomainFineGrainedPolicies = Invoke-Command -ScriptBlock {
             $FineGrainedPoliciesData = Get-ADFineGrainedPasswordPolicy -Filter * -Server $Domain
             $FineGrainedPolicies = @()
@@ -686,7 +668,6 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain information - $Domain DomainGroupsMembersRecursive"
         $Data.DomainGroupsMembersRecursive = Get-WinGroupMembers -Groups $Data.DomainGroups -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option Recursive
     }
-
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsPriviliged -or $TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursivePriviliged) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsPriviliged"
         $Data.DomainGroupsPriviliged = Invoke-Command -ScriptBlock {
@@ -711,7 +692,6 @@ function Get-WinADDomainInformation {
             $Groups = $Data.DomainGroupsFullList  | Where { ($_.SID.Value).Length -ne 12 } | Select-Object Name, DisplayName, SID, ManagedBy, Members, MemberOf, GroupCategory, GroupScope, AdminCount
             return Get-WinGroups -Groups $Groups -Users $Data.DomainUsersFullList
         }
-
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGroupMembersRecursiveRest) {
         Write-Verbose "Getting domain information - $Domain DomainGroupMembersRecursiveRest"
