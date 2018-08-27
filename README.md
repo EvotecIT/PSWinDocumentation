@@ -2,7 +2,15 @@
 
 Overview of this module is available at: https://evotec.xyz/hub/scripts/pswindocumentation-powershell-module/
 
-This module utilizes two projects of mine: [PSWriteWord](https://evotec.xyz/hub/scripts/pswriteword-powershell-module/) and [PSWriteExcel](https://evotec.xyz/hub/scripts/pswriteexcel-powershell-module/). Both are under development and going step by step on per need basis.
+This module utilizes two projects of mine:
+- [PSWriteWord](https://evotec.xyz/hub/scripts/pswriteword-powershell-module/)
+- [PSWriteExcel](https://evotec.xyz/hub/scripts/pswriteexcel-powershell-module/)
+
+For additional functionality it utilizes:
+- [AWSPowershell](https://www.powershellgallery.com/packages/AWSPowerShell/) - **work in progress** - not yet ready
+- ActiveDirectory module - available as part of [RSAT](https://www.microsoft.com/en-us/download/details.aspx?id=45520)
+
+ Both are under development and going step by step on per need basis.
 
 ## Goals
 
@@ -73,71 +81,71 @@ Following is incomplete list of things that are done or are planned in near futu
 
 ```powershell
  public enum ActiveDirectory {
-        // Forest Information - Section Main
-        ForestInformation,
-        ForestFSMO,
-        ForestGlobalCatalogs,
-        ForestOptionalFeatures,
-        ForestUPNSuffixes,
-        ForestSPNSuffixes,
-        ForestSites,
-        ForestSites1,
-        ForestSites2,
-        ForestSubnets,
-        ForestSubnets1,
-        ForestSubnets2,
-        ForestSiteLinks,
-        // Domain Information - Section Main
-        DomainRootDSE,
-        DomainAuthenticationPolicies, // Not yet tested
-        DomainAuthenticationPolicySilos, // Not yet tested
-        DomainCentralAccessPolicies, // Not yet tested
-        DomainCentralAccessRules, // Not yet tested
-        DomainClaimTransformPolicies, // Not yet tested
-        DomainClaimTypes, // Not yet tested
-        DomainFineGrainedPolicies,
-        DomainGUIDS,
-        DomainDNSSRV,
-        DomainDNSA,
-        DomainInformation,
-        DomainControllers,
-        DomainFSMO,
-        DomainDefaultPasswordPolicy,
-        DomainGroupPolicies,
-        DomainGroupPoliciesDetails,
-        DomainGroupPoliciesACL,
-        DomainOrganizationalUnits,
-        DomainOrganizationalUnitsBasicACL,
-        DomainOrganizationalUnitsExtended,
-        DomainContainers,
-        DomainTrusts,
-        // Domain Information - Group Data
-        DomainGroupsFullList, // Contains all data
-        DomainGroups,
-        DomainGroupsMembers,
-        DomainGroupsMembersRecursive,
-        DomainGroupsSpecial,
-        DomainGroupsSpecialMembers,
-        DomainGroupsSpecialMembersRecursive,
-        DomainGroupsPriviliged,
-        DomainGroupsPriviligedMembers,
-        DomainGroupsPriviligedMembersRecursive,
-        // Domain Information - User Data
-        DomainUsersFullList, // Contains all data
-        DomainUsers,
-        DomainUsersAll,
-        DomainUsersSystemAccounts,
-        DomainUsersNeverExpiring,
-        DomainUsersNeverExpiringInclDisabled,
-        DomainUsersExpiredInclDisabled,
-        DomainUsersExpiredExclDisabled,
-        DomainUsersCount,
-        DomainAdministrators,
-        DomainAdministratorsRecursive,
-        DomainEnterpriseAdministrators,
-        DomainEnterpriseAdministratorsRecursive,
-        // Domain Information - Computer Data
-        DomainComputersFullList // Contains all data
+// Forest Information - Section Main
+ForestInformation,
+ForestFSMO,
+ForestGlobalCatalogs,
+ForestOptionalFeatures,
+ForestUPNSuffixes,
+ForestSPNSuffixes,
+ForestSites,
+ForestSites1,
+ForestSites2,
+ForestSubnets,
+ForestSubnets1,
+ForestSubnets2,
+ForestSiteLinks,
+// Domain Information - Section Main
+DomainRootDSE,
+DomainAuthenticationPolicies, // Not yet tested
+DomainAuthenticationPolicySilos, // Not yet tested
+DomainCentralAccessPolicies, // Not yet tested
+DomainCentralAccessRules, // Not yet tested
+DomainClaimTransformPolicies, // Not yet tested
+DomainClaimTypes, // Not yet tested
+DomainFineGrainedPolicies,
+DomainGUIDS,
+DomainDNSSRV,
+DomainDNSA,
+DomainInformation,
+DomainControllers,
+DomainFSMO,
+DomainDefaultPasswordPolicy,
+DomainGroupPolicies,
+DomainGroupPoliciesDetails,
+DomainGroupPoliciesACL,
+DomainOrganizationalUnits,
+DomainOrganizationalUnitsBasicACL,
+DomainOrganizationalUnitsExtended,
+DomainContainers,
+DomainTrusts,
+// Domain Information - Group Data
+DomainGroupsFullList, // Contains all data
+DomainGroups,
+DomainGroupsMembers,
+DomainGroupsMembersRecursive,
+DomainGroupsSpecial,
+DomainGroupsSpecialMembers,
+DomainGroupsSpecialMembersRecursive,
+DomainGroupsPriviliged,
+DomainGroupsPriviligedMembers,
+DomainGroupsPriviligedMembersRecursive,
+// Domain Information - User Data
+DomainUsersFullList, // Contains all data
+DomainUsers,
+DomainUsersAll,
+DomainUsersSystemAccounts,
+DomainUsersNeverExpiring,
+DomainUsersNeverExpiringInclDisabled,
+DomainUsersExpiredInclDisabled,
+DomainUsersExpiredExclDisabled,
+DomainUsersCount,
+DomainAdministrators,
+DomainAdministratorsRecursive,
+DomainEnterpriseAdministrators,
+DomainEnterpriseAdministratorsRecursive,
+// Domain Information - Computer Data
+DomainComputersFullList // Contains all data
  }
 ```
 
