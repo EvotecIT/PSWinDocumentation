@@ -584,7 +584,7 @@ function Get-WinADDomainInformation {
             return Format-TransposeTable $FineGrainedPolicies
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainGroups) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainGroups, [ActiveDirectory]::DomainGroupsSpecial)) {
         Write-Verbose "Getting domain information - $Domain DomainGroups"
         $Data.DomainGroups = Get-WinGroups -Groups $Data.DomainGroupsFullList -Users $Data.DomainUsersFullList
     }
@@ -635,4 +635,18 @@ function Get-WinADDomainInformation {
         $Data.DomainEnterpriseAdministratorsRecursive = $Data.DomainGroupsMembersRecursive | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
     return $Data
+}
+
+function Find-TypesNeeded {
+    param (
+        $TypesRequired,
+        $TypesNeeded
+    )
+
+    foreach ($Type in $TypesNeeded) {
+        if ($TypesRequired -contains $Type) {
+            return $True
+        }
+    }
+    return $False
 }

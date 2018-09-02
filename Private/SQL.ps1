@@ -25,16 +25,20 @@ function New-SqlQuery {
         [hashtable ]$SqlSettings,
         [PSCustomObject] $Object
     )
-    $TableMapping = $SqlSettings.SqlTableMapping
+    $ArraySQLQueries = New-ArrayList
+    $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping
     $SQLTable = $SqlSettings.SqlTable
 
-    $ArraySQLQueries = New-ArrayList
-    ## Added fields to know when event was added to SQL and by WHO (in this case TaskS Scheduler User)
-    Add-Member -InputObject $Object -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
-    Add-Member -InputObject $Object -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
-
-    $CreateTableSQL = New-SqlQueryCreateTable -SqlSettings $SqlSettings -Object $Object
-    Add-ToArray -List $ArraySQLQueries -Element $CreateTableSQL
+    if ($Object) {
+        ## Added fields to know when event was added to SQL and by WHO (in this case TaskS Scheduler User)
+        ## Only adding when $Object exists
+        Add-Member -InputObject $Object -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
+        Add-Member -InputObject $Object -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
+    }
+    if ($SqlSettings.SqlTableCreate) {
+        $CreateTableSQL = New-SqlQueryCreateTable -SqlSettings $SqlSettings -Object $Object
+        Add-ToArray -List $ArraySQLQueries -Element $CreateTableSQL
+    }
 
     foreach ($O in $Object) {
         $ArrayMain = New-ArrayList
@@ -70,13 +74,33 @@ function New-SqlQuery {
     return $ArraySQLQueries
 }
 
+function New-SqlTableMapping {
+    param(
+        [hashtable] $SqlTableMapping
+    )
+    if ($SqlTableMapping) {
+        $TableMapping = $SqlTableMapping
+    } else {
+        $TableMapping = @{}
+        foreach ($O in $Object) {
+            foreach ($E in $O.PSObject.Properties) {
+                $FieldName = $E.Name
+                $FieldNameSQL = $($E.Name).Replace(' ', '')
+                $TableMapping.$FieldName = $FieldNameSQL
+            }
+            break
+        }
+    }
+    return $SqlTableMapping
+}
+
 function New-SqlQueryCreateTable {
     [CmdletBinding()]
     param (
         [hashtable ]$SqlSettings,
         [PSCustomObject] $Object
     )
-    $TableMapping = $SqlSettings.SqlTableMapping
+    $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping
     $SQLTable = $SqlSettings.SqlTable
 
     $ArraySQLQueries = New-ArrayList
@@ -109,7 +133,6 @@ function New-SqlQueryCreateTable {
         Add-ToArray -List $ArrayMain -Element "CREATE TABLE $SQLTable ("
         Add-ToArray -List $ArrayMain -Element ($ArrayKeys -join ',')
         Add-ToArray -List $ArrayMain -Element ')'
-
 
         Add-ToArray -List $ArraySQLQueries -Element ([string] ($ArrayMain) -replace "`n", "" -replace "`r", "")
         break

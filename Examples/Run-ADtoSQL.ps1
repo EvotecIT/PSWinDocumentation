@@ -475,20 +475,23 @@ $Document = [ordered]@{
                     ExcelData      = [ActiveDirectory]::DomainOrganizationalUnitsExtended
                 }
                 #>
-                SectionExcelDomainUsers = [ordered] @{
-                    Use             = $true
-                    ExcelExport     = $false
-                    ExcelWorkSheet  = '<Domain> - Users'
-                    ExcelData       = [ActiveDirectory]::DomainUsers
+                SectionExcelDomainUsers               = [ordered] @{
+                    Use              = $true
+                    ExcelExport      = $false
+                    ExcelWorkSheet   = '<Domain> - Users'
+                    ExcelData        = [ActiveDirectory]::DomainUsers
 
-                    SqlExport       = $true
-                    SqlServer       = 'EVO1'
-                    SqlDatabase     = 'SSAE18'
-                    SqlData         = [ActiveDirectory]::DomainUsers
-                    SqlTable        = 'dbo.[Users]'
-                    # Left Side is ColumnName in SQL, right side is data in PSWinReporting.
-                    # Changing makes sense only for left side...
-                    SqlTableMapping = [ordered] @{
+                    SqlExport        = $true
+                    SqlServer        = 'EVO1'
+                    SqlDatabase      = 'SSAE18'
+                    SqlData          = [ActiveDirectory]::DomainUsers
+                    SqlTable         = 'dbo.[Users]'
+                    SqlTableCreate   = $true
+                    SqlTabl1eMapping = [ordered] @{
+                        # Left Side is data in PSWinReporting
+                        # Right Side is column name in SQL
+                        # Changing makes sense only for left side...
+                        # Use this if you need to have different mapping
                         'Name'                              = 'Name'
                         'UserPrincipalName'                 = 'UserPrincipalName'
                         'SamAccountName'                    = 'SamAccountName'
@@ -526,25 +529,32 @@ $Document = [ordered]@{
                         'AddedWho'                          = 'AddedWho'   # ColumnsToTrack when it was added to database and by who / not part of event
                     }
                 }
-                <#
-                SectionExcelDomainUsersAll                        = [ordered] @{
-                    Use            = $true
+
+                SectionExcelDomainUsersAll            = [ordered] @{
+                    Use            = $false
                     ExcelExport    = $false
                     ExcelWorkSheet = '<Domain> - Users All'
                     ExcelData      = [ActiveDirectory]::DomainUsersAll
                 }
-                SectionExcelDomainUsersSystemAccounts             = [ordered] @{
-                    Use            = $true
+                SectionExcelDomainUsersSystemAccounts = [ordered] @{
+                    Use            = $false
                     ExcelExport    = $false
                     ExcelWorkSheet = '<Domain> - Users System'
                     ExcelData      = [ActiveDirectory]::DomainUsersSystemAccounts
                 }
-                SectionExcelDomainUsersNeverExpiring              = [ordered] @{
+                SectionExcelDomainUsersNeverExpiring  = [ordered] @{
                     Use            = $true
                     ExcelExport    = $false
                     ExcelWorkSheet = '<Domain> - Never Expiring'
                     ExcelData      = [ActiveDirectory]::DomainUsersNeverExpiring
+
+                    SqlExport      = $true
+                    SqlServer      = 'EVO1'
+                    SqlDatabase    = 'SSAE18'
+                    SqlData        = [ActiveDirectory]::DomainUsersNeverExpiring
+                    SqlTable       = 'dbo.[UsersNeverExpiring]'
                 }
+                <#
                 SectionExcelDomainUsersNeverExpiringInclDisabled  = [ordered] @{
                     Use            = $true
                     ExcelExport    = $false
@@ -587,12 +597,22 @@ $Document = [ordered]@{
                     ExcelWorkSheet = '<Domain> - Groups'
                     ExcelData      = [ActiveDirectory]::DomainGroups
                 }
-                SectionExcelDomainGroupsSpecial                   = [ordered] @{
+                #>
+
+                SectionExcelDomainGroupsSpecial       = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Groups Special'
                     ExcelData      = [ActiveDirectory]::DomainGroupsSpecial
+
+                    SqlExport      = $true
+                    SqlServer      = 'EVO1'
+                    SqlDatabase    = 'SSAE18'
+                    SqlData        = [ActiveDirectory]::DomainGroupsSpecial
+                    SqlTabelCreate = $true
+                    SqlTable       = 'dbo.[DomainGroupsSpecial]'
                 }
+                <#
                 SectionExcelDomainGroupsPriviliged                = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
