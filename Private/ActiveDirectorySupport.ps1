@@ -41,7 +41,7 @@ function Convert-ToDateTime {
     }
     #Write-Verbose "Convert-ToDateTime: $DateTime"
     if ($DateTime -eq $null -or $DateTime -like $Ignore) {
-        return 'N/A'
+        return $null
     } else {
         return $DateTime
     }
@@ -63,7 +63,7 @@ function Convert-ToTimeSpan {
     if ($TimeSpan -ne $null) {
         return $TimeSpan
     } else {
-        return 'N/A'
+        return $null
     }
 }
 function Convert-TimeToDays {
@@ -78,10 +78,10 @@ function Convert-TimeToDays {
             if ($StartTime -notlike $Ignore -and $EndTime -notlike $Ignore) {
                 $Days = (NEW-TIMESPAN -Start (GET-DATE) -End ($EndTime)).Days
             } else {
-                $Days = 'N/A'
+                $Days = $null
             }
         } catch {
-            $Days = $Days = 'N/A'
+            $Days = $null
         }
     }
     return $Days

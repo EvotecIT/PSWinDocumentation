@@ -18,7 +18,9 @@ function Start-Documentation {
 
         $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
         ### Starting WORD
-        $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
+        if ($Document.DocumentAD.ExportWord) {
+            $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAD.FilePathWord
+        }
         if ($Document.DocumentAD.ExportExcel) {
             $ExcelDocument = New-ExcelDocument
         }
@@ -46,12 +48,13 @@ function Start-Documentation {
         ### End Sections
 
         ### Ending WORD
-        $FilePath = Save-WordDocument -WordDocument $WordDocument `
-            -Language $Document.Configuration.Prettify.Language `
-            -FilePath $Document.DocumentAD.FilePathWord `
-            -Supress $True `
-            -OpenDocument:$Document.Configuration.Options.OpenDocument
-
+        if ($Document.DocumentAD.ExportWord) {
+            $FilePath = Save-WordDocument -WordDocument $WordDocument `
+                -Language $Document.Configuration.Prettify.Language `
+                -FilePath $Document.DocumentAD.FilePathWord `
+                -Supress $True `
+                -OpenDocument:$Document.Configuration.Options.OpenDocument
+        }
         ### Ending EXCEL
         if ($Document.DocumentAD.ExportExcel) {
             Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAD.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenExcel

@@ -34,7 +34,7 @@ function Get-WinDocumentationText {
 
 function New-ADDocumentBlock {
     param(
-        [parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Mandatory = $true)][Xceed.Words.NET.Container]$WordDocument,
+        [Xceed.Words.NET.Container]$WordDocument,
         [Object] $Section,
         [Object] $Forest,
         [string] $Domain,
@@ -52,6 +52,7 @@ function New-ADDocumentBlock {
         $TableData = (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain)
         $ExcelData = (Get-WinDocumentationData -Data $Section.ExcelData -Forest $Forest -Domain $Domain)
         $ListData = (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain)
+        $SqlData = (Get-WinDocumentationData -Data $Section.SqlData -Forest $Forest -Domain $Domain)
 
         ### Preparing chart data
         $ChartData = (Get-WinDocumentationData -Data $Section.ChartData -Forest $Forest -Domain $Domain)
@@ -73,40 +74,41 @@ function New-ADDocumentBlock {
         $ListBuilderContent = (Get-WinDocumentationText -Text $Section.ListBuilderContent -Forest $Forest -Domain $Domain)
         $TextNoData = (Get-WinDocumentationText -Text $Section.TextNoData -Forest $Forest -Domain $Domain)
 
-        Write-Verbose "Generating WORD Section for [$SectionDetails]"
-        $WordDocument | New-WordBlock `
-            -TocGlobalDefinition $Section.TocGlobalDefinition`
-            -TocGlobalTitle $Section.TocGlobalTitle `
-            -TocGlobalSwitches $Section.TocGlobalSwitches `
-            -TocGlobalRightTabPos $Section.TocGlobalRightTabPos `
-            -TocEnable $Section.TocEnable `
-            -TocText $TocText `
-            -TocListLevel $Section.TocListLevel `
-            -TocListItemType $Section.TocListItemType `
-            -TocHeadingType $Section.TocHeadingType `
-            -TableData $TableData `
-            -TableDesign $Section.TableDesign `
-            -TableTitleMerge $Section.TableTitleMerge `
-            -TableTitleText $TableTitleText `
-            -TableMaximumColumns $Section.TableMaximumColumns `
-            -Text $Text `
-            -TextNoData $TextNoData `
-            -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
-            -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `
-            -PageBreaksBefore $Section.PageBreaksBefore `
-            -PageBreaksAfter $Section.PageBreaksAfter `
-            -TextAlignment $Section.TextAlignment `
-            -ListData $ListData `
-            -ListType $Section.ListType `
-            -ListTextEmpty $Section.ListTextEmpty `
-            -ChartEnable $Section.ChartEnable `
-            -ChartTitle $ChartTitle `
-            -ChartKeys $ChartKeys `
-            -ChartValues $ChartValues `
-            -ListBuilderContent $ListBuilderContent `
-            -ListBuilderType $Section.ListBuilderType `
-            -ListBuilderLevel $Section.ListBuilderLevel
-
+        if ($WordDocument) {
+            Write-Verbose "Generating WORD Section for [$SectionDetails]"
+            $WordDocument | New-WordBlock `
+                -TocGlobalDefinition $Section.TocGlobalDefinition`
+                -TocGlobalTitle $Section.TocGlobalTitle `
+                -TocGlobalSwitches $Section.TocGlobalSwitches `
+                -TocGlobalRightTabPos $Section.TocGlobalRightTabPos `
+                -TocEnable $Section.TocEnable `
+                -TocText $TocText `
+                -TocListLevel $Section.TocListLevel `
+                -TocListItemType $Section.TocListItemType `
+                -TocHeadingType $Section.TocHeadingType `
+                -TableData $TableData `
+                -TableDesign $Section.TableDesign `
+                -TableTitleMerge $Section.TableTitleMerge `
+                -TableTitleText $TableTitleText `
+                -TableMaximumColumns $Section.TableMaximumColumns `
+                -Text $Text `
+                -TextNoData $TextNoData `
+                -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
+                -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `
+                -PageBreaksBefore $Section.PageBreaksBefore `
+                -PageBreaksAfter $Section.PageBreaksAfter `
+                -TextAlignment $Section.TextAlignment `
+                -ListData $ListData `
+                -ListType $Section.ListType `
+                -ListTextEmpty $Section.ListTextEmpty `
+                -ChartEnable $Section.ChartEnable `
+                -ChartTitle $ChartTitle `
+                -ChartKeys $ChartKeys `
+                -ChartValues $ChartValues `
+                -ListBuilderContent $ListBuilderContent `
+                -ListBuilderType $Section.ListBuilderType `
+                -ListBuilderLevel $Section.ListBuilderLevel
+        }
         if ($Excel -and $Section.ExcelExport) {
             if ($Section.ExcelWorkSheet -eq '') {
                 $WorkSheetName = $SectionDetails
@@ -119,8 +121,15 @@ function New-ADDocumentBlock {
                 #| Convert-ToExcel -Path $Excel -AutoSize -AutoFilter -WorksheetName $WorkSheetName -ClearSheet -NoNumberConversion SSDL, GUID, ID, ACLs
             }
         }
+        if ($Section.SQLExport) {
+            Write-Verbose "Sending [$SectionDetails] to SQL Server"
+            $SqlQuery = Send-SqlInsert -Object $SqlData -SqlSettings $Section
+            foreach ($Query in $SqlQuery) {
+                Write-Color @script:WriteParameters -Text '[i] ', 'MS SQL Output: ', $Query -Color White, White, Yellow
+            }
+        }
     }
-    return $WordDocument
+    if ($WordDocument) { return $WordDocument } else { return }
 }
 
 function Start-ActiveDirectoryDocumentation {
