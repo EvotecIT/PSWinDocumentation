@@ -551,6 +551,7 @@ $Document = [ordered]@{
                     SqlExport      = $true
                     SqlServer      = 'EVO1'
                     SqlDatabase    = 'SSAE18'
+                    SqlTableCreate = $true
                     SqlData        = [ActiveDirectory]::DomainUsersNeverExpiring
                     SqlTable       = 'dbo.[UsersNeverExpiring]'
                 }
@@ -609,7 +610,7 @@ $Document = [ordered]@{
                     SqlServer      = 'EVO1'
                     SqlDatabase    = 'SSAE18'
                     SqlData        = [ActiveDirectory]::DomainGroupsSpecial
-                    SqlTabelCreate = $true
+                    SqlTableCreate = $true
                     SqlTable       = 'dbo.[DomainGroupsSpecial]'
                 }
                 <#

@@ -49,14 +49,7 @@ function New-SqlQuery {
         Add-Member -InputObject $Object -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
         Add-Member -InputObject $Object -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
 
-        foreach ($E in $O.PSObject.Properties) {
-            $FieldName = $E.Name
-            $FieldValue = $E.Value
-            Write-Verbose "Object: $FieldName Err: $FieldValue"
-        }
-
-
-        $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping
+        $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping -Object $Object
         $SQLTable = $SqlSettings.SqlTable
 
         if ($SqlSettings.SqlTableCreate) {
@@ -103,7 +96,8 @@ function New-SqlQuery {
 function New-SqlTableMapping {
     [CmdletBinding()]
     param(
-        [hashtable] $SqlTableMapping
+        [hashtable] $SqlTableMapping,
+        $Object
     )
     if ($SqlTableMapping) {
         $TableMapping = $SqlTableMapping
@@ -130,7 +124,7 @@ function New-SqlQueryCreateTable {
 
     $ArraySQLQueries = New-ArrayList
     if ($Object) {
-        $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping
+        $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping -Object $Object
         $SQLTable = $SqlSettings.SqlTable
 
         foreach ($O in $Object) {
