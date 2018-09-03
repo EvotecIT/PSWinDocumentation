@@ -73,16 +73,6 @@ function New-SqlQuery {
                 $FieldName = $E.Name
                 $FieldValue = $E.Value
 
-                if ($FieldName -eq 'AddedWhen') {
-                    #      Write-Color 'Test  ' -Color Red
-                    #       $FieldValue = Get-Date
-                } elseif ($FieldName -eq 'AddedWho') {
-                    #    $FieldValue = $Env:USERNAME
-                    #     Write-Color 'Test  ' -Color Green
-                } else {
-                    #     Write-Color "not test", $FieldName -Color Blue
-                }
-
                 #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
                 #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
 
