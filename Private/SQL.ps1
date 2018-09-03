@@ -46,9 +46,6 @@ function New-SqlQuery {
     if ($Object) {
         ## Added fields to know when event was added to SQL and by WHO (in this case TaskS Scheduler User)
         ## Only adding when $Object exists
-        Add-Member -InputObject $Object -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
-        Add-Member -InputObject $Object -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
-
         $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping -Object $Object
         $SQLTable = $SqlSettings.SqlTable
 
@@ -62,10 +59,32 @@ function New-SqlQuery {
             $ArrayKeys = New-ArrayList
             $ArrayValues = New-ArrayList
 
+            #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
+            #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
+
             #Write-Verbose "Test: $($($O.PSObject.Properties.Name) -join ',')"
+            if (-not $O.AddedWhen) {
+                Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
+            }
+            if (-not $O.AddedWho) {
+                Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
+            }
             foreach ($E in $O.PSObject.Properties) {
                 $FieldName = $E.Name
                 $FieldValue = $E.Value
+
+                if ($FieldName -eq 'AddedWhen') {
+                    #      Write-Color 'Test  ' -Color Red
+                    #       $FieldValue = Get-Date
+                } elseif ($FieldName -eq 'AddedWho') {
+                    #    $FieldValue = $Env:USERNAME
+                    #     Write-Color 'Test  ' -Color Green
+                } else {
+                    #     Write-Color "not test", $FieldName -Color Blue
+                }
+
+                #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
+                #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
 
                 foreach ($MapKey in $TableMapping.Keys) {
                     if ($FieldName -eq $MapKey) {
@@ -104,6 +123,12 @@ function New-SqlTableMapping {
     } else {
         $TableMapping = @{}
         foreach ($O in $Object) {
+            if (-not $O.AddedWhen) {
+                Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
+            }
+            if (-not $O.AddedWho) {
+                Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
+            }
             foreach ($E in $O.PSObject.Properties) {
                 $FieldName = $E.Name
                 $FieldNameSQL = $($E.Name).Replace(' ', '')
@@ -156,6 +181,8 @@ function New-SqlQueryCreateTable {
                 Add-ToArray -List $ArrayMain -Element "CREATE TABLE $SQLTable ("
                 Add-ToArray -List $ArrayMain -Element "ID int IDENTITY(1,1) PRIMARY KEY,"
                 Add-ToArray -List $ArrayMain -Element ($ArrayKeys -join ',')
+
+
                 Add-ToArray -List $ArrayMain -Element ')'
                 Add-ToArray -List $ArraySQLQueries -Element ([string] ($ArrayMain) -replace "`n", "" -replace "`r", "")
             }
