@@ -43,7 +43,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules   = @('PSWriteWord', 'PSWriteExcel', 'AWSPowerShell', 'PSWriteColor')
+    RequiredModules   = @('PSWriteWord', 'PSWriteExcel', 'PSWriteColor', 'PSSharedGoods', 'AWSPowerShell')
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
