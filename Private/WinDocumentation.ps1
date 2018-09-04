@@ -1,17 +1,69 @@
+function Get-ObjectType {
+    [CmdletBinding()]
+    param(
+        [Object] $Object,
+        [string] $ObjectName = 'Random Object Name',
+        [switch] $VerboseOnly
+    )
+    $Data = [ordered] @{}
+    $Data.ObjectName = $ObjectName
+
+    if ($Object) {
+        try {
+            $TypeInformation = $Object.GetType()
+            $Data.ObjectTypeName = $TypeInformation.Name
+            $Data.ObjectTypeBaseName = $TypeInformation.BaseType
+            $Data.SystemType = $TypeInformation.UnderlyingSystemType
+        } catch {
+            $Data.ObjectTypeName = ''
+            $Data.ObjectTypeBaseName = ''
+            $Data.SystemType = ''
+        }
+        try {
+            $TypeInformationInsider = $Object[0].GetType()
+            $Data.ObjectTypeInsiderName = $TypeInformationInsider.Name
+            $Data.ObjectTypeInsiderBaseName = $TypeInformationInsider.BaseType
+            $Data.SystemTypeInsider = $TypeInformationInsider.UnderlyingSystemType
+        } catch {
+            $Data.ObjectTypeInsiderName = ''
+            $Data.ObjectTypeInsiderBaseName = ''
+            $Data.SystemTypeInsider = ''
+        }
+    } else {
+        $Data.ObjectTypeName = ''
+        $Data.ObjectTypeBaseName = ''
+        $Data.SystemType = ''
+        $Data.ObjectTypeInsiderName = ''
+        $Data.ObjectTypeInsiderBaseName = ''
+        $Data.SystemTypeInsider = ''
+    }
+    Write-Verbose "Get-ObjectType - ObjectTypeName: $($Data.ObjectTypeName)"
+    Write-Verbose "Get-ObjectType - ObjectTypeBaseName: $($Data.ObjectTypeBaseName)"
+    Write-Verbose "Get-ObjectType - SystemType: $($Data.SystemType)"
+    Write-Verbose "Get-ObjectType - ObjectTypeInsiderName: $($Data.ObjectTypeInsiderName)"
+    Write-Verbose "Get-ObjectType - ObjectTypeInsiderBaseName: $($Data.ObjectTypeInsiderBaseName)"
+    Write-Verbose "Get-ObjectType - SystemTypeInsider: $($Data.SystemTypeInsider)"
+    if ($VerboseOnly) { return } else { return Format-TransposeTable -Object $Data }
+
+}
+
 function Get-WinDocumentationData {
     param (
         [Object] $Data,
         [Object] $Forest,
         [string] $Domain
     )
-    $Type = Get-ObjectType $Data
-    #Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl"
-    if ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data -like 'Forest*') {
-        return $Forest."$Data"
-    } elseif ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data -like 'Domain*' ) {
-        return $Forest.FoundDomains.$Domain."$Data"
-        # DomainControllers { return $Forest.FoundDomains.$Domain.DomainControllers }
+    if ($Data) {
+        $Type = Get-ObjectType $Data -Verbose
+        Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl $Data"
+        if ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data -like 'Forest*') {
+            return $Forest."$Data"
+        } elseif ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data -like 'Domain*' ) {
+            return $Forest.FoundDomains.$Domain."$Data"
+        }
     }
+    Write-Verbose 'Get-WinDocumentationData - Data was $null'
+    return
 }
 function Get-WinDocumentationText {
     param (
@@ -47,8 +99,7 @@ function New-ADDocumentBlock {
         } else {
             $SectionDetails = $SectionName
         }
-
-        #Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.TableData)]"
+        Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.SqlData)]"
         $TableData = (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain)
         $ExcelData = (Get-WinDocumentationData -Data $Section.ExcelData -Forest $Forest -Domain $Domain)
         $ListData = (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain)
@@ -121,7 +172,7 @@ function New-ADDocumentBlock {
                 #| Convert-ToExcel -Path $Excel -AutoSize -AutoFilter -WorksheetName $WorkSheetName -ClearSheet -NoNumberConversion SSDL, GUID, ID, ACLs
             }
         }
-        if ($Section.SQLExport) {
+        if ($Section.SQLExport -and $SqlData) {
             Write-Verbose "Sending [$SectionDetails] to SQL Server"
             $SqlQuery = Send-SqlInsert -Object $SqlData -SqlSettings $Section
             foreach ($Query in $SqlQuery) {

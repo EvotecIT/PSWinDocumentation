@@ -19,7 +19,7 @@ function Get-WinADForestInformation {
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
     $Data.Domains = $Data.Forest.Domains
 
-    if ($TypesRequired -contains [ActiveDirectory]::ForestSites -or $TypesRequired -contains [ActiveDirectory]::ForestSites1 -or $TypesRequired -contains [ActiveDirectory]::ForestSites2) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSites, [ActiveDirectory]::ForestSites1, [ActiveDirectory]::ForestSites2)) {
         Write-Verbose 'Getting forest information - Forest Sites'
         $Data.ForestSites = $(Get-ADReplicationSite -Filter * -Properties * )
         $Data.ForestSites1 = Invoke-Command -ScriptBlock {
@@ -52,7 +52,7 @@ function Get-WinADForestInformation {
             return Format-TransposeTable $ReturnData
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestSubnets -or $TypesRequired -contains [ActiveDirectory]::ForestSubnets1 -or $TypesRequired -contains [ActiveDirectory]::ForestSubnets2) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSubnet , [ActiveDirectory]::ForestSubnets1, [ActiveDirectory]::ForestSubnets2)) {
         Write-Verbose 'Getting forest information - Forest Subnets'
         $Data.ForestSubnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
                 Select-Object  Name, DisplayName, Description, Site, ProtectedFromAccidentalDeletion, Created, Modified, Deleted )
@@ -81,7 +81,7 @@ function Get-WinADForestInformation {
             return Format-TransposeTable $ReturnData
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestSiteLinks) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSiteLinks)) {
         Write-Verbose 'Getting forest information - Forest SiteLinks'
         $Data.ForestSiteLinks = $(
             Get-ADReplicationSiteLink -Filter * -Properties `
@@ -89,7 +89,7 @@ function Get-WinADForestInformation {
                 Select-Object Name, Cost, ReplicationFrequencyInMinutes, ReplInterval, Modified
         )
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestInformation) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestInformation)) {
         Write-Verbose 'Getting forest information - Forest Information'
         $Data.ForestInformation = [ordered] @{
             'Name'                    = $Data.Forest.Name
@@ -101,7 +101,7 @@ function Get-WinADForestInformation {
             'Sites'                   = ($Data.Forest.Sites) -join ", "
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestUPNSuffixes) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestUPNSuffixes)) {
         Write-Verbose 'Getting forest information - Forest UPNSuffixes'
         $Data.ForestUPNSuffixes = Invoke-Command -ScriptBlock {
             $UPNSuffixList = @()

@@ -27,7 +27,7 @@ function Send-SqlInsert {
 function Display-DataInVerbose {
     [CmdletBinding()]
     param(
-        $Object
+        [Object] $Object
     )
     foreach ($O in $Object) {
         foreach ($E in $O.PSObject.Properties) {

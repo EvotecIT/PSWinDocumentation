@@ -1,5 +1,5 @@
-Import-Module PSWriteWord # -Force
-Import-Module PSWriteExcel
+Import-Module PSWriteWord  -Force
+#Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
