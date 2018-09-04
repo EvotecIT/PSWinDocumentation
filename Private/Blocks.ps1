@@ -71,6 +71,7 @@ function Get-TypesRequired {
             Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ListData -SkipNull -RequireUnique -FullComparison
             Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ChartData -SkipNull -RequireUnique -FullComparison
             Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ExcelData -SkipNull -RequireUnique -FullComparison
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.SqlData -SkipNull -RequireUnique -FullComparison
         }
     }
 
@@ -79,7 +80,8 @@ function Get-TypesRequired {
             Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.TableData -SkipNull -RequireUnique -FullComparison
             Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ListData -SkipNull -RequireUnique -FullComparison
             Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ChartData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ExcelData -SkipNull -RequireUnique -FullComparison
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ExcelData -SkipNull -RequireUnique -FullComparison
+            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.SqlData -SkipNull -RequireUnique -FullComparison
         }
     }
     #Show-Array $TypesRequired -WithType

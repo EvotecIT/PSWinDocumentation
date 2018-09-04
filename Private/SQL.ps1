@@ -1,10 +1,13 @@
 function Send-SqlInsert {
     [CmdletBinding()]
     param(
-        [PSCustomObject] $Object,
+        [Object] $Object,
         [hashtable] $SqlSettings
     )
     $ReturnData = @()
+    if ($SqlSettings.SqlTableTransopse) {
+        $Object = Format-TransposeTable -Object $Object
+    }
     $Queries = New-SqlQuery -Object $Object -SqlSettings $SqlSettings
     foreach ($Query in $Queries) {
         $ReturnData += $Query
@@ -39,11 +42,14 @@ function New-SqlQuery {
     [CmdletBinding()]
     param (
         [hashtable ]$SqlSettings,
-        [PSCustomObject] $Object
+        [Object] $Object
     )
 
     $ArraySQLQueries = New-ArrayList
+    Write-Verbose "I'm here..."
     if ($Object) {
+        Write-Verbose "I'm here1..."
+        Write-Verbose "Count: $($Object.Count)"
         ## Added fields to know when event was added to SQL and by WHO (in this case TaskS Scheduler User)
         ## Only adding when $Object exists
         $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping -Object $Object
@@ -94,7 +100,7 @@ function New-SqlQuery {
                 Add-ToArray -List $ArrayMain -Element ($ArrayValues -join ',')
                 Add-ToArray -List $ArrayMain -Element ')'
 
-                Add-ToArray -List $ArraySQLQueries -Element ([string] ($ArrayMain) -replace "`n", "" -replace "`r", "")
+                #Add-ToArray -List $ArraySQLQueries -Element ([string] ($ArrayMain) -replace "`n", "" -replace "`r", "")
             }
         }
     }
@@ -106,7 +112,7 @@ function New-SqlTableMapping {
     [CmdletBinding()]
     param(
         [hashtable] $SqlTableMapping,
-        $Object
+        [Object] $Object
     )
     if ($SqlTableMapping) {
         $TableMapping = $SqlTableMapping
@@ -134,7 +140,7 @@ function New-SqlQueryCreateTable {
     [CmdletBinding()]
     param (
         [hashtable ]$SqlSettings,
-        [PSCustomObject] $Object
+        [Object] $Object
     )
 
     $ArraySQLQueries = New-ArrayList

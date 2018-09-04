@@ -66,26 +66,35 @@ $Document = [ordered]@{
                     PageBreaksAfter = 1
 
                 }
-                SectionForestSummary      = [ordered] @{
-                    Use             = $true
-                    TocEnable       = $True
-                    TocText         = 'General Information - Forest Summary'
-                    TocListLevel    = 0
-                    TocListItemType = [ListItemType]::Numbered
-                    TocHeadingType  = [HeadingType]::Heading1
-                    TableData       = [ActiveDirectory]::ForestForestInformation
-                    TableDesign     = [TableDesign]::ColorfulGridAccent5
-                    TableTitleMerge = $true
-                    TableTitleText  = "Forest Summary"
-                    Text            = "Active Directory at <CompanyName> has a forest name <ForestName>." `
-                        + " Following table contains forest summary with important information:"
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = 'Forest Summary'
-                    ExcelData       = [ActiveDirectory]::ForestForestInformation
-                }
                 #>
-                <#
-                SectionForestFSMO             = [ordered] @{
+                SectionForestSummary = [ordered] @{
+                    Use               = $true
+                    TocEnable         = $True
+                    TocText           = 'General Information - Forest Summary'
+                    TocListLevel      = 0
+                    TocListItemType   = [ListItemType]::Numbered
+                    TocHeadingType    = [HeadingType]::Heading1
+                    TableData         = [ActiveDirectory]::ForestInformation
+                    TableDesign       = [TableDesign]::ColorfulGridAccent5
+                    TableTitleMerge   = $true
+                    TableTitleText    = "Forest Summary"
+                    Text              = "Active Directory at <CompanyName> has a forest name <ForestName>." `
+                        + " Following table contains forest summary with important information:"
+                    ExcelExport       = $true
+                    ExcelWorkSheet    = 'Forest Summary'
+                    ExcelData         = [ActiveDirectory]::ForestInformation
+
+                    SqlExport         = $true
+                    SqlServer         = 'EVO1'
+                    SqlDatabase       = 'SSAE18'
+                    SqlData           = [ActiveDirectory]::ForestInformation
+                    SqlTable          = 'dbo.[ForestInformation]'
+                    SqlTableTransopse = $true
+                    SqlTableCreate    = $true
+                }
+
+
+                SectionForestFSMO    = [ordered] @{
                     Use                   = $true
                     TableData             = [ActiveDirectory]::ForestFSMO
                     TableDesign           = 'ColorfulGridAccent5'
@@ -96,7 +105,17 @@ $Document = [ordered]@{
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest FSMO'
                     ExcelData             = [ActiveDirectory]::ForestFSMO
+
+
+                    SqlExport             = $true
+                    SqlServer             = 'EVO1'
+                    SqlDatabase           = 'SSAE18'
+                    SqlData               = [ActiveDirectory]::ForestFSMO
+                    SqlTable              = 'dbo.[ForestFSMO]'
+                    SqlTableTransopse     = $true
+                    SqlTableCreate        = $true
                 }
+                <#
                 SectionForestOptionalFeatures = [ordered] @{
                     Use                   = $true
                     TableData             = [ActiveDirectory]::ForestOptionalFeatures

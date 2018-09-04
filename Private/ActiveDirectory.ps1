@@ -89,7 +89,7 @@ function Get-WinADForestInformation {
                 Select-Object Name, Cost, ReplicationFrequencyInMinutes, ReplInterval, Modified
         )
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestForestInformation) {
+    if ($TypesRequired -contains [ActiveDirectory]::ForestInformation) {
         Write-Verbose 'Getting forest information - Forest Information'
         $Data.ForestInformation = [ordered] @{
             'Name'                    = $Data.Forest.Name

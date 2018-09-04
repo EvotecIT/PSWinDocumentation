@@ -72,7 +72,7 @@ $Document = [ordered]@{
                     TocListLevel    = 0
                     TocListItemType = [ListItemType]::Numbered
                     TocHeadingType  = [HeadingType]::Heading1
-                    TableData       = [ActiveDirectory]::ForestForestInformation
+                    TableData       = [ActiveDirectory]::ForestInformation
                     TableDesign     = [TableDesign]::ColorfulGridAccent5
                     TableTitleMerge = $true
                     TableTitleText  = "Forest Summary"
@@ -80,7 +80,7 @@ $Document = [ordered]@{
                         + " Following table contains forest summary with important information:"
                     ExcelExport     = $true
                     ExcelWorkSheet  = 'Forest Summary'
-                    ExcelData       = [ActiveDirectory]::ForestForestInformation
+                    ExcelData       = [ActiveDirectory]::ForestInformation
                 }
                 SectionForestFSMO             = [ordered] @{
                     Use                   = $true
