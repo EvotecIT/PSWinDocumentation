@@ -1,4 +1,4 @@
-Import-Module PSWriteWord  -Force
+Import-Module PSWriteWord # -Force
 #Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
@@ -89,7 +89,7 @@ $Document = [ordered]@{
                     SqlDatabase       = 'SSAE18'
                     SqlData           = [ActiveDirectory]::ForestInformation
                     SqlTable          = 'dbo.[ForestInformation]'
-                    SqlTableTransopse = $true
+                    SqlTableTranspose = $true
                     SqlTableCreate    = $true
                 }
 
@@ -112,7 +112,7 @@ $Document = [ordered]@{
                     SqlDatabase           = 'SSAE18'
                     SqlData               = [ActiveDirectory]::ForestFSMO
                     SqlTable              = 'dbo.[ForestFSMO]'
-                    SqlTableTransopse     = $true
+                    SqlTableTranspose     = $true
                     SqlTableCreate        = $true
                 }
                 <#

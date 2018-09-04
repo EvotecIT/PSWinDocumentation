@@ -5,7 +5,7 @@ function Send-SqlInsert {
         [hashtable] $SqlSettings
     )
     $ReturnData = @()
-    if ($SqlSettings.SqlTableTransopse) {
+    if ($SqlSettings.SqlTableTranspose) {
         $Object = Format-TransposeTable -Object $Object
     }
     $Queries = New-SqlQuery -Object $Object -SqlSettings $SqlSettings
@@ -46,10 +46,7 @@ function New-SqlQuery {
     )
 
     $ArraySQLQueries = New-ArrayList
-    Write-Verbose "I'm here..."
-    if ($Object) {
-        Write-Verbose "I'm here1..."
-        Write-Verbose "Count: $($Object.Count)"
+    if ($Object -ne $null) {
         ## Added fields to know when event was added to SQL and by WHO (in this case TaskS Scheduler User)
         ## Only adding when $Object exists
         $TableMapping = New-SqlTableMapping -SqlTableMapping $SqlSettings.SqlTableMapping -Object $Object
@@ -65,10 +62,6 @@ function New-SqlQuery {
             $ArrayKeys = New-ArrayList
             $ArrayValues = New-ArrayList
 
-            #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
-            #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
-
-            #Write-Verbose "Test: $($($O.PSObject.Properties.Name) -join ',')"
             if (-not $O.AddedWhen) {
                 Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
             }
@@ -78,9 +71,6 @@ function New-SqlQuery {
             foreach ($E in $O.PSObject.Properties) {
                 $FieldName = $E.Name
                 $FieldValue = $E.Value
-
-                #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWhen" -Value (Get-Date)
-                #Add-Member -InputObject $O -MemberType NoteProperty -Name "AddedWho" -Value ($Env:USERNAME)
 
                 foreach ($MapKey in $TableMapping.Keys) {
                     if ($FieldName -eq $MapKey) {
@@ -100,7 +90,7 @@ function New-SqlQuery {
                 Add-ToArray -List $ArrayMain -Element ($ArrayValues -join ',')
                 Add-ToArray -List $ArrayMain -Element ')'
 
-                #Add-ToArray -List $ArraySQLQueries -Element ([string] ($ArrayMain) -replace "`n", "" -replace "`r", "")
+                Add-ToArray -List $ArraySQLQueries -Element ([string] ($ArrayMain) -replace "`n", "" -replace "`r", "")
             }
         }
     }

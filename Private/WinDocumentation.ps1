@@ -5,70 +5,74 @@ function Get-ObjectType {
         [string] $ObjectName = 'Random Object Name',
         [switch] $VerboseOnly
     )
-    $Data = [ordered] @{}
-    $Data.ObjectName = $ObjectName
+    $ReturnData = [ordered] @{}
+    $ReturnData.ObjectName = $ObjectName
 
-    if ($Object) {
+    if ($Object -ne $null) {
         try {
             $TypeInformation = $Object.GetType()
-            $Data.ObjectTypeName = $TypeInformation.Name
-            $Data.ObjectTypeBaseName = $TypeInformation.BaseType
-            $Data.SystemType = $TypeInformation.UnderlyingSystemType
+            $ReturnData.ObjectTypeName = $TypeInformation.Name
+            $ReturnData.ObjectTypeBaseName = $TypeInformation.BaseType
+            $ReturnData.SystemType = $TypeInformation.UnderlyingSystemType
         } catch {
-            $Data.ObjectTypeName = ''
-            $Data.ObjectTypeBaseName = ''
-            $Data.SystemType = ''
+            $ReturnData.ObjectTypeName = ''
+            $ReturnData.ObjectTypeBaseName = ''
+            $ReturnData.SystemType = ''
+            #Write-Verbose "Get-ObjectType - Outside Error: $($_.Exception.Message)"
         }
         try {
             $TypeInformationInsider = $Object[0].GetType()
-            $Data.ObjectTypeInsiderName = $TypeInformationInsider.Name
-            $Data.ObjectTypeInsiderBaseName = $TypeInformationInsider.BaseType
-            $Data.SystemTypeInsider = $TypeInformationInsider.UnderlyingSystemType
+            $ReturnData.ObjectTypeInsiderName = $TypeInformationInsider.Name
+            $ReturnData.ObjectTypeInsiderBaseName = $TypeInformationInsider.BaseType
+            $ReturnData.SystemTypeInsider = $TypeInformationInsider.UnderlyingSystemType
         } catch {
-            $Data.ObjectTypeInsiderName = ''
-            $Data.ObjectTypeInsiderBaseName = ''
-            $Data.SystemTypeInsider = ''
+
+            $ReturnData.ObjectTypeInsiderName = ''
+            $ReturnData.ObjectTypeInsiderBaseName = ''
+            $ReturnData.SystemTypeInsider = ''
+            #Write-Verbose "Get-ObjectType - Inside Error: $($_.Exception.Message)"
         }
     } else {
-        $Data.ObjectTypeName = ''
-        $Data.ObjectTypeBaseName = ''
-        $Data.SystemType = ''
-        $Data.ObjectTypeInsiderName = ''
-        $Data.ObjectTypeInsiderBaseName = ''
-        $Data.SystemTypeInsider = ''
+        $ReturnData.ObjectTypeName = ''
+        $ReturnData.ObjectTypeBaseName = ''
+        $ReturnData.SystemType = ''
+        $ReturnData.ObjectTypeInsiderName = ''
+        $ReturnData.ObjectTypeInsiderBaseName = ''
+        $ReturnData.SystemTypeInsider = ''
+        #Write-Verbose "Get-ObjectType - No data to process - Object is empty?"
     }
-    Write-Verbose "Get-ObjectType - ObjectTypeName: $($Data.ObjectTypeName)"
-    Write-Verbose "Get-ObjectType - ObjectTypeBaseName: $($Data.ObjectTypeBaseName)"
-    Write-Verbose "Get-ObjectType - SystemType: $($Data.SystemType)"
-    Write-Verbose "Get-ObjectType - ObjectTypeInsiderName: $($Data.ObjectTypeInsiderName)"
-    Write-Verbose "Get-ObjectType - ObjectTypeInsiderBaseName: $($Data.ObjectTypeInsiderBaseName)"
-    Write-Verbose "Get-ObjectType - SystemTypeInsider: $($Data.SystemTypeInsider)"
-    if ($VerboseOnly) { return } else { return Format-TransposeTable -Object $Data }
+    Write-Verbose "Get-ObjectType - ObjectTypeName: $($ReturnData.ObjectTypeName)"
+    Write-Verbose "Get-ObjectType - ObjectTypeBaseName: $($ReturnData.ObjectTypeBaseName)"
+    Write-Verbose "Get-ObjectType - SystemType: $($ReturnData.SystemType)"
+    Write-Verbose "Get-ObjectType - ObjectTypeInsiderName: $($ReturnData.ObjectTypeInsiderName)"
+    Write-Verbose "Get-ObjectType - ObjectTypeInsiderBaseName: $($ReturnData.ObjectTypeInsiderBaseName)"
+    Write-Verbose "Get-ObjectType - SystemTypeInsider: $($ReturnData.SystemTypeInsider)"
+    if ($VerboseOnly) { return } else { return Format-TransposeTable -Object $ReturnData }
 
 }
 
 function Get-WinDocumentationData {
     param (
         [Object] $Data,
-        [Object] $Forest,
+        [hashtable] $Forest,
         [string] $Domain
     )
-    if ($Data) {
-        $Type = Get-ObjectType $Data -Verbose
-        Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl $Data"
-        if ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data -like 'Forest*') {
+    if ($Data -ne $null) {
+        $Type = Get-ObjectType -Object $Data -ObjectName 'Get-WinDocumentationData' #-Verbose
+        #Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl $Data"
+        if ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data.ToString() -like 'Forest*') {
             return $Forest."$Data"
-        } elseif ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data -like 'Domain*' ) {
+        } elseif ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data.ToString() -like 'Domain*' ) {
             return $Forest.FoundDomains.$Domain."$Data"
         }
     }
-    Write-Verbose 'Get-WinDocumentationData - Data was $null'
+    #Write-Verbose 'Get-WinDocumentationData - Data was $null'
     return
 }
 function Get-WinDocumentationText {
     param (
         [string[]] $Text,
-        [Object] $Forest,
+        [hashtable] $Forest,
         [string] $Domain
     )
     $Array = @()
@@ -99,11 +103,11 @@ function New-ADDocumentBlock {
         } else {
             $SectionDetails = $SectionName
         }
-        Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.SqlData)]"
-        $TableData = (Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain)
-        $ExcelData = (Get-WinDocumentationData -Data $Section.ExcelData -Forest $Forest -Domain $Domain)
-        $ListData = (Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain)
-        $SqlData = (Get-WinDocumentationData -Data $Section.SqlData -Forest $Forest -Domain $Domain)
+        #Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.SqlData)][Forest: $Forest][Domain: $Domain]"
+        $TableData = Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain
+        $ExcelData = Get-WinDocumentationData -Data $Section.ExcelData -Forest $Forest -Domain $Domain
+        $ListData = Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain
+        $SqlData = Get-WinDocumentationData -Data $($Section.SqlData) -Forest $Forest -Domain $Domain
 
         ### Preparing chart data
         $ChartData = (Get-WinDocumentationData -Data $Section.ChartData -Forest $Forest -Domain $Domain)

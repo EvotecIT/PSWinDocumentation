@@ -59,32 +59,22 @@ Function Get-Types {
 function Get-TypesRequired {
     [CmdletBinding()]
     param (
-        [System.Object] $Document
+        [hashtable[]] $Sections
     )
-    $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
-    $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
-
     $TypesRequired = New-ArrayList
-    foreach ($Section in $ADSectionsDomain) {
-        if ($Document.DocumentAD.Sections.SectionDomain.$Section.Use -eq $True) {
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.TableData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ListData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ChartData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.ExcelData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionDomain.$Section.SqlData -SkipNull -RequireUnique -FullComparison
+    $Types = 'TableData', 'ListData', 'ChartData', 'SqlData', 'ExcelData'
+    foreach ($Section in $Sections) {
+        $Keys = Get-ObjectKeys -Object $Section
+        foreach ($Key in $Keys) {
+            if ($Section.$Key.Use -eq $True) {
+                foreach ($Type in $Types) {
+                    #Write-Verbose "Get-TypesRequired - Section: $Key Type: $Type Value: $($Section.$Key.$Type)"
+                    Add-ToArrayAdvanced -List $TypesRequired -Element $Section.$Key.$Type -SkipNull -RequireUnique -FullComparison
+                }
+            }
         }
     }
-
-    foreach ($Section in $ADSectionsForest) {
-        if ($Document.DocumentAD.Sections.SectionForest.$Section.Use -eq $True) {
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.TableData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ListData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ChartData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.ExcelData -SkipNull -RequireUnique -FullComparison
-            Add-ToArrayAdvanced -List $TypesRequired -Element $Document.DocumentAD.Sections.SectionForest.$Section.SqlData -SkipNull -RequireUnique -FullComparison
-        }
-    }
-    #Show-Array $TypesRequired -WithType
+    Write-Verbose "Get-TypesRequired - FinalList: $($TypesRequired -join ' ,')"
     return $TypesRequired
 }
 function Get-DocumentPath {

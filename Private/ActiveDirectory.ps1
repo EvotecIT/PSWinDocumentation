@@ -6,7 +6,7 @@ function Get-WinADForestInformation {
     )
     if ($TypesRequired -eq $null) {
         Write-Verbose 'Get-WinADForestInformation - TypesRequired is null. Getting all.'
-        $TypesRequired = Get-Types
+        $TypesRequired = Get-Types -Types [ActiveDirectory]
     } # Gets all types
 
     $Data = [ordered] @{}
@@ -176,7 +176,7 @@ function Get-WinADDomainInformation {
     )
     if ($TypesRequired -eq $null) {
         Write-Verbose 'Get-WinADDomainInformation - TypesRequired is null. Getting all.'
-        $TypesRequired = Get-Types
+        $TypesRequired = Get-Types -Types [ActiveDirectory]
     } # Gets all types
     $Data = [ordered] @{}
     Write-Verbose "Getting domain information - $Domain DomainRootDSE"

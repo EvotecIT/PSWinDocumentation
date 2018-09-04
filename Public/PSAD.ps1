@@ -9,13 +9,14 @@ function Start-Documentation {
     Test-Configuration -Document $Document
 
     if ($Document.DocumentAD.Enable) {
-        $TypesRequired = Get-TypesRequired -Document $Document
+        $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
+
         $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
         $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
+
         $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
         $Forest = Get-WinADForestInformation -TypesRequired $TypesRequired
         $TimeDataOnly.Stop()
-
         $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
         ### Starting WORD
         if ($Document.DocumentAD.ExportWord) {
