@@ -1,5 +1,5 @@
 Import-Module PSWriteWord # -Force
-#Import-Module PSWriteExcel
+Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
@@ -68,7 +68,7 @@ $Document = [ordered]@{
                 }
                 #>
                 SectionForestSummary = [ordered] @{
-                    Use               = $true
+                    Use               = $false
                     TocEnable         = $True
                     TocText           = 'General Information - Forest Summary'
                     TocListLevel      = 0
@@ -95,7 +95,7 @@ $Document = [ordered]@{
 
 
                 SectionForestFSMO    = [ordered] @{
-                    Use                   = $true
+                    Use                   = $false
                     TableData             = [ActiveDirectory]::ForestFSMO
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -495,18 +495,18 @@ $Document = [ordered]@{
                 }
                 #>
                 SectionExcelDomainUsers               = [ordered] @{
-                    Use              = $true
-                    ExcelExport      = $false
-                    ExcelWorkSheet   = '<Domain> - Users'
-                    ExcelData        = [ActiveDirectory]::DomainUsers
+                    Use                     = $true
+                    ExcelExport             = $false
+                    ExcelWorkSheet          = '<Domain> - Users'
+                    ExcelData               = [ActiveDirectory]::DomainUsers
 
-                    SqlExport        = $true
-                    SqlServer        = 'EVO1'
-                    SqlDatabase      = 'SSAE18'
-                    SqlData          = [ActiveDirectory]::DomainUsers
-                    SqlTable         = 'dbo.[Users]'
-                    SqlTableCreate   = $true
-                    SqlTabl1eMapping = [ordered] @{
+                    SqlExport               = $true
+                    SqlServer               = 'EVO1'
+                    SqlDatabase             = 'SSAE18'
+                    SqlData                 = [ActiveDirectory]::DomainUsers
+                    SqlTable                = 'dbo.[Users]'
+                    SqlTableCreate          = $true
+                    DisabledSqlTableMapping = [ordered] @{  # SqlTableMapping is proper name
                         # Left Side is data in PSWinReporting
                         # Right Side is column name in SQL
                         # Changing makes sense only for left side...
