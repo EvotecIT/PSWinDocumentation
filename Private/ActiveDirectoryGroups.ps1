@@ -2,7 +2,8 @@ function Get-WinUsers {
     param(
         [System.Object[]] $Users,
         [System.Object[]] $ADCatalog,
-        [System.Object[]] $ADCatalogUsers
+        [System.Object[]] $ADCatalogUsers,
+        [string] $Domain
     )
     $UserList = @()
     foreach ($U in $Users) {
@@ -43,6 +44,7 @@ function Get-WinUsers {
 
             "Primary Group"                     = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $U.PrimaryGroup -Type 'SamAccountName')
             "Member Of"                         = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $U.MemberOf -Type 'SamAccountName' -Splitter ', ')
+            "Domain"                            = $Domain
         }
 
     }
@@ -52,7 +54,8 @@ function Get-WinUsers {
 function Get-WinGroups {
     param (
         [System.Object[]] $Groups,
-        [System.Object[]] $Users
+        [System.Object[]] $Users,
+        [string] $Domain
     )
     $ReturnGroups = @()
     foreach ($Group in $Groups) {
@@ -70,6 +73,7 @@ function Get-WinGroups {
             'Manager Email'         = $User.EmailAddress
             'Group Members'         = (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -DistinguishedName $Group.Members -Type 'SamAccountName')
             'Group Members DN'      = $Group.Members
+            "Domain"                = $Domain
         }
     }
     return Format-TransposeTable -Object $ReturnGroups
@@ -130,6 +134,7 @@ function Get-WinGroupMembers {
                     "Created"                           = $Object.Created
                     "Modified"                          = $Object.Modified
                     "Protected"                         = $Object.ProtectedFromAccidentalDeletion
+                    "Domain"                            = $Domain
                 }
                 # $Member
             }
@@ -182,6 +187,7 @@ function Get-WinGroupMembers {
                     "Created"                           = $Object.Created
                     "Modified"                          = $Object.Modified
                     "Protected"                         = $Object.ProtectedFromAccidentalDeletion
+                    "Domain"                            = $Domain
                 }
             }
         }
