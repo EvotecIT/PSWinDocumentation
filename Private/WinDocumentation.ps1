@@ -127,7 +127,10 @@ function New-ADDocumentBlock {
             Write-Verbose "Sending [$SectionDetails] to SQL Server"
             $SqlQuery = Send-SqlInsert -Object $SqlData -SqlSettings $Section
             foreach ($Query in $SqlQuery) {
+
+                # if ($Query -like '*Error*') {
                 Write-Color @script:WriteParameters -Text '[i] ', 'MS SQL Output: ', $Query -Color White, White, Yellow
+                # }
             }
         }
     }

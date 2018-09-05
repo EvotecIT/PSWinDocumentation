@@ -3,6 +3,7 @@ Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
+Import-Module PSSharedGoods -Force
 
 $Document = [ordered]@{
     Configuration    = [ordered] @{
@@ -18,7 +19,7 @@ $Document = [ordered]@{
         }
         DisplayConsole = @{
             ShowTime   = $false
-            LogFile    = "$ENV:TEMP\PSWinDocumentationTesting.log"
+            LogFile    = "C:\PSWinDocumentationTesting.log"
             TimeFormat = 'yyyy-MM-dd HH:mm:ss'
         }
         Debug          = @{
@@ -593,31 +594,59 @@ $Document = [ordered]@{
                     ExcelWorkSheet = '<Domain> - Expired excl Disabled'
                     ExcelData      = [ActiveDirectory]::DomainUsersExpiredExclDisabled
                 }
-                SectionExcelDomainUsersFullList                   = [ordered] @{
+                #>
+                SectionExcelDomainUsersFullList       = [ordered] @{
                     Use            = $true
                     ExcelExport    = $false
                     ExcelWorkSheet = '<Domain> - Users List Full'
                     ExcelData      = [ActiveDirectory]::DomainUsersFullList
+                    SqlExport      = $true
+                    SqlServer      = 'EVO1'
+                    SqlDatabase    = 'SSAE18'
+                    SqlData        = [ActiveDirectory]::DomainUsersFullList
+                    SqlTable       = 'dbo.[DomainUsersFullList]'
+                    SqlTableCreate = $true
                 }
-                SectionExcelDomainComputersFullList               = [ordered] @{
+
+                SectionExcelDomainComputersFullList   = [ordered] @{
                     Use            = $true
                     ExcelExport    = $false
                     ExcelWorkSheet = '<Domain> - Computers List'
                     ExcelData      = [ActiveDirectory]::DomainComputersFullList
+
+                    SqlExport      = $true
+                    SqlServer      = 'EVO1'
+                    SqlDatabase    = 'SSAE18'
+                    SqlTableCreate = $true
+                    SqlData        = [ActiveDirectory]::DomainComputersFullList
+                    SqlTable       = 'dbo.[DomainComputersFullList]'
                 }
-                SectionExcelDomainGroupsFullList                  = [ordered] @{
+                SectionExcelDomainGroupsFullList      = [ordered] @{
                     Use            = $true
                     ExcelExport    = $false
                     ExcelWorkSheet = '<Domain> - Groups List'
                     ExcelData      = [ActiveDirectory]::DomainGroupsFullList
+
+                    SqlExport      = $true
+                    SqlServer      = 'EVO1'
+                    SqlDatabase    = 'SSAE18'
+                    SqlTableCreate = $true
+                    SqlData        = [ActiveDirectory]::DomainGroupsFullList
+                    SqlTable       = 'dbo.[DomainGroupsFullList]'
                 }
-                SectionExcelDomainGroupsRest                      = [ordered] @{
+                SectionExcelDomainGroupsRest          = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Groups'
                     ExcelData      = [ActiveDirectory]::DomainGroups
+
+                    SqlExport      = $true
+                    SqlServer      = 'EVO1'
+                    SqlDatabase    = 'SSAE18'
+                    SqlTableCreate = $true
+                    SqlData        = [ActiveDirectory]::DomainGroups
+                    SqlTable       = 'dbo.[DomainGroups]'
                 }
-                #>
 
                 SectionExcelDomainGroupsSpecial       = [ordered] @{
                     Use            = $true
