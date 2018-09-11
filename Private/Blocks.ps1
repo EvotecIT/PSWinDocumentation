@@ -47,10 +47,11 @@ function Test-Configuration {
 Function Get-Types {
     [CmdletBinding()]
     param (
-        $Types = [ActiveDirectory]
+        [Object] $Types
     )
     $TypesRequired = @()
     foreach ($Type in $Types) {
+        #Write-Verbose "Type: $Type"
         $TypesRequired += $Type.GetEnumValues()
     }
     return $TypesRequired

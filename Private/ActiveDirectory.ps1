@@ -1,3 +1,7 @@
+<#
+    Useful AD information: https://social.technet.microsoft.com/wiki/contents/articles/12031.active-directory-powershell-ad-module-properties.aspx
+#>
+
 function Get-WinADForestInformation {
     [CmdletBinding()]
     param (
@@ -6,7 +10,7 @@ function Get-WinADForestInformation {
     )
     if ($TypesRequired -eq $null) {
         Write-Verbose 'Get-WinADForestInformation - TypesRequired is null. Getting all.'
-        $TypesRequired = Get-Types -Types [ActiveDirectory]
+        $TypesRequired = Get-Types -Types ([ActiveDirectory])
     } # Gets all types
 
     $Data = [ordered] @{}
@@ -176,7 +180,7 @@ function Get-WinADDomainInformation {
     )
     if ($TypesRequired -eq $null) {
         Write-Verbose 'Get-WinADDomainInformation - TypesRequired is null. Getting all.'
-        $TypesRequired = Get-Types -Types [ActiveDirectory]
+        $TypesRequired = Get-Types -Types ([ActiveDirectory])
     } # Gets all types
     $Data = [ordered] @{}
     Write-Verbose "Getting domain information - $Domain DomainRootDSE"
@@ -186,7 +190,7 @@ function Get-WinADDomainInformation {
     Write-Verbose "Getting domain information - $Domain DomainGroupsFullList"
     $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
     Write-Verbose "Getting domain information - $Domain DomainUsersFullList"
-    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
+    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | get-member -force -memberType properties | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
     Write-Verbose "Getting domain information - $Domain DomainComputersFullList"
     $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
 
