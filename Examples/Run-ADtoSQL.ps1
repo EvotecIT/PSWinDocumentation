@@ -6,7 +6,7 @@ Import-Module ActiveDirectory
 Import-Module PSSharedGoods -Force
 
 $Document = [ordered]@{
-    Configuration    = [ordered] @{
+    Configuration = [ordered] @{
         Prettify       = @{
             CompanyName        = 'Evotec'
             UseBuiltinTemplate = $true
@@ -26,7 +26,7 @@ $Document = [ordered]@{
             Verbose = $false
         }
     }
-    DocumentAD       = [ordered] @{
+    DocumentAD    = [ordered] @{
         Enable        = $true
         ExportWord    = $false
         ExportExcel   = $false
@@ -709,9 +709,6 @@ $Document = [ordered]@{
                 #>
             }
         }
-
-    }
-    DocumentExchange = [ordered] @{
 
     }
 }

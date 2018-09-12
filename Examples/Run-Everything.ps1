@@ -1,12 +1,13 @@
-Import-Module PSWriteWord -Force
-Import-Module PSWriteExcel -Force
+Import-Module PSWriteWord
+Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
 Import-Module PSSharedGoods -Force
+Import-Module AWSPowerShell
 
 $Document = [ordered]@{
-    Configuration    = [ordered] @{
+    Configuration = [ordered] @{
         Prettify       = @{
             CompanyName        = 'Evotec'
             UseBuiltinTemplate = $true
@@ -26,8 +27,8 @@ $Document = [ordered]@{
             Verbose = $false
         }
     }
-    DocumentAD       = [ordered] @{
-        Enable        = $true
+    DocumentAD    = [ordered] @{
+        Enable        = $false
         ExportWord    = $false
         ExportExcel   = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.docx"
@@ -586,9 +587,132 @@ $Document = [ordered]@{
                 }
             }
         }
-
     }
-    DocumentExchange = [ordered] @{
+    DocumentAWS   = [ordered] @{
+        Enable        = $true
+        ExportWord    = $true
+        ExportExcel   = $false
+        FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.docx"
+        FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xlsx"
+        Configuration = [ordered] @{
+            AWSAccessKey = ''
+            AWSSecretKey = ''
+            AWSRegion    = ''
+        }
+        Sections      = [ordered] @{
+            SectionTOC              = [ordered] @{
+                Use                  = $true
+                TocGlobalDefinition  = $true
+                TocGlobalTitle       = 'Table of content'
+                TocGlobalRightTabPos = 15
+                #TocGlobalSwitches    = 'A', 'C' #[TableContentSwitches]::C, [TableContentSwitches]::A
+                PageBreaksAfter      = 1
+            }
+            SectionAWSIntroduction  = [ordered] @{
+                ### Enables section
+                Use             = $true
+
+                ### Decides how TOC should be visible
+                TocEnable       = $True
+                TocText         = 'Scope'
+                TocListLevel    = 0
+                TocListItemType = [ListItemType]::Numbered
+                TocHeadingType  = [HeadingType]::Heading1
+
+                ### Text is added before table/list
+                Text            = "This document provides starting overview of AWS..."
+                TextAlignment   = [Alignment]::Both
+                PageBreaksAfter = 1
+
+            }
+            SectionAWS1             = [ordered] @{
+                Use             = $true
+                TocEnable       = $True
+                TocText         = 'General Information - AWSEC2DetailsList'
+                TocListLevel    = 0
+                TocListItemType = [ListItemType]::Numbered
+                TocHeadingType  = [HeadingType]::Heading1
+                TableData       = [AWS]::AWSEC2DetailsList
+                TableDesign     = [TableDesign]::ColorfulGridAccent5
+                Text            = "AWSEC2DetailsList"
+                ExcelExport     = $true
+                ExcelWorkSheet  = 'Forest Summary'
+                ExcelData       = [AWS]::AWSEC2DetailsList
+            }
+            SectionAWS2             = [ordered] @{
+                Use             = $true
+                TocEnable       = $True
+                TocText         = 'General Information - AWSRDSDetailsList'
+                TocListLevel    = 0
+                TocListItemType = [ListItemType]::Numbered
+                TocHeadingType  = [HeadingType]::Heading1
+                TableData       = [AWS]::AWSRDSDetailsList
+                TableDesign     = [TableDesign]::ColorfulGridAccent5
+
+                Text            = "AWSRDSDetailsList"
+                ExcelExport     = $true
+                ExcelWorkSheet  = 'Forest Summary'
+                ExcelData       = [AWS]::AWSRDSDetailsList
+            }
+            SectionAWS3             = [ordered] @{
+                Use             = $true
+                TocEnable       = $True
+                TocText         = 'General Information - AWSLBDetailsList'
+                TocListLevel    = 0
+                TocListItemType = [ListItemType]::Numbered
+                TocHeadingType  = [HeadingType]::Heading1
+                TableData       = [AWS]::AWSLBDetailsList
+                TableDesign     = [TableDesign]::ColorfulGridAccent5
+
+                Text            = "AWSLBDetailsList"
+                ExcelExport     = $true
+                ExcelWorkSheet  = 'AWSLBDetailsList'
+                ExcelData       = [AWS]::AWSLBDetailsList
+            }
+            SectionAWS4             = [ordered] @{
+                Use             = $true
+                TocEnable       = $True
+                TocText         = 'General Information - AWSNetworkDetailsList'
+                TocListLevel    = 0
+                TocListItemType = [ListItemType]::Numbered
+                TocHeadingType  = [HeadingType]::Heading1
+                TableData       = [AWS]::AWSNetworkDetailsList
+                TableDesign     = [TableDesign]::ColorfulGridAccent5
+
+                Text            = "AWSNetworkDetailsList"
+                ExcelExport     = $true
+                ExcelWorkSheet  = 'AWSNetworkDetailsList'
+                ExcelData       = [AWS]::AWSNetworkDetailsList
+            }
+            SectionAWSE5            = [ordered] @{
+                Use             = $true
+                TocEnable       = $True
+                TocText         = 'General Information - AWSEIPDetailsList'
+                TocListLevel    = 0
+                TocListItemType = [ListItemType]::Numbered
+                TocHeadingType  = [HeadingType]::Heading1
+                TableData       = [AWS]::AWSEIPDetailsList
+                TableDesign     = [TableDesign]::ColorfulGridAccent5
+                Text            = "AWSEIPDetailsList"
+                ExcelExport     = $true
+                ExcelWorkSheet  = 'AWSEIPDetailsList'
+                ExcelData       = [AWS]::AWSEIPDetailsList
+            }
+            SectionAWS6DoesntMatter = [ordered] @{
+                Use             = $true
+                TocEnable       = $True
+                TocText         = 'General Information - AWSIAMDetailsList'
+                TocListLevel    = 0
+                TocListItemType = [ListItemType]::Numbered
+                TocHeadingType  = [HeadingType]::Heading1
+                TableData       = [AWS]::AWSIAMDetailsList
+                TableDesign     = [TableDesign]::ColorfulGridAccent5
+                Text            = "AWSIAMDetailsList"
+                ExcelExport     = $true
+                ExcelWorkSheet  = 'AWSIAMDetailsList'
+                ExcelData       = [AWS]::AWSIAMDetailsList
+            }
+        }
 
     }
 }

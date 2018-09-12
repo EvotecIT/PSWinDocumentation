@@ -1,7 +1,3 @@
-<#
-    Useful AD information: https://social.technet.microsoft.com/wiki/contents/articles/12031.active-directory-powershell-ad-module-properties.aspx
-#>
-
 function Get-WinADForestInformation {
     [CmdletBinding()]
     param (
