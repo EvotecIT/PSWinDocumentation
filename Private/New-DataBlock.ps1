@@ -1,4 +1,4 @@
-function New-ADDocumentBlock {
+function New-DataBlock {
     param(
         [Xceed.Words.NET.Container]$WordDocument,
         [Object] $Section,
@@ -82,7 +82,7 @@ function New-ADDocumentBlock {
             }
             if ($ExcelData) {
                 Write-Verbose "Generating EXCEL Section for [$SectionDetails]"
-                Add-ExcelWorksheetData -ExcelDocument $Excel -ExcelWorksheetName $WorkSheetName -DataTable $ExcelData -AutoFit -AutoFilter #-Verbose
+                $ExcelWorksheet = Add-ExcelWorksheetData -ExcelDocument $Excel -ExcelWorksheetName $WorkSheetName -DataTable $ExcelData -AutoFit -AutoFilter -PreScanHeaders #-Verbose
                 #| Convert-ToExcel -Path $Excel -AutoSize -AutoFilter -WorksheetName $WorkSheetName -ClearSheet -NoNumberConversion SSDL, GUID, ID, ACLs
             }
         }

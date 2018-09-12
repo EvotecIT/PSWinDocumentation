@@ -25,10 +25,11 @@ function Start-Documentation {
         if ($Document.DocumentAD.ExportExcel) {
             $ExcelDocument = New-ExcelDocument
         }
+        #Get-ObjectType -Object $WordDocument -Verbose -VerboseOnly
 
         ### Start Sections
         foreach ($Section in $ADSectionsForest) {
-            $WordDocument = New-ADDocumentBlock `
+            $WordDocument = New-DataBlock `
                 -WordDocument $WordDocument `
                 -Section $Document.DocumentAD.Sections.SectionForest.$Section `
                 -Forest $Forest `
@@ -37,7 +38,7 @@ function Start-Documentation {
         }
         foreach ($Domain in $Forest.Domains) {
             foreach ($Section in $ADSectionsDomain) {
-                $WordDocument = New-ADDocumentBlock `
+                $WordDocument = New-DataBlock `
                     -WordDocument $WordDocument `
                     -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
                     -Forest $Forest `
@@ -58,7 +59,7 @@ function Start-Documentation {
         }
         ### Ending EXCEL
         if ($Document.DocumentAD.ExportExcel) {
-            Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAD.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenExcel
+            $ExcelData = Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAD.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenExcel
         }
         $TimeDocuments.Stop()
         $TimeTotal.Stop()

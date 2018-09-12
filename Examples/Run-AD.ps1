@@ -1,8 +1,9 @@
-Import-Module PSWriteWord
-Import-Module PSWriteExcel
-Import-Module PSWinDocumentation
+Import-Module PSWriteWord -Force
+Import-Module PSWriteExcel -Force
+Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module ActiveDirectory
+Import-Module PSSharedGoods -Force
 
 $Document = [ordered]@{
     Configuration    = [ordered] @{
@@ -27,7 +28,7 @@ $Document = [ordered]@{
     }
     DocumentAD       = [ordered] @{
         Enable        = $true
-        ExportWord    = $true
+        ExportWord    = $false
         ExportExcel   = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.xlsx"
