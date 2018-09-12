@@ -496,7 +496,7 @@ $Document = [ordered]@{
                 }
                 #>
                 SectionExcelDomainUsers               = [ordered] @{
-                    Use                     = $true
+                    Use                     = $false
                     ExcelExport             = $false
                     ExcelWorkSheet          = '<Domain> - Users'
                     ExcelData               = [ActiveDirectory]::DomainUsers
@@ -563,7 +563,7 @@ $Document = [ordered]@{
                     ExcelData      = [ActiveDirectory]::DomainUsersSystemAccounts
                 }
                 SectionExcelDomainUsersNeverExpiring  = [ordered] @{
-                    Use            = $true
+                    Use            = $false
                     ExcelExport    = $false
                     ExcelWorkSheet = '<Domain> - Never Expiring'
                     ExcelData      = [ActiveDirectory]::DomainUsersNeverExpiring
@@ -596,20 +596,21 @@ $Document = [ordered]@{
                 }
                 #>
                 SectionExcelDomainUsersFullList       = [ordered] @{
-                    Use            = $true
-                    ExcelExport    = $false
-                    ExcelWorkSheet = '<Domain> - Users List Full'
-                    ExcelData      = [ActiveDirectory]::DomainUsersFullList
-                    SqlExport      = $true
-                    SqlServer      = 'EVO1'
-                    SqlDatabase    = 'SSAE18'
-                    SqlData        = [ActiveDirectory]::DomainUsersFullList
-                    SqlTable       = 'dbo.[DomainUsersFullList]'
-                    SqlTableCreate = $true
+                    Use                   = $false
+                    ExcelExport           = $false
+                    ExcelWorkSheet        = '<Domain> - Users List Full'
+                    ExcelData             = [ActiveDirectory]::DomainUsersFullList
+                    SqlExport             = $true
+                    SqlServer             = 'EVO1'
+                    SqlDatabase           = 'SSAE18'
+                    SqlData               = [ActiveDirectory]::DomainUsersFullList
+                    SqlTable              = 'dbo.[DomainUsersFullList]'
+                    SqlTableCreate        = $false
+                    SqlTableAlterIfNeeded = $true
                 }
 
                 SectionExcelDomainComputersFullList   = [ordered] @{
-                    Use            = $true
+                    Use            = $false
                     ExcelExport    = $false
                     ExcelWorkSheet = '<Domain> - Computers List'
                     ExcelData      = [ActiveDirectory]::DomainComputersFullList
@@ -622,20 +623,21 @@ $Document = [ordered]@{
                     SqlTable       = 'dbo.[DomainComputersFullList]'
                 }
                 SectionExcelDomainGroupsFullList      = [ordered] @{
-                    Use            = $true
-                    ExcelExport    = $false
-                    ExcelWorkSheet = '<Domain> - Groups List'
-                    ExcelData      = [ActiveDirectory]::DomainGroupsFullList
+                    Use                   = $true
+                    ExcelExport           = $false
+                    ExcelWorkSheet        = '<Domain> - Groups List'
+                    ExcelData             = [ActiveDirectory]::DomainGroupsFullList
 
-                    SqlExport      = $true
-                    SqlServer      = 'EVO1'
-                    SqlDatabase    = 'SSAE18'
-                    SqlTableCreate = $true
-                    SqlData        = [ActiveDirectory]::DomainGroupsFullList
-                    SqlTable       = 'dbo.[DomainGroupsFullList]'
+                    SqlExport             = $true
+                    SqlServer             = 'EVO1'
+                    SqlDatabase           = 'SSAE18'
+                    SqlTableCreate        = $false
+                    SqlData               = [ActiveDirectory]::DomainGroupsFullList
+                    SqlTable              = 'dbo.[DomainGroupsFullList]'
+                    SqlTableAlterIfNeeded = $true
                 }
                 SectionExcelDomainGroupsRest          = [ordered] @{
-                    Use            = $true
+                    Use            = $false
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Groups'
                     ExcelData      = [ActiveDirectory]::DomainGroups
@@ -649,7 +651,7 @@ $Document = [ordered]@{
                 }
 
                 SectionExcelDomainGroupsSpecial       = [ordered] @{
-                    Use            = $true
+                    Use            = $false
                     ExcelExport    = $true
                     ExcelWorkSheet = '<Domain> - Groups Special'
                     ExcelData      = [ActiveDirectory]::DomainGroupsSpecial
