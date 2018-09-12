@@ -190,7 +190,7 @@ function Get-WinADDomainInformation {
     Write-Verbose "Getting domain information - $Domain DomainGroupsFullList"
     $Data.DomainGroupsFullList = Get-ADGroup -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
     Write-Verbose "Getting domain information - $Domain DomainUsersFullList"
-    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | get-member -force -memberType properties | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
+    $Data.DomainUsersFullList = Get-ADUser -Server $Domain -ResultPageSize 500000 -Filter * -Properties *, "msDS-UserPasswordExpiryTimeComputed" | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
     Write-Verbose "Getting domain information - $Domain DomainComputersFullList"
     $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
 
