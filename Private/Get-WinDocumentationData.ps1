@@ -1,18 +1,22 @@
 function Get-WinDocumentationData {
     param (
-        [Object] $Data,
-        [hashtable] $Forest,
+        [alias("Data")][Object] $DataToGet,
+        [alias("Forest")][Object] $Object,
         [string] $Domain
     )
-    if ($Data -ne $null) {
-        $Type = Get-ObjectType -Object $Data -ObjectName 'Get-WinDocumentationData' #-Verbose
-        #Write-Verbose "Get-WinDocumentationData - Type: $($Type.ObjectTypeName) - Tabl $Data"
-        if ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data.ToString() -like 'Forest*') {
-            return $Forest."$Data"
-        } elseif ($Type.ObjectTypeName -eq 'ActiveDirectory' -and $Data.ToString() -like 'Domain*' ) {
-            return $Forest.FoundDomains.$Domain."$Data"
+    if ($DataToGet -ne $null) {
+        $Type = Get-ObjectType -Object $DataToGet -ObjectName 'Get-WinDocumentationData' -Verbose
+        Write-Verbose "Get-WinDocumentationData - DataToGet: $DataToGet Domain: $Domain"
+        if ($Type.ObjectTypeName -eq 'ActiveDirectory') {
+            if ($DataToGet.ToString() -like 'Forest*') {
+                return $Object."$DataToGet"
+            } elseif ($DataToGet.ToString() -like 'Domain*' ) {
+                return $Object.FoundDomains.$Domain."$DataToGet"
+            }
+        } else {
+
+            return $Object.$DataToGet
         }
     }
-    #Write-Verbose 'Get-WinDocumentationData - Data was $null'
     return
 }

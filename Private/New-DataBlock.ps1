@@ -14,13 +14,13 @@ function New-DataBlock {
             $SectionDetails = $SectionName
         }
         #Write-Verbose "New-ADDocumentBlock - Processing section [$Section][$($Section.SqlData)][Forest: $Forest][Domain: $Domain]"
-        $TableData = Get-WinDocumentationData -Data $Section.TableData -Forest $Forest -Domain $Domain
-        $ExcelData = Get-WinDocumentationData -Data $Section.ExcelData -Forest $Forest -Domain $Domain
-        $ListData = Get-WinDocumentationData -Data $Section.ListData -Forest $Forest -Domain $Domain
-        $SqlData = Get-WinDocumentationData -Data $($Section.SqlData) -Forest $Forest -Domain $Domain
+        $TableData = Get-WinDocumentationData -DataToGet $Section.TableData -Object $Forest -Domain $Domain
+        $ExcelData = Get-WinDocumentationData -DataToGet $Section.ExcelData -Object $Forest -Domain $Domain
+        $ListData = Get-WinDocumentationData -DataToGet $Section.ListData -Object $Forest -Domain $Domain
+        $SqlData = Get-WinDocumentationData -DataToGet $($Section.SqlData) -Object $Forest -Domain $Domain
 
         ### Preparing chart data
-        $ChartData = (Get-WinDocumentationData -Data $Section.ChartData -Forest $Forest -Domain $Domain)
+        $ChartData = (Get-WinDocumentationData -DataToGet $Section.ChartData -Object $Forest -Domain $Domain)
         if ($ChartData) {
             if ($Section.ChartKeys -eq 'Keys' -and $Section.ChartValues -eq 'Values') {
                 $ChartKeys = (Convert-KeyToKeyValue $ChartData).Keys
