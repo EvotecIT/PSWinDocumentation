@@ -1,9 +1,10 @@
 Import-Module PSWriteWord
 Import-Module PSWriteExcel
-Import-Module PSWinDocumentation -Force
+Import-Module PSWinDocumentation
 Import-Module PSWriteColor
+Import-Module PSSharedGoods
+Import-Module DbaTools
 Import-Module ActiveDirectory
-Import-Module PSSharedGoods -Force
 Import-Module AWSPowerShell
 
 $Document = [ordered]@{

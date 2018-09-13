@@ -1,7 +1,6 @@
-Import-Module PSWriteWord
-Import-Module PSWriteExcel
 Import-Module AWSPowerShell
-Import-Module PSWinDocumentation -Force
+Import-Module PSSharedGoods
+Import-Module PSWinDocumentation
 
 $Configuration = [ordered] @{
     AWSAccessKey = ''

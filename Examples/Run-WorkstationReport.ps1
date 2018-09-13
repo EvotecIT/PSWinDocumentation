@@ -1,5 +1,6 @@
-Import-Module PSWriteWord -Force
-Import-Module PSWinDocumentation -Force
+Import-Module PSWriteWord
+Import-Module PSSharedGoods
+Import-Module PSWinDocumentation
 
 $FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-WorkstationReport.docx"
 

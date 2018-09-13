@@ -1,7 +1,5 @@
-Import-Module PSWriteWord
-Import-Module PSWriteExcel
 Import-Module PSWinDocumentation
-Import-Module PSWriteColor
+Import-Module PSSharedGoods
 Import-Module ActiveDirectory
 
 $Forest = Get-WinADForestInformation -Verbose
