@@ -628,31 +628,31 @@ $Document = [ordered]@{
             SectionAWS1             = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSEC2DetailsList'
+                TocText         = 'General Information - AWSEC2Details'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSEC2DetailsList
+                TableData       = [AWS]::AWSEC2Details
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-                Text            = "AWSEC2DetailsList"
+                Text            = "AWSEC2Details"
                 ExcelExport     = $true
-                ExcelWorkSheet  = 'Forest Summary'
-                ExcelData       = [AWS]::AWSEC2DetailsList
+                ExcelWorkSheet  = 'AWSEC2Details'
+                ExcelData       = [AWS]::AWSEC2Details
             }
             SectionAWS2             = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSRDSDetailsList'
+                TocText         = 'General Information - AWSRDSDetails'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSRDSDetailsList
+                TableData       = [AWS]::AWSRDSDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
 
-                Text            = "AWSRDSDetailsList"
+                Text            = "AWSRDSDetails"
                 ExcelExport     = $true
-                ExcelWorkSheet  = 'Forest Summary'
-                ExcelData       = [AWS]::AWSRDSDetailsList
+                ExcelWorkSheet  = 'AWSRDSDetails'
+                ExcelData       = [AWS]::AWSRDSDetails
             }
             SectionAWS3             = [ordered] @{
                 Use             = $true
@@ -661,13 +661,13 @@ $Document = [ordered]@{
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSLBDetailsList
+                TableData       = [AWS]::AWSLBDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
 
                 Text            = "AWSLBDetailsList"
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSLBDetailsList'
-                ExcelData       = [AWS]::AWSLBDetailsList
+                ExcelData       = [AWS]::AWSLBDetails
             }
             SectionAWS4             = [ordered] @{
                 Use             = $true
@@ -676,41 +676,41 @@ $Document = [ordered]@{
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSNetworkDetailsList
+                TableData       = [AWS]::AWSSubnetDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
 
-                Text            = "AWSNetworkDetailsList"
+                Text            = "AWSSubnetDetails"
                 ExcelExport     = $true
-                ExcelWorkSheet  = 'AWSNetworkDetailsList'
-                ExcelData       = [AWS]::AWSNetworkDetailsList
+                ExcelWorkSheet  = 'AWSSubnetDetails'
+                ExcelData       = [AWS]::AWSSubnetDetails
             }
             SectionAWSE5            = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSEIPDetailsList'
+                TocText         = 'General Information - AWSElasticIpDetails'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSEIPDetailsList
+                TableData       = [AWS]::AWSElasticIpDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-                Text            = "AWSEIPDetailsList"
+                Text            = "AWSElasticIpDetails"
                 ExcelExport     = $true
-                ExcelWorkSheet  = 'AWSEIPDetailsList'
-                ExcelData       = [AWS]::AWSEIPDetailsList
+                ExcelWorkSheet  = 'AWSElasticIpDetails'
+                ExcelData       = [AWS]::AWSElasticIpDetails
             }
             SectionAWS6DoesntMatter = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSIAMDetailsList'
+                TocText         = 'General Information - AWSIAMDetails'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSIAMDetailsList
+                TableData       = [AWS]::AWSIAMDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-                Text            = "AWSIAMDetailsList"
+                Text            = "AWSIAMDetails"
                 ExcelExport     = $true
-                ExcelWorkSheet  = 'AWSIAMDetailsList'
-                ExcelData       = [AWS]::AWSIAMDetailsList
+                ExcelWorkSheet  = 'AWSIAMDetails'
+                ExcelData       = [AWS]::AWSIAMDetails
             }
         }
 
