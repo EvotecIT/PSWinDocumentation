@@ -419,11 +419,11 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain information - $Domain DomainGroups"
         $Data.DomainGroups = Get-WinGroups -Groups $Data.DomainGroupsFullList -Users $Data.DomainUsersFullList -Domain $Domain
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsMembers) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainGroups, [ActiveDirectory]::DomainGroupsMembers)) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsMembers"
         $Data.DomainGroupsMembers = Get-WinGroupMembers -Groups $Data.DomainGroups -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option Standard
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainGroupsMembersRecursive) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainGroups, [ActiveDirectory]::DomainGroupsMembersRecursive)) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsMembersRecursive"
         $Data.DomainGroupsMembersRecursive = Get-WinGroupMembers -Groups $Data.DomainGroups -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList -Option Recursive
     }

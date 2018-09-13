@@ -1,4 +1,5 @@
 function Get-AWSLBDetails {
+    [CmdletBinding()]
     param (
         [string] $AWSAccessKey,
         [string] $AWSSecretKey,

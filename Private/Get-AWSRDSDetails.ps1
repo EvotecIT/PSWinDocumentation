@@ -1,4 +1,5 @@
 function Get-AWSRDSDetails {
+    [CmdletBinding()]
     param (
         [string] $AWSAccessKey,
         [string] $AWSSecretKey,

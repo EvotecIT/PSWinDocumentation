@@ -39,7 +39,7 @@ function Start-Documentation {
                 $WordDocument = New-DataBlock `
                     -WordDocument $WordDocument `
                     -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
-                    -Forest $Forest `
+                    -Object $Forest `
                     -Domain $Domain `
                     -Excel $ExcelDocument `
                     -SectionName $Section

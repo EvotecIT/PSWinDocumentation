@@ -5,17 +5,17 @@ function Get-WinDocumentationData {
         [string] $Domain
     )
     if ($DataToGet -ne $null) {
-        $Type = Get-ObjectType -Object $DataToGet -ObjectName 'Get-WinDocumentationData' -Verbose
-        Write-Verbose "Get-WinDocumentationData - DataToGet: $DataToGet Domain: $Domain"
+        $Type = Get-ObjectType -Object $DataToGet -ObjectName 'Get-WinDocumentationData' #-Verbose
         if ($Type.ObjectTypeName -eq 'ActiveDirectory') {
-            if ($DataToGet.ToString() -like 'Forest*') {
+            #Write-Verbose "Get-WinDocumentationData - DataToGet: $DataToGet Domain: $Domain"
+            if ("$DataToGet" -like 'Forest*') {
                 return $Object."$DataToGet"
             } elseif ($DataToGet.ToString() -like 'Domain*' ) {
                 return $Object.FoundDomains.$Domain."$DataToGet"
             }
         } else {
-
-            return $Object.$DataToGet
+            #Write-Verbose "Get-WinDocumentationData - DataToGet: $DataToGet Object: $($Object.Count)"
+            return $Object."$DataToGet"
         }
     }
     return

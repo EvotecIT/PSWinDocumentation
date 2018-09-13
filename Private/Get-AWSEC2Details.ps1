@@ -1,4 +1,5 @@
 function Get-AWSEC2Details {
+    [CmdletBinding()]
     param (
         [string] $AWSAccessKey,
         [string] $AWSSecretKey,

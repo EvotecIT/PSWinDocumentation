@@ -1,10 +1,10 @@
 Add-Type -TypeDefinition @"
     public enum AWS {
         AWSEC2Details,
-        AWSRDSDetails,
+        AWSElasticIpDetails,
+        AWSIAMDetails,
         AWSLBDetails,
-        AWSNetworkDetails,
-        AWSEIPDetails,
-        AWSIAMDetails
+        AWSRDSDetails,
+        AWSSubnetDetails
     }
 "@

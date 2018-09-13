@@ -2,9 +2,9 @@ function New-DataBlock {
     param(
         [Xceed.Words.NET.Container]$WordDocument,
         [Object] $Section,
-        [Object] $Forest,
+        [alias('Object')][Object] $Forest,
         [string] $Domain,
-        $Excel,
+        [OfficeOpenXml.ExcelPackage] $Excel,
         [string] $SectionName
     )
     if ($Section.Use) {
@@ -17,7 +17,7 @@ function New-DataBlock {
         $TableData = Get-WinDocumentationData -DataToGet $Section.TableData -Object $Forest -Domain $Domain
         $ExcelData = Get-WinDocumentationData -DataToGet $Section.ExcelData -Object $Forest -Domain $Domain
         $ListData = Get-WinDocumentationData -DataToGet $Section.ListData -Object $Forest -Domain $Domain
-        $SqlData = Get-WinDocumentationData -DataToGet $($Section.SqlData) -Object $Forest -Domain $Domain
+        $SqlData = Get-WinDocumentationData -DataToGet $Section.SqlData -Object $Forest -Domain $Domain
 
         ### Preparing chart data
         $ChartData = (Get-WinDocumentationData -DataToGet $Section.ChartData -Object $Forest -Domain $Domain)
@@ -38,6 +38,8 @@ function New-DataBlock {
         $ChartTitle = (Get-WinDocumentationText -Text $Section.ChartTitle -Forest $Forest -Domain $Domain)
         $ListBuilderContent = (Get-WinDocumentationText -Text $Section.ListBuilderContent -Forest $Forest -Domain $Domain)
         $TextNoData = (Get-WinDocumentationText -Text $Section.TextNoData -Forest $Forest -Domain $Domain)
+
+        #Write-Verbose "Table Data $($TableData.Count)"
 
         if ($WordDocument) {
             Write-Verbose "Generating WORD Section for [$SectionDetails]"

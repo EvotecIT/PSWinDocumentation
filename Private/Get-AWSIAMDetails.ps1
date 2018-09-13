@@ -1,4 +1,5 @@
 function Get-AWSIAMDetails {
+    [CmdletBinding()]
     param (
         [string] $AWSAccessKey,
         [string] $AWSSecretKey,

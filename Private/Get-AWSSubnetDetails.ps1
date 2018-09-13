@@ -1,4 +1,5 @@
 function Get-AWSSubnetDetails {
+    [CmdletBinding()]
     param (
         [string] $AWSAccessKey,
         [string] $AWSSecretKey,

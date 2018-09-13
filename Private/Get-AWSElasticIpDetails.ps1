@@ -1,4 +1,5 @@
 function Get-AWSElasticIpDetails {
+    [CmdletBinding()]
     param (
         [string] $AWSAccessKey,
         [string] $AWSSecretKey,
