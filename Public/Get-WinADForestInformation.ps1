@@ -112,15 +112,17 @@ function Get-WinADForestInformation {
             return $UPNSuffixList
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestGlobalCatalogs) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestGlobalCatalogs)) {
         Write-Verbose 'Getting forest information - Forest GlobalCatalogs'
         $Data.ForestGlobalCatalogs = $Data.Forest.GlobalCatalogs
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestSPNSuffixes) {
+
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSPNSuffixes)) {
         Write-Verbose 'Getting forest information - Forest SPNSuffixes'
         $Data.ForestSPNSuffixes = $Data.Forest.SPNSuffixes
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestFSMO) {
+
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestFSMO)) {
         Write-Verbose 'Getting forest information - Forest FSMO'
         $Data.ForestFSMO = Invoke-Command -ScriptBlock {
             $FSMO = [ordered] @{
@@ -130,7 +132,8 @@ function Get-WinADForestInformation {
             return $FSMO
         }
     }
-    if ($TypesRequired -contains [ActiveDirectory]::ForestOptionalFeatures) {
+
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestOptionalFeatures)) {
         Write-Verbose 'Getting forest information - Forest Optional Features'
         $Data.ForestOptionalFeatures = Invoke-Command -ScriptBlock {
             $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
