@@ -31,6 +31,7 @@ $Document = [ordered]@{
         Enable        = $true
         ExportWord    = $false
         ExportExcel   = $false
+        ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.xlsx"
         Sections      = [ordered] @{
@@ -609,7 +610,6 @@ $Document = [ordered]@{
                     SqlTableCreate        = $false
                     SqlTableAlterIfNeeded = $true
                 }
-
                 SectionExcelDomainComputersFullList   = [ordered] @{
                     Use            = $false
                     ExcelExport    = $false

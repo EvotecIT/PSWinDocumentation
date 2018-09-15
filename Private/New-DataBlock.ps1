@@ -5,7 +5,8 @@ function New-DataBlock {
         [alias('Object')][Object] $Forest,
         [string] $Domain,
         [OfficeOpenXml.ExcelPackage] $Excel,
-        [string] $SectionName
+        [string] $SectionName,
+        [nullable[bool]] $Sql # Global Sql Enable/Disable
     )
     if ($Section.Use) {
         if ($Domain) {
@@ -88,7 +89,7 @@ function New-DataBlock {
                 #| Convert-ToExcel -Path $Excel -AutoSize -AutoFilter -WorksheetName $WorkSheetName -ClearSheet -NoNumberConversion SSDL, GUID, ID, ACLs
             }
         }
-        if ($Section.SQLExport -and $SqlData) {
+        if ($Sql -and $Section.SQLExport -and $SqlData) {
             Write-Verbose "Sending [$SectionDetails] to SQL Server"
             $SqlQuery = Send-SqlInsert -Object $SqlData -SqlSettings $Section -Verbose
             foreach ($Query in $SqlQuery) {

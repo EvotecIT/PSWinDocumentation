@@ -1,6 +1,6 @@
 Import-Module PSWriteWord
 Import-Module PSWriteExcel
-Import-Module PSWinDocumentation
+Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module PSSharedGoods
 Import-Module DbaTools
@@ -32,6 +32,7 @@ $Document = [ordered]@{
         Enable        = $false
         ExportWord    = $false
         ExportExcel   = $true
+        ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.xlsx"
         Sections      = [ordered] @{

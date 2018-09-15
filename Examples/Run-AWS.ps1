@@ -30,6 +30,7 @@ $Document = [ordered]@{
         Enable        = $true
         ExportWord    = $true
         ExportExcel   = $false
+        ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xlsx"
         Configuration = [ordered] @{
