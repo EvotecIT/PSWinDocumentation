@@ -4,11 +4,11 @@ function Start-Documentation {
         [System.Object] $Document
     )
     $TimeTotal = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-    Test-ModuleAvailability
-    Test-ForestConnectivity
     Test-Configuration -Document $Document
 
     if ($Document.DocumentAD.Enable) {
+        Test-ModuleAvailability
+        Test-ForestConnectivity
         $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
 
         $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
