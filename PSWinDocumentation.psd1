@@ -4,7 +4,7 @@
     RootModule        = 'PSWinDocumentation.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.1'
+    ModuleVersion     = '0.1.2'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -49,7 +49,7 @@
     # RequiredAssemblies = @()
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-    ScriptsToProcess  = @('Enums\ActiveDirectory.ps1', 'Enums\AWS.ps1')
+    ScriptsToProcess  = @('Enums\ActiveDirectory.ps1', 'Enums\AWS.ps1', 'Enums\Exchange.ps1', 'Enums\O365.ps1')
 
     # Type files (.ps1xml) to be loaded when importing this module
     # TypesToProcess = @()
@@ -62,7 +62,7 @@
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     #FunctionsToExport = '*'
-    FunctionsToExport = 'Start-Documentation', 'Start-WinDocumentationWorkstation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-AWSInformation'
+    FunctionsToExport = 'Start-Documentation', 'Start-WinDocumentationWorkstation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-AWSInformation', 'Get-WinExchangeInformation'
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = @()
@@ -86,7 +86,7 @@
     PrivateData       = @{
 
         PSData = @{
-            Prerelease = '-alpha2'
+            Prerelease = '-alpha3'
             # Tags applied to this module. These help with module discovery in online galleries.
             Tags       = @('documentation', 'windows', 'word', 'workstation', 'activedirectory', 'ad')
 
