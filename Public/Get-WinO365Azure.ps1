@@ -1,13 +1,20 @@
 function Get-WinO365Azure {
     [CmdletBinding()]
     $Data = [ordered] @{}
-    Write-Verbose "Get-WinO365Azure - Getting Users"
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureLicensing"
+    $Data.O365AzureLicensing = Get-MsolAccountSku
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureLicensing"
+    $Data.O365AzureTenantDomains = Get-MsolDomain
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureLicensing"
+    $Data.O365AzureSubscription = Get-MsolSubscription
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureADUsers"
     $Data.O365AzureADUsers = Get-MsolUser -All
-    Write-Verbose "Get-WinO365Azure - Getting UsersDeleted"
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureADUsersDeleted"
     $Data.O365AzureADUsersDeleted = Get-MsolUser -ReturnDeletedUsers
-    Write-Verbose "Get-WinO365Azure - Getting Groups"
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureADGroups"
     $Data.O365AzureADGroups = Get-MsolGroup -All
-    Write-Verbose "Get-WinO365Azure - Getting GroupMembers"
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureADGroupMembers"
+    <#
     $Data.O365AzureADGroupMembers = Invoke-Command -ScriptBlock {
         $GroupMembers = @()
         foreach ($Group in $Data.Groups) {
@@ -17,13 +24,14 @@ function Get-WinO365Azure {
         }
         return $GroupMembers
     }
-    Write-Verbose "Get-WinO365Azure - Getting Contacts"
+    #>
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureADContacts"
     $Data.O365AzureADContacts = Get-MsolContact -All
-    Write-Verbose "Get-WinO365Azure - Getting GroupMembersUser"
+    Write-Verbose "Get-WinO365Azure - Getting O365AzureADGroupMembersUser"
     $Data.O365AzureADGroupMembersUser = Invoke-Command -ScriptBlock {
         $Members = @()
-        foreach ($Group in $Data.Groups) {
-            $GroupMembers = $Data.GroupMembers | Where { $_.GroupObjectId -eq $Group.ObjectId }
+        foreach ($Group in $Data.O365AzureADGroups) {
+            $GroupMembers = $Data.O365AzureADGroupMembers | Where { $_.GroupObjectId -eq $Group.ObjectId }
             foreach ($GroupMember in $GroupMembers) {
                 $Members += [PsCustomObject] @{
                     "GroupDisplayName"    = $Group.DisplayName
