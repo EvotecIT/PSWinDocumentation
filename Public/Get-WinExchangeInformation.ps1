@@ -47,6 +47,7 @@ function Get-WinExchangeInformation {
 
     $Data.ExchangeMailboxesStatistics = Invoke-Command -ScriptBlock {
         $i = 0
+        $ExchangeMailboxesStatistics = @()
         foreach ($Mailbox in $Data.ExchangeMailboxes) {
             $i = $i + 1
             $PercentComplete = $i / $Data.ExchangeMailboxes.Count * 100
@@ -70,49 +71,49 @@ function Get-WinExchangeInformation {
             $ExchangeDatabaseArchive = $Data.ExchangeMailboxes | Where-Object {$_.Name -eq $Mailbox.ArchiveDatabase.Name}
 
             $UserObject = [PSCustomObject]@{
-                "DisplayName"        = $Mailbox.DisplayName
-                "Mailbox Type"       = $Mailbox.RecipientTypeDetails
-                "Title"              = $ExchangeUser.Title
-                "Department"         = $ExchangeUser.Department
-                "Office"             = $ExchangeUser.Office
+                "DisplayName"                   = $Mailbox.DisplayName
+                "Mailbox Type"                  = $Mailbox.RecipientTypeDetails
+                "Title"                         = $ExchangeUser.Title
+                "Department"                    = $ExchangeUser.Department
+                "Office"                        = $ExchangeUser.Office
 
-                "Total Mailbox Size" = '' # (($stats.TotalItemSize.Value + $stats.TotalDeletedItemSize.Value))
-                #       "Mailbox Size"                  = $ExchangeStatistics.TotalItemSize.Value
-                #      "Mailbox Recoverable Item Size" = $ExchangeStatistics.TotalDeletedItemSize.Value
-                #     "Mailbox Items"                 = $ExchangeStatistics.ItemCount
-                #    "Inbox Folder Size"             = $ExchangeStatisticsInbox.FolderandSubFolderSize
-                #   "Sent Items Folder Size"        = $ExchangeStatisticsSent.FolderandSubFolderSize
-                #  "Deleted Items Folder Size"     = $ExchangeStatisticsDeleted.FolderandSubFolderSize
+                "Total Mailbox Size"            = '' # (($stats.TotalItemSize.Value + $stats.TotalDeletedItemSize.Value))
+                "Mailbox Size"                  = $ExchangeStatistics.TotalItemSize.Value
+                "Mailbox Recoverable Item Size" = $ExchangeStatistics.TotalDeletedItemSize.Value
+                "Mailbox Items"                 = $ExchangeStatistics.ItemCount
+                "Inbox Folder Size"             = $ExchangeStatisticsInbox.FolderandSubFolderSize
+                "Sent Items Folder Size"        = $ExchangeStatisticsSent.FolderandSubFolderSize
+                "Deleted Items Folder Size"     = $ExchangeStatisticsDeleted.FolderandSubFolderSize
 
-                # "Total Archive Size"            = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else { ($ExchangeStatisticsArchive.TotalItemSize.Value + $ExchangeStatisticsArchive.TotalDeletedItemSize.Value) }
-                # "Archive Size"                  = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else {$ExchangeStatisticsArchive.TotalItemSize.Value }
-                # "Archive Deleted Item Size"     = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else {$ExchangeStatisticsArchive.TotalDeletedItemSize.Value }
-                # "Archive Items"                 = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else {$ExchangeStatisticsArchive.ItemCount }
+                "Total Archive Size"            = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else { ($ExchangeStatisticsArchive.TotalItemSize.Value + $ExchangeStatisticsArchive.TotalDeletedItemSize.Value) }
+                "Archive Size"                  = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else { $ExchangeStatisticsArchive.TotalItemSize.Value }
+                "Archive Deleted Item Size"     = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else { $ExchangeStatisticsArchive.TotalDeletedItemSize.Value }
+                "Archive Items"                 = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else { $ExchangeStatisticsArchive.ItemCount }
 
-                #                "Audit Enabled"                 = $Mailbox.AuditEnabled
-                #               "Email Address Policy Enabled"  = $Mailbox.EmailAddressPolicyEnabled
-                #              "Hidden From Address Lists"     = $Mailbox.HiddenFromAddressListsEnabled
-                #             "Use Database Quota Defaults"   = $Mailbox.UseDatabaseQuotaDefaults
+                "Audit Enabled"                 = $Mailbox.AuditEnabled
+                "Email Address Policy Enabled"  = $Mailbox.EmailAddressPolicyEnabled
+                "Hidden From Address Lists"     = $Mailbox.HiddenFromAddressListsEnabled
+                "Use Database Quota Defaults"   = $Mailbox.UseDatabaseQuotaDefaults
 
-                #            "Issue Warning Quota"           = if ($Mailbox.UseDatabaseQuotaDefaults) { $ExchangeDatabasePrimary.IssueWarningQuota } else {  $Mailbox.IssueWarningQuota }
-                #           "Prohibit Send Quota"           = if ($Mailbox.UseDatabaseQuotaDefaults) {  $ExchangeDatabasePrimary.ProhibitSendQuota } else { $Mailbox.ProhibitSendQuota }
-                #          "Prohibit Send Receive Quota"   = if ($Mailbox.UseDatabaseQuotaDefaults) {  $ExchangeDatabasePrimary.ProhibitSendReceiveQuota } else { $Mailbox.ProhibitSendReceiveQuota }
-
-
-                #  "Account Enabled"               = $ActiveDirectoryUser.Enabled
-                #  "Account Expires"               = $ActiveDirectoryUser.AccountExpirationDate
-                #  "Last Mailbox Logon"            = $ExchangeStatistics.LastLogonTime
-                #  "Last Logon By"                 = $ExchangeStatistics.LastLoggedOnUserAccount
+                "Issue Warning Quota"           = if ($Mailbox.UseDatabaseQuotaDefaults) { $ExchangeDatabasePrimary.IssueWarningQuota } else { $Mailbox.IssueWarningQuota }
+                "Prohibit Send Quota"           = if ($Mailbox.UseDatabaseQuotaDefaults) { $ExchangeDatabasePrimary.ProhibitSendQuota } else { $Mailbox.ProhibitSendQuota }
+                "Prohibit Send Receive Quota"   = if ($Mailbox.UseDatabaseQuotaDefaults) { $ExchangeDatabasePrimary.ProhibitSendReceiveQuota } else { $Mailbox.ProhibitSendReceiveQuota }
 
 
-                #  "Primary Mailbox Database"      = $Mailbox.Database
-                #  "Primary Server/DAG"            = $ExchangeDatabasePrimary.MasterServerOrAvailabilityGroup
+                "Account Enabled"               = $ActiveDirectoryUser.Enabled
+                "Account Expires"               = $ActiveDirectoryUser.AccountExpirationDate
+                "Last Mailbox Logon"            = $ExchangeStatistics.LastLogonTime
+                "Last Logon By"                 = $ExchangeStatistics.LastLoggedOnUserAccount
 
-                #        "Archive Mailbox Database"      = $Mailbox.ArchiveDatabase
-                #         "Archive Server/DAG"            = $ExchangeDatabaseArchive.MasterServerOrAvailabilityGroup
 
-                #      "Primary Email Address"         = $Mailbox.PrimarySMTPAddress
-                #       "Organizational Unit"           = $ExchangeUser.OrganizationalUnit
+                "Primary Mailbox Database"      = $Mailbox.Database
+                "Primary Server/DAG"            = $ExchangeDatabasePrimary.MasterServerOrAvailabilityGroup
+
+                "Archive Mailbox Database"      = $Mailbox.ArchiveDatabase
+                "Archive Server/DAG"            = $ExchangeDatabaseArchive.MasterServerOrAvailabilityGroup
+
+                "Primary Email Address"         = $Mailbox.PrimarySMTPAddress
+                "Organizational Unit"           = $ExchangeUser.OrganizationalUnit
             }
             $ExchangeMailboxesStatistics += $UserObject
         }
@@ -120,16 +121,3 @@ function Get-WinExchangeInformation {
     }
     return $Data
 }
-
-
-#Import-Module PSSharedGoods -Force
-
-#$session = Connect-Exchange -ConnectionURI 'http://ex2013x3.ad.evotec.xyz/Powershell' -SessionName 'Evotec' -Verbose
-#Import-PSSession -Session $Session -AllowClobber -DisableNameChecking
-
-
-#$Exchange = Get-WinExchangeInformation -Verbose
-#$Exchange
-#$Exchange.ExchangeServers | Format-Table -AutoSize
-#$Exchange.ExchangeDatabases # | Select *
-#$Exchange.ExchangeMailboxesStatistics | Format-Table

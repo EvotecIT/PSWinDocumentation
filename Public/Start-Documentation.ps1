@@ -15,4 +15,7 @@ function Start-Documentation {
     if ($Document.DocumentExchange.Enable) {
         Start-DocumentationExchange -Document $Document
     }
+    if ($Document.DocumentOffice365.Enable) {
+        Start-DocumentationO365 -Document $Document
+    }
 }

@@ -1,4 +1,3 @@
-
 function Start-DocumentationExchange {
     param(
         $Document
@@ -23,7 +22,7 @@ function Start-DocumentationExchange {
             -Password $Password `
             -AsSecure:$Document.DocumentExchange.Configuration.PasswordAsSecure
 
-        Import-PSSession -Session $Session -AllowClobber -DisableNameChecking
+        Import-PSSession -Session $Session -AllowClobber -DisableNameChecking -Verbose:$false
 
         $CheckAvailabilityCommands = Test-AvailabilityCommands -Commands 'Get-ExchangeServer', 'Get-MailboxDatabase', 'Get-PublicFolderDatabase'
         if ($CheckAvailabilityCommands -notcontains $false) {

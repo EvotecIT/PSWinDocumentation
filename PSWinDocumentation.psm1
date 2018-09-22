@@ -10,8 +10,8 @@ Foreach ($import in @($Public + $Private)) {
         Write-Error -Message "Failed to import function $($import.fullname): $_"
     }
 }
-#Export-ModuleMember -Function '*'
-Export-ModuleMember -Function 'Start-Documentation', 'Start-WinDocumentationWorkstation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-AWSInformation'
+Export-ModuleMember -Function '*'
+#Export-ModuleMember -Function 'Start-Documentation', 'Start-WinDocumentationWorkstation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-AWSInformation'
 
 #As per: https://d-fens.ch/2014/11/26/bug-powershell-scripts-in-scriptstoprocess-attribute-appear-as-loaded-modules/
 [string] $ManifestFile = '{0}.psd1' -f (Get-Item $PSCommandPath).BaseName;
