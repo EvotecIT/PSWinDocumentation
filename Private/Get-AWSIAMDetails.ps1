@@ -15,14 +15,14 @@ function Get-AWSIAMDetails {
         $mfaTemp = (Get-IAMMFADevice -UserName $user.UserName -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion).EnableDate
         $accessKeysCreationDateTemp = (Get-IAMAccessKey -UserName $user.UserName -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion).CreateDate
 
-        $IAMUser = [ordered] @{
-            UserName              = $user.UserName
-            UserGroups            = if ([string]::IsNullOrEmpty($groupsTemp)) { "No groups assigned" } Else { $groupsTemp -join ", " }
-            MFAEnabledSince       = if ([string]::IsNullOrEmpty($mfaTemp)) { "Missing MFA" } Else { $mfaTemp }
-            AccessKeysCount       = $accessKeysCreationDateTemp.Count
-            AccessKeyCreationDate = $accessKeysCreationDateTemp -join ", "
+        $IAMUser = [pscustomobject] @{
+            "User Name"                 = $user.UserName
+            "Groups"                    = if ([string]::IsNullOrEmpty($groupsTemp)) { "No groups assigned" } Else { $groupsTemp -join ", " }
+            "MFA Since"                 = if ([string]::IsNullOrEmpty($mfaTemp)) { "Missing MFA" } Else { $mfaTemp }
+            "Access Keys Count"         = $accessKeysCreationDateTemp.Count
+            "Access Keys Creation Date" = $accessKeysCreationDateTemp -join ", "
         }
         [void]$IAMDetailsList.Add($IAMUser)
     }
-    return Format-TransposeTable $IAMDetailsList
+    return $IAMDetailsList
 }

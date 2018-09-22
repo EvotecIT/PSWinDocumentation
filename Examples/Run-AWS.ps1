@@ -64,89 +64,86 @@ $Document = [ordered]@{
                 PageBreaksAfter = 1
 
             }
-            SectionAWS1             = [ordered] @{
+            SectionEC2             = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSEC2Details'
+                TocText         = 'General Information - EC2'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
                 TableData       = [AWS]::AWSEC2Details
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-                Text            = "AWSEC2Details"
+                Text            = "Basic information about EC2 servers such as ID, name, environment, instance type and IP."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSEC2Details'
                 ExcelData       = [AWS]::AWSEC2Details
             }
-            SectionAWS2             = [ordered] @{
+            SectionRDS             = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSRDSDetails'
+                TocText         = 'General Information - RDS Details'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
                 TableData       = [AWS]::AWSRDSDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-
-                Text            = "AWSRDSDetails"
+                Text            = "Basic information about RDS databases such as name, class, mutliAZ, engine version."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSRDSDetails'
                 ExcelData       = [AWS]::AWSRDSDetails
             }
-            SectionAWS3             = [ordered] @{
+            SectionELB             = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSLBDetailsList'
+                TocText         = 'General Information - Load Balancers'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
                 TableData       = [AWS]::AWSLBDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-
-                Text            = "AWSLBDetailsList"
+                Text            = "Basic information about ELB and ALB such as name, DNS name, targets, scheme."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSLBDetailsList'
                 ExcelData       = [AWS]::AWSLBDetails
             }
-            SectionAWS4             = [ordered] @{
+            SectionVPC             = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSNetworkDetailsList'
+                TocText         = 'General Information - Networking'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
                 TableData       = [AWS]::AWSSubnetDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-
-                Text            = "AWSSubnetDetails"
+                Text            = "Basic information about subnets such as: id, name, CIDR, free IP and VPC."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSSubnetDetails'
                 ExcelData       = [AWS]::AWSSubnetDetails
             }
-            SectionAWSE5            = [ordered] @{
+            SectionEIP            = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSElasticIpDetails'
+                TocText         = 'General Information - Elastic IPs'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
                 TableData       = [AWS]::AWSElasticIpDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-                Text            = "AWSElasticIpDetails"
+                Text            = "Basic information about reserved elastic IPs such as name, IP, network interface."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSElasticIpDetails'
                 ExcelData       = [AWS]::AWSElasticIpDetails
             }
-            SectionAWS6DoesntMatter = [ordered] @{
+            SectionIAM = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
-                TocText         = 'General Information - AWSIAMDetails'
+                TocText         = 'General Information - IAM Users'
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
                 TableData       = [AWS]::AWSIAMDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
-                Text            = "AWSIAMDetails"
+                Text            = "Basic information about IAM users such as groups and MFA details."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSIAMDetails'
                 ExcelData       = [AWS]::AWSIAMDetails
