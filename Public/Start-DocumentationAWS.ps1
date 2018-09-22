@@ -1,4 +1,5 @@
 function Start-DocumentationAWS {
+    [CmdletBinding()]
     param(
         $Document
     )

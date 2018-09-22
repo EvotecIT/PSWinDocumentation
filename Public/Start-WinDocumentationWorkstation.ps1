@@ -1,4 +1,5 @@
 function Start-WinDocumentationWorkstation {
+    [CmdletBinding()]
     param (
         [string[]] $ComputerName = $Env:COMPUTERNAME,
         [string] $FilePath,

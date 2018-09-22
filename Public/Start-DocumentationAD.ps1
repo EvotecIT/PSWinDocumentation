@@ -1,4 +1,5 @@
 function Start-DocumentationAD {
+    [CmdletBinding()]
     param(
         $Document
     )

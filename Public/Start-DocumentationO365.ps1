@@ -1,4 +1,5 @@
 function Start-DocumentationO365 {
+    [CmdletBinding()]
     param(
         $Document
     )
@@ -21,9 +22,11 @@ function Start-DocumentationO365 {
             -Password $Password `
             -AsSecure:$Document.DocumentOffice365.Configuration.O365PasswordAsSecure
 
-        Import-PSSession -Session $Session -AllowClobber -DisableNameChecking -Prefix 'O365'
+        $CurrentVerbosePreference = $VerbosePreference; $VerbosePreference = 'SilentlyContinue' # weird but -Verbose:$false doesn't do anything below
+        $ImportedSession = Import-PSSession -Session $Session -AllowClobber -DisableNameChecking -Prefix 'O365' -Verbose:$false | Out-Null
+        $VerbosePreference = $CurrentVerbosePreference
 
-        Connect-Azure -SessionName $Document.DocumentOffice365.Configuration.O365AzureSessionName `
+        $SessionAzure = Connect-Azure -SessionName $Document.DocumentOffice365.Configuration.O365AzureSessionName `
             -Username $Document.DocumentOffice365.Configuration.O365Username `
             -Password $Password `
             -AsSecure:$Document.DocumentOffice365.Configuration.O365PasswordAsSecure
@@ -34,7 +37,7 @@ function Start-DocumentationO365 {
             $DataSections = Get-ObjectKeys -Object $Document.DocumentOffice365.Sections
 
             $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-            $DataInformation = Get-WinO365Exchange #TypesRequired $TypesRequired
+            $DataInformation = Get-WinO365Exchange -TypesRequired $TypesRequired
             $TimeDataOnly.Stop()
 
             $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start

@@ -1,11 +1,5 @@
 Add-Type -TypeDefinition @"
     public enum O365 {
-        O365AzureADUsers,
-        O365AzureADUsersDeleted,
-        O365AzureADGroups,
-        O365AzureADGroupMembersUser,
-        O365AzureADGroupMembers,
-        O365AzureADContacts,
         O365ExchangeContacts,
         O365ExchangeRoomsCalendarPrcessing,
         O365ExchangeMailboxesJunk,
@@ -20,6 +14,12 @@ Add-Type -TypeDefinition @"
         O365ExchangeGroupsDistributionDynamic,
         O365ExchangeRecipientsPermissions,
         O365ExchangeMailUsers,
-        O365ExchangeMailBoxes
+        O365ExchangeMailBoxes,
+        O365AzureADUsers,
+        O365AzureADUsersDeleted,
+        O365AzureADGroups,
+        O365AzureADGroupMembersUser,
+        O365AzureADGroupMembers,
+        O365AzureADContacts
     }
 "@

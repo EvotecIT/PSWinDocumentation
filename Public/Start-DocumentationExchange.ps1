@@ -1,4 +1,5 @@
 function Start-DocumentationExchange {
+    [CmdletBinding()]
     param(
         $Document
     )
@@ -22,7 +23,9 @@ function Start-DocumentationExchange {
             -Password $Password `
             -AsSecure:$Document.DocumentExchange.Configuration.PasswordAsSecure
 
-        Import-PSSession -Session $Session -AllowClobber -DisableNameChecking -Verbose:$false
+        $CurrentVerbosePreference = $VerbosePreference; $VerbosePreference = 'SilentlyContinue' # weird but -Verbose:$false doesn't do anything
+        $ImportedSession = Import-PSSession -Session $Session -AllowClobber -DisableNameChecking -Verbose:$false
+        $VerbosePreference = $CurrentVerbosePreference
 
         $CheckAvailabilityCommands = Test-AvailabilityCommands -Commands 'Get-ExchangeServer', 'Get-MailboxDatabase', 'Get-PublicFolderDatabase'
         if ($CheckAvailabilityCommands -notcontains $false) {
