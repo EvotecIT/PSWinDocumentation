@@ -4,7 +4,7 @@
     RootModule        = 'PSWinDocumentation.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.0'
+    ModuleVersion     = '0.2.1'
 
     # ID used to uniquely identify this module
     GUID              = '6bd80c20-e606-4e31-9f88-9ad305256f23'
@@ -59,7 +59,7 @@
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     #FunctionsToExport = '*'
-    FunctionsToExport = 'Start-Documentation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-WinAWSInformation', 'Get-WinO365Azure', 'Get-WinO365Exchange', 'Get-WinExchangeInformation'
+    FunctionsToExport = 'Start-Documentation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-WinAWSInformation', 'Get-WinO365Azure', 'Get-WinO365Exchange', 'Get-WinExchangeInformation', 'Start-WinDocumentationWorkstation'
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
