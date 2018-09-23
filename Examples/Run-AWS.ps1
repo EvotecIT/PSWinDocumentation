@@ -30,7 +30,7 @@ $Document = [ordered]@{
         Enable        = $true
         ExportWord    = $true
         ExportExcel   = $false
-        ExportSql     = $false
+        ExportSql     = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xlsx"
         Configuration = [ordered] @{
@@ -65,18 +65,26 @@ $Document = [ordered]@{
 
             }
             SectionEC2             = [ordered] @{
-                Use             = $true
-                TocEnable       = $True
-                TocText         = 'General Information - EC2'
-                TocListLevel    = 0
-                TocListItemType = [ListItemType]::Numbered
-                TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSEC2Details
-                TableDesign     = [TableDesign]::ColorfulGridAccent5
-                Text            = "Basic information about EC2 servers such as ID, name, environment, instance type and IP."
-                ExcelExport     = $true
-                ExcelWorkSheet  = 'AWSEC2Details'
-                ExcelData       = [AWS]::AWSEC2Details
+                Use               = $true
+                TocEnable         = $True
+                TocText           = 'General Information - EC2'
+                TocListLevel      = 0
+                TocListItemType   = [ListItemType]::Numbered
+                TocHeadingType    = [HeadingType]::Heading1
+                TableData         = [AWS]::AWSEC2Details
+                TableDesign       = [TableDesign]::ColorfulGridAccent5
+                Text              = "Basic information about EC2 servers such as ID, name, environment, instance type and IP."
+
+                ExcelExport       = $true
+                ExcelWorkSheet    = 'AWSEC2Details'
+                ExcelData         = [AWS]::AWSEC2Details
+
+                SqlExport         = $true
+                SqlServer         = 'EVO1'
+                SqlDatabase       = 'SSAE18'
+                SqlData           = [AWS]::AWSEC2Details
+                SqlTable          = 'dbo.[AWSEC2Details]'
+                SqlTableCreate    = $true
             }
             SectionRDS             = [ordered] @{
                 Use             = $true

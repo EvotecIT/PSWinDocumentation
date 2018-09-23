@@ -1,4 +1,4 @@
-function Get-AWSInformation {
+function Get-WinAWSInformation {
     [CmdletBinding()]
     param(
         [string] $AWSAccessKey,

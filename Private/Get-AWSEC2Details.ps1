@@ -11,7 +11,7 @@ function Get-AWSEC2Details {
 
     foreach ($instance in $EC2Instances) {
         $ec2 = [pscustomobject] @{
-            'ID'            = $instance[0].Instances[0].InstanceId
+            'Instance ID'   = $instance[0].Instances[0].InstanceId
             "Instance Name" = $instance[0].Instances[0].Tags | Where-Object {$_.key -eq "Name"} | Select-Object -Expand Value
             "Environment"   = $instance[0].Instances[0].Tags | Where-Object {$_.key -eq "Environment"} | Select-Object -Expand Value
             "Instance Type" = $instance[0].Instances[0].InstanceType

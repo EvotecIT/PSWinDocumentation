@@ -9,7 +9,7 @@ function Start-DocumentationAWS {
         $DataSections = Get-ObjectKeys -Object $Document.DocumentAWS.Sections
 
         $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-        $DataInformation = Get-AWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Document.DocumentAWS.Configuration.AWSAccessKey -AWSSecretKey $Document.DocumentAWS.Configuration.AWSSecretKey -AWSRegion $Document.DocumentAWS.Configuration.AWSRegion
+        $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Document.DocumentAWS.Configuration.AWSAccessKey -AWSSecretKey $Document.DocumentAWS.Configuration.AWSSecretKey -AWSRegion $Document.DocumentAWS.Configuration.AWSRegion
         $TimeDataOnly.Stop()
 
         $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start

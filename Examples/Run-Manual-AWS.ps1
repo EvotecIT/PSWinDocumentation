@@ -8,7 +8,7 @@ $Configuration = [ordered] @{
     AWSRegion    = ''
 }
 
-$AWS = Get-AWSInformation -AWSAccessKey $Configuration.AWSAccessKey -AWSSecretKey $Configuration.AWSSecretKey -AWSRegion $Configuration.AWSRegion
+$AWS = Get-WinAWSInformation -AWSAccessKey $Configuration.AWSAccessKey -AWSSecretKey $Configuration.AWSSecretKey -AWSRegion $Configuration.AWSRegion
 $AWS.AWSEC2Details | Format-Table -AutoSize
 $AWS.AWSRDSDetails | Format-Table -AutoSize
 $AWS.AWSLBDetails | Format-Table -AutoSize
