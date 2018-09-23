@@ -16,7 +16,7 @@ function Start-DocumentationExchange {
             $Password = $Document.DocumentExchange.Configuration.Password
         }
 
-        $Session = Connect-Exchange -SessionName $Document.DocumentExchange.Configuration.ExchangeSessionName `
+        $Session = Connect-WinExchange -SessionName $Document.DocumentExchange.Configuration.ExchangeSessionName `
             -ConnectionURI $Document.DocumentExchange.Configuration.ExchangeURI `
             -Authentication $Document.DocumentExchange.Configuration.ExchangeAuthentication `
             -Username $Document.DocumentExchange.Configuration.Username `

@@ -8,7 +8,7 @@ function Start-DocumentationO365 {
 
     if ($CheckCredentials) {
         if ($Document.DocumentOffice365.Configuration.O365ExchangeUse) {
-            $Session = Connect-Exchange -SessionName $Document.DocumentOffice365.Configuration.O365ExchangeSessionName `
+            $Session = Connect-WinExchange -SessionName $Document.DocumentOffice365.Configuration.O365ExchangeSessionName `
                 -ConnectionURI $Document.DocumentOffice365.Configuration.O365ExchangeURI `
                 -Authentication $Document.DocumentOffice365.Configuration.O365ExchangeAuthentication `
                 -Username $Document.DocumentOffice365.Configuration.O365Username `
@@ -25,7 +25,7 @@ function Start-DocumentationO365 {
         }
 
         if ($Document.DocumentOffice365.Configuration.O365AzureADUse) {
-            $SessionAzure = Connect-Azure -SessionName $Document.DocumentOffice365.Configuration.O365AzureSessionName `
+            $SessionAzure = Connect-WinAzure -SessionName $Document.DocumentOffice365.Configuration.O365AzureSessionName `
                 -Username $Document.DocumentOffice365.Configuration.O365Username `
                 -Password $Document.DocumentOffice365.Configuration.O365Password `
                 -AsSecure:$Document.DocumentOffice365.Configuration.O365PasswordAsSecure `
