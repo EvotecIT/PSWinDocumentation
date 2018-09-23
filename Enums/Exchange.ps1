@@ -1,10 +1,13 @@
 Add-Type -TypeDefinition @"
     public enum Exchange {
-        ExchangeServers,
-        ExchangeDatabases,
+        // Clean On-Premises Exchange Data
+        ExchangeUServers,
+        ExchangeUDatabases,
+        ExchangeUPublicFolderDatabase,
+        ExchangeUMailboxes,
+
+        // Prepared On-Premises Exchange Data
         ExchangeDatabasesBackup,
-        ExchangePublicFolderDatabase,
-        ExchangeMailboxes,
         ExchangeMailboxesStatistics
     }
 "@

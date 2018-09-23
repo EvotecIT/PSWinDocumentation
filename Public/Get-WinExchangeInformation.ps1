@@ -8,11 +8,11 @@ function Get-WinExchangeInformation {
         Write-Verbose 'Get-WinExchangeInformation - TypesRequired is null. Getting all Exchange types.'
         $TypesRequired = Get-Types -Types ([Exchange])  # Gets all types
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeServers)) {
-        $Data.ExchangeServers = Get-ExchangeServer
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeUServers)) {
+        $Data.ExchangeUServers = Get-ExchangeServer
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeDatabases)) {
-        $Data.ExchangeDatabases = Invoke-Command -ScriptBlock {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeUDatabases)) {
+        $Data.ExchangeUDatabases = Invoke-Command -ScriptBlock {
             # Get Exchange Databases
             $Command = @(Get-Command Get-MailboxDatabase)[0]
             if ($Command.Parameters.ContainsKey("IncludePreExchange2010")) {
@@ -25,22 +25,8 @@ function Get-WinExchangeInformation {
             return $Databases
         }
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeDatabasesBackup)) {
-        $Data.ExchangeDatabasesBackup = Invoke-Command -ScriptBlock {
-            #$Backups = $Data.ExchangeDatabase | Select Name, LastFullBackup, LastIncrementalBackup, LastDifferentialBackup
-            $Backups = @()
-            $Backups += [ordered] @{
-                Name                   = $Data.ExchangeDatabases.Name
-                Mounted                = $Data.ExchangeDatabases.Mounted
-                LastFullBackup         = if ($Data.ExchangeDatabases.LastFullbackup) { $Data.ExchangeDatabases.LastFullbackup.ToUniversalTime() } else { 'N/A' }
-                LastIncrementalBackup  = if ($Data.ExchangeDatabases.LastIncrementalBackup) { $Data.ExchangeDatabases.LastIncrementalBackup.ToUniversalTime() } else { 'N/A' }
-                LastDifferentialBackup = if ($Data.ExchangeDatabases.LastDifferentialBackup) {  $Data.ExchangeDatabases.LastDifferentialBackup.ToUniversalTime() } else { 'N/A' }
-            }
-            return Format-TransposeTable -Object $Backups
-        }
-    }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangePublicFolderDatabase)) {
-        $Data.ExchangePublicFolderDatabase = Invoke-Command -ScriptBlock {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeUPublicFolderDatabase)) {
+        $Data.ExchangeUPublicFolderDatabase = Invoke-Command -ScriptBlock {
             #Get Public Folder Databases
             $Command = @(Get-Command Get-PublicFolderDatabase)[0]
             if ($Command.Parameters.ContainsKey("IncludePreExchange2010")) {
@@ -51,20 +37,39 @@ function Get-WinExchangeInformation {
             return $Databases
         }
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeMailboxes)) {
-        $Data.ExchangeMailboxes = Invoke-Command -ScriptBlock {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeUMailboxes)) {
+        $Data.ExchangeUMailboxes = Invoke-Command -ScriptBlock {
             $Mailboxes = Get-Mailbox -ResultSize Unlimited
             return $Mailboxes
+        }
+    }
+
+
+    # Below data is prepared data
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeDatabasesBackup)) {
+        $Data.ExchangeDatabasesBackup = Invoke-Command -ScriptBlock {
+
+            $Backups = @()
+            foreach ($DB in $Data.ExchangeUDatabases) {
+                $Backups += [pscustomobject] @{
+                    Name                   = $DB.Name
+                    Mounted                = $DB.Mounted
+                    LastFullBackup         = if ($DB.LastFullbackup) { $DB.LastFullbackup.ToUniversalTime() } else { 'N/A' }
+                    LastIncrementalBackup  = if ($DB.LastIncrementalBackup) { $DB.LastIncrementalBackup.ToUniversalTime() } else { 'N/A' }
+                    LastDifferentialBackup = if ($DB.LastDifferentialBackup) {  $DB.LastDifferentialBackup.ToUniversalTime() } else { 'N/A' }
+                }
+            }
+            return $Backups
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeMailboxesStatistics)) {
         $Data.ExchangeMailboxesStatistics = Invoke-Command -ScriptBlock {
             $i = 0
             $ExchangeMailboxesStatistics = @()
-            foreach ($Mailbox in $Data.ExchangeMailboxes) {
+            foreach ($Mailbox in $Data.ExchangeUMailboxes) {
                 $i = $i + 1
-                $PercentComplete = $i / $Data.ExchangeMailboxes.Count * 100
-                Write-Verbose "Collecting mailbox details Processing mailbox $i of $($Data.ExchangeMailboxes.Count) - $Mailbox Percent Complete $PercentComplete"
+                $PercentComplete = $i / $Data.ExchangeUMailboxes.Count * 100
+                Write-Verbose "Collecting mailbox details Processing mailbox $i of $($Data.ExchangeUMailboxes.Count) - $Mailbox Percent Complete $PercentComplete"
                 $ExchangeStatistics = $Mailbox | Get-MailboxStatistics | Select-Object TotalItemSize, TotalDeletedItemSize, ItemCount, LastLogonTime, LastLoggedOnUserAccount
 
                 if ($Mailbox.ArchiveDatabase) {
@@ -80,8 +85,8 @@ function Get-WinExchangeInformation {
                 $ExchangeUser = Get-User $Mailbox.Identity
                 $ActiveDirectoryUser = Get-ADUser $Mailbox.SamAccountName -Properties Enabled, AccountExpirationDate
 
-                $ExchangeDatabasePrimary = $Data.ExchangeMailboxes | Where-Object {$_.Name -eq $Mailbox.Database.Name}
-                $ExchangeDatabaseArchive = $Data.ExchangeMailboxes | Where-Object {$_.Name -eq $Mailbox.ArchiveDatabase.Name}
+                $ExchangeDatabasePrimary = $Data.ExchangeUMailboxes | Where-Object {$_.Name -eq $Mailbox.Database.Name}
+                $ExchangeDatabaseArchive = $Data.ExchangeUMailboxes | Where-Object {$_.Name -eq $Mailbox.ArchiveDatabase.Name}
 
                 $UserObject = [PSCustomObject]@{
                     "DisplayName"                   = $Mailbox.DisplayName
@@ -90,7 +95,7 @@ function Get-WinExchangeInformation {
                     "Department"                    = $ExchangeUser.Department
                     "Office"                        = $ExchangeUser.Office
 
-                    "Total Mailbox Size"            = '' # (($stats.TotalItemSize.Value + $stats.TotalDeletedItemSize.Value))
+                    #"Total Mailbox Size"            = (($ExchangeStatistics.TotalItemSize.Value + $ExchangeStatistics.TotalDeletedItemSize.Value))
                     "Mailbox Size"                  = $ExchangeStatistics.TotalItemSize.Value
                     "Mailbox Recoverable Item Size" = $ExchangeStatistics.TotalDeletedItemSize.Value
                     "Mailbox Items"                 = $ExchangeStatistics.ItemCount
