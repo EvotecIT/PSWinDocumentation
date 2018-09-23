@@ -91,14 +91,17 @@ function Get-WinExchangeInformation {
                 $UserObject = [PSCustomObject]@{
                     "DisplayName"                   = $Mailbox.DisplayName
                     "Mailbox Type"                  = $Mailbox.RecipientTypeDetails
-                    "Title"                         = $ExchangeUser.Title
-                    "Department"                    = $ExchangeUser.Department
-                    "Office"                        = $ExchangeUser.Office
 
                     #"Total Mailbox Size"            = (($ExchangeStatistics.TotalItemSize.Value + $ExchangeStatistics.TotalDeletedItemSize.Value))
                     "Mailbox Size"                  = $ExchangeStatistics.TotalItemSize.Value
                     "Mailbox Recoverable Item Size" = $ExchangeStatistics.TotalDeletedItemSize.Value
                     "Mailbox Items"                 = $ExchangeStatistics.ItemCount
+
+                    "Audit Enabled"                 = $Mailbox.AuditEnabled
+                    "Email Address Policy Enabled"  = $Mailbox.EmailAddressPolicyEnabled
+                    "Hidden From Address Lists"     = $Mailbox.HiddenFromAddressListsEnabled
+                    "Use Database Quota Defaults"   = $Mailbox.UseDatabaseQuotaDefaults
+
                     "Inbox Folder Size"             = $ExchangeStatisticsInbox.FolderandSubFolderSize
                     "Sent Items Folder Size"        = $ExchangeStatisticsSent.FolderandSubFolderSize
                     "Deleted Items Folder Size"     = $ExchangeStatisticsDeleted.FolderandSubFolderSize
@@ -108,15 +111,10 @@ function Get-WinExchangeInformation {
                     "Archive Deleted Item Size"     = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else { $ExchangeStatisticsArchive.TotalDeletedItemSize.Value }
                     "Archive Items"                 = if ($ExchangeStatisticsArchive -eq "n/a") { 'n/a' } else { $ExchangeStatisticsArchive.ItemCount }
 
-                    "Audit Enabled"                 = $Mailbox.AuditEnabled
-                    "Email Address Policy Enabled"  = $Mailbox.EmailAddressPolicyEnabled
-                    "Hidden From Address Lists"     = $Mailbox.HiddenFromAddressListsEnabled
-                    "Use Database Quota Defaults"   = $Mailbox.UseDatabaseQuotaDefaults
 
                     "Issue Warning Quota"           = if ($Mailbox.UseDatabaseQuotaDefaults) { $ExchangeDatabasePrimary.IssueWarningQuota } else { $Mailbox.IssueWarningQuota }
                     "Prohibit Send Quota"           = if ($Mailbox.UseDatabaseQuotaDefaults) { $ExchangeDatabasePrimary.ProhibitSendQuota } else { $Mailbox.ProhibitSendQuota }
                     "Prohibit Send Receive Quota"   = if ($Mailbox.UseDatabaseQuotaDefaults) { $ExchangeDatabasePrimary.ProhibitSendReceiveQuota } else { $Mailbox.ProhibitSendReceiveQuota }
-
 
                     "Account Enabled"               = $ActiveDirectoryUser.Enabled
                     "Account Expires"               = $ActiveDirectoryUser.AccountExpirationDate
@@ -132,6 +130,10 @@ function Get-WinExchangeInformation {
 
                     "Primary Email Address"         = $Mailbox.PrimarySMTPAddress
                     "Organizational Unit"           = $ExchangeUser.OrganizationalUnit
+
+                    "Title"                         = $ExchangeUser.Title
+                    "Department"                    = $ExchangeUser.Department
+                    "Office"                        = $ExchangeUser.Office
                 }
                 $ExchangeMailboxesStatistics += $UserObject
             }
