@@ -7,18 +7,6 @@ function Start-DocumentationO365 {
     $CheckCredentials = Test-ConfigurationCredentials -Configuration $Document.DocumentOffice365.Configuration
 
     if ($CheckCredentials) {
-        <#
-        if ($Document.DocumentOffice365.Configuration.O365PasswordFromFile) {
-            if (Test-Path $Document.DocumentOffice365.Configuration.O365Password) {
-                $Password = Get-Content $Document.DocumentOffice365.Configuration.O365Password | ConvertTo-SecureString
-            } else {
-                Write-Warning "Start-DocumentationO365 - Secure password from file couldn't be read. File not readable. Terminating."
-                return
-            }
-        } else {
-            $Password = $Document.DocumentOffice365.Configuration.O365Password
-        }
-#>
         if ($Document.DocumentOffice365.Configuration.O365ExchangeUse) {
             $Session = Connect-Exchange -SessionName $Document.DocumentOffice365.Configuration.O365ExchangeSessionName `
                 -ConnectionURI $Document.DocumentOffice365.Configuration.O365ExchangeURI `
@@ -100,6 +88,5 @@ function Start-DocumentationO365 {
         Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"
         Write-Verbose "Time to create documents: $($TimeDocuments.Elapsed)"
         Write-Verbose "Time total: $($TimeTotal.Elapsed)"
-        # }
     }
 }
