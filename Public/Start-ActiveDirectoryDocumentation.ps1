@@ -8,7 +8,7 @@ function Start-ActiveDirectoryDocumentation {
         [switch] $OpenDocument,
         [switch] $OpenExcel
     )
-    #Write-Warning 'This is legacy command. Use Start-Documentation instead.'
+    Write-Warning 'This is legacy command. Use Start-Documentation instead. Will be terminated sooner or later'
     # Left here for legacy reasons.
     $Document = $Script:Document
     $Document.Configuration.Prettify.CompanyName = $CompanyName
