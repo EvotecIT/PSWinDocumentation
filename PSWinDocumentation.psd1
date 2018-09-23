@@ -4,10 +4,7 @@
     RootModule        = 'PSWinDocumentation.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.2'
-
-    # Supported PSEditions
-    # CompatiblePSEditions = @()
+    ModuleVersion     = '0.2.0'
 
     # ID used to uniquely identify this module
     GUID              = '6bd80c20-e606-4e31-9f88-9ad305256f23'
@@ -19,10 +16,10 @@
     CompanyName       = 'Evotec'
 
     # Copyright statement for this module
-    Copyright         = 'Evotec (c) 2011-2018. All rights reserved.'
+    Copyright         = 'Evotec (c) 2011-2019. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'Simple project generating Active Directory (for now) documentation with a single button!'
+    Description       = 'Simple project generating Active Directory, AWS, Exchange, Office 365 (Exchange, Azure AD) documentation to Microsoft Word, Microsoft Excel and Microsoft SQL. More things to follow...'
 
     # Minimum version of the Windows PowerShell engine required by this module
     # PowerShellVersion = ''
@@ -61,17 +58,8 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = '*'
-    #FunctionsToExport = 'Start-Documentation', 'Start-WinDocumentationWorkstation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-AWSInformation', 'Get-WinExchangeInformation'
-
-    # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = @()
-
-    # Variables to export from this module
-    VariablesToExport = @()
-
-    # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @()
+    #FunctionsToExport = '*'
+    FunctionsToExport = 'Start-Documentation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-WinAWSInformation', 'Get-WinO365Azure', 'Get-WinO365Exchange', 'Get-WinExchangeInformation'
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -86,9 +74,9 @@
     PrivateData       = @{
 
         PSData = @{
-            Prerelease = '-alpha3'
+            #Prerelease = ''
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = @('documentation', 'windows', 'word', 'workstation', 'activedirectory', 'ad')
+            Tags       = @('documentation', 'windows', 'word', 'workstation', 'activedirectory', 'ad', 'excel', 'sql', 'azure', 'azuread', 'exchange', 'office365', 'aws')
 
             # A URL to the license for this module.
             # LicenseUri = ''
@@ -105,11 +93,4 @@
         } # End of PSData hashtable
 
     } # End of PrivateData hashtable
-
-    # HelpInfo URI of this module
-    #HelpInfoURI       = 'https://github.com/EvotecIT/PSWinDocumentation'
-
-    # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
-    # DefaultCommandPrefix = ''
-
 }
