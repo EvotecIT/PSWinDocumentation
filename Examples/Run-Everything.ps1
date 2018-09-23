@@ -609,7 +609,7 @@ $Document = [ordered]@{
                 TocGlobalTitle       = 'Table of content'
                 TocGlobalRightTabPos = 15
                 #TocGlobalSwitches    = 'A', 'C' #[TableContentSwitches]::C, [TableContentSwitches]::A
-                PageBreaksAfter      = 1
+                PageBreaksAfter      = 0
             }
             SectionAWSIntroduction = [ordered] @{
                 ### Enables section

@@ -20,16 +20,16 @@ function Start-DocumentationO365 {
             -Authentication $Document.DocumentOffice365.Configuration.O365ExchangeAuthentication `
             -Username $Document.DocumentOffice365.Configuration.O365Username `
             -Password $Password `
-            -AsSecure:$Document.DocumentOffice365.Configuration.O365PasswordAsSecure
+            -AsSecure:$Document.DocumentOffice365.Configuration.O365PasswordAsSecure -Verbose
 
         $CurrentVerbosePreference = $VerbosePreference; $VerbosePreference = 'SilentlyContinue' # weird but -Verbose:$false doesn't do anything below
-        $ImportedSession = Import-PSSession -Session $Session -AllowClobber -DisableNameChecking -Prefix 'O365' -Verbose:$false | Out-Null
+        $ImportedSession = Import-PSSession -Session $Session -AllowClobber -DisableNameChecking -Prefix 'O365' -Verbose:$false
         $VerbosePreference = $CurrentVerbosePreference
 
         $SessionAzure = Connect-Azure -SessionName $Document.DocumentOffice365.Configuration.O365AzureSessionName `
             -Username $Document.DocumentOffice365.Configuration.O365Username `
             -Password $Password `
-            -AsSecure:$Document.DocumentOffice365.Configuration.O365PasswordAsSecure
+            -AsSecure:$Document.DocumentOffice365.Configuration.O365PasswordAsSecure -Verbose
 
         $CheckAvailabilityCommands = Test-AvailabilityCommands -Commands 'Get-O365MailContact', 'Get-O365CalendarProcessing'
         if ($CheckAvailabilityCommands -notcontains $false) {
@@ -37,7 +37,8 @@ function Start-DocumentationO365 {
             $DataSections = Get-ObjectKeys -Object $Document.DocumentOffice365.Sections
 
             $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-            $DataInformation = Get-WinO365Exchange -TypesRequired $TypesRequired
+            $DataInformationO365 = Get-WinO365Exchange -TypesRequired $TypesRequired
+            $DataInformationAzure = Get-WinO365Azure -TypesRequired $TypesRequired
             $TimeDataOnly.Stop()
 
             $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
@@ -48,15 +49,18 @@ function Start-DocumentationO365 {
             if ($Document.DocumentOffice365.ExportExcel) {
                 $ExcelDocument = New-ExcelDocument
             }
+
             ### Start Sections
-            foreach ($Section in $DataSections) {
-                $WordDocument = New-DataBlock `
-                    -WordDocument $WordDocument `
-                    -Section $Document.DocumentOffice365.Sections.$Section `
-                    -Forest $DataInformation `
-                    -Excel $ExcelDocument `
-                    -SectionName $Section `
-                    -Sql $Document.DocumentOffice365.ExportSQL
+            foreach ($DataInformation in $($DataInformationO365 + $DataInformationAzure)) {
+                foreach ($Section in $DataSections) {
+                    $WordDocument = New-DataBlock `
+                        -WordDocument $WordDocument `
+                        -Section $Document.DocumentOffice365.Sections.$Section `
+                        -Forest $DataInformation `
+                        -Excel $ExcelDocument `
+                        -SectionName $Section `
+                        -Sql $Document.DocumentOffice365.ExportSQL
+                }
             }
             ### End Sections
 
