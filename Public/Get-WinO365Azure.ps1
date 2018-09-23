@@ -13,11 +13,11 @@ function Get-WinO365Azure {
         $Data.O365AzureLicensing = Get-MsolAccountSku
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureTenantDomains)) {
-        Write-Verbose "Get-WinO365Azure - Getting O365AzureLicensing"
+        Write-Verbose "Get-WinO365Azure - Getting O365AzureTenantDomains"
         $Data.O365AzureTenantDomains = Get-MsolDomain
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureSubscription)) {
-        Write-Verbose "Get-WinO365Azure - Getting O365AzureLicensing"
+        Write-Verbose "Get-WinO365Azure - Getting O365AzureSubscription"
         $Data.O365AzureSubscription = Get-MsolSubscription
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureADUsers)) {
