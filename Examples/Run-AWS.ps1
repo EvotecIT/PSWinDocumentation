@@ -39,7 +39,7 @@ $Document = [ordered]@{
             AWSRegion    = ''
         }
         Sections      = [ordered] @{
-            SectionTOC              = [ordered] @{
+            SectionTOC             = [ordered] @{
                 Use                  = $true
                 TocGlobalDefinition  = $true
                 TocGlobalTitle       = 'Table of content'
@@ -47,7 +47,7 @@ $Document = [ordered]@{
                 #TocGlobalSwitches    = 'A', 'C' #[TableContentSwitches]::C, [TableContentSwitches]::A
                 PageBreaksAfter      = 1
             }
-            SectionAWSIntroduction  = [ordered] @{
+            SectionAWSIntroduction = [ordered] @{
                 ### Enables section
                 Use             = $true
 
@@ -120,7 +120,7 @@ $Document = [ordered]@{
                 ExcelWorkSheet  = 'AWSSubnetDetails'
                 ExcelData       = [AWS]::AWSSubnetDetails
             }
-            SectionEIP            = [ordered] @{
+            SectionEIP             = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
                 TocText         = 'General Information - Elastic IPs'
@@ -134,7 +134,7 @@ $Document = [ordered]@{
                 ExcelWorkSheet  = 'AWSElasticIpDetails'
                 ExcelData       = [AWS]::AWSElasticIpDetails
             }
-            SectionIAM = [ordered] @{
+            SectionIAM             = [ordered] @{
                 Use             = $true
                 TocEnable       = $True
                 TocText         = 'General Information - IAM Users'

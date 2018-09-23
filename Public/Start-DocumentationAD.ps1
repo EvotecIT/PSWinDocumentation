@@ -3,15 +3,18 @@ function Start-DocumentationAD {
     param(
         $Document
     )
-    Test-ModuleAvailability
-    Test-ForestConnectivity
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
-
     $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
     $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
 
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-    $Forest = Get-WinADForestInformation -TypesRequired $TypesRequired
+    $CheckAvailabilityCommandsAD = Test-AvailabilityCommands -Commands 'Get-ADForest', 'Get-ADDomain', 'Get-ADRootDSE', 'Get-ADGroup', 'Get-ADUser', 'Get-ADComputer'
+    if ($CheckAvailabilityCommandsAD -notcontains $false) {
+        Test-ForestConnectivity
+        $DataInformationAD = Get-WinADForestInformation -TypesRequired $TypesRequired
+
+    }
+
     $TimeDataOnly.Stop()
     $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     ### Starting WORD
@@ -22,25 +25,27 @@ function Start-DocumentationAD {
         $ExcelDocument = New-ExcelDocument
     }
     ### Start Sections
-    foreach ($Section in $ADSectionsForest) {
-        $WordDocument = New-DataBlock `
-            -WordDocument $WordDocument `
-            -Section $Document.DocumentAD.Sections.SectionForest.$Section `
-            -Forest $Forest `
-            -Excel $ExcelDocument `
-            -SectionName $Section `
-            -Sql $Document.DocumentAD.ExportSQL
-    }
-    foreach ($Domain in $Forest.Domains) {
-        foreach ($Section in $ADSectionsDomain) {
+    foreach ($DataInformation in $DataInformationAD) {
+        foreach ($Section in $ADSectionsForest) {
             $WordDocument = New-DataBlock `
                 -WordDocument $WordDocument `
-                -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
-                -Object $Forest `
-                -Domain $Domain `
+                -Section $Document.DocumentAD.Sections.SectionForest.$Section `
+                -Object $DataInformationAD `
                 -Excel $ExcelDocument `
                 -SectionName $Section `
                 -Sql $Document.DocumentAD.ExportSQL
+        }
+        foreach ($Domain in $DataInformationAD.Domains) {
+            foreach ($Section in $ADSectionsDomain) {
+                $WordDocument = New-DataBlock `
+                    -WordDocument $WordDocument `
+                    -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
+                    -Object $DataInformationAD `
+                    -Domain $Domain `
+                    -Excel $ExcelDocument `
+                    -SectionName $Section `
+                    -Sql $Document.DocumentAD.ExportSQL
+            }
         }
     }
     ### End Sections

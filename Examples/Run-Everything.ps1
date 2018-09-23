@@ -29,8 +29,8 @@ $Document = [ordered]@{
         }
     }
     DocumentAD    = [ordered] @{
-        Enable        = $false
-        ExportWord    = $false
+        Enable        = $true
+        ExportWord    = $true
         ExportExcel   = $true
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.docx"
@@ -591,8 +591,8 @@ $Document = [ordered]@{
         }
     }
     DocumentAWS   = [ordered] @{
-        Enable        = $true
-        ExportWord    = $true
+        Enable        = $false
+        ExportWord    = $false
         ExportExcel   = $false
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.docx"
