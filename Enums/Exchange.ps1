@@ -7,6 +7,7 @@ Add-Type -TypeDefinition @"
         ExchangeUMailboxes,
 
         // Prepared On-Premises Exchange Data
+        ExchangeServers,
         ExchangeDatabasesBackup,
         ExchangeMailboxesStatistics
     }

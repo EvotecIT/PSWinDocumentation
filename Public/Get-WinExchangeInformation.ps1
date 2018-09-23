@@ -46,12 +46,30 @@ function Get-WinExchangeInformation {
 
 
     # Below data is prepared data
+
+
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeServers)) {
+        $Data.ExchangeServers = Invoke-Command -ScriptBlock {
+            $Servers = @()
+            foreach ($Server in $Data.ExchangeUServers) {
+                $Servers += [PSCustomObject]@{
+                    Name    = $Server.Name
+                    Roles   = $Server.ServerRole
+                    Edition = $Server.Edition
+                    Version = $Server.AdminDisplayVersion
+                    Trial   = $Server.IsExchangeTrialEdition
+                    FQDN    = $Server.FQDN
+                }
+            }
+            return $Servers
+        }
+    }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([Exchange]::ExchangeDatabasesBackup)) {
         $Data.ExchangeDatabasesBackup = Invoke-Command -ScriptBlock {
 
             $Backups = @()
             foreach ($DB in $Data.ExchangeUDatabases) {
-                $Backups += [pscustomobject] @{
+                $Backups += [PSCustomObject] @{
                     Name                   = $DB.Name
                     Mounted                = $DB.Mounted
                     LastFullBackup         = if ($DB.LastFullbackup) { $DB.LastFullbackup.ToUniversalTime() } else { 'N/A' }

@@ -59,6 +59,7 @@ function New-DataBlock {
                 -TableTitleMerge $Section.TableTitleMerge `
                 -TableTitleText $TableTitleText `
                 -TableMaximumColumns $Section.TableMaximumColumns `
+                -TableColumnWidths $Section.TableColumnWidths `
                 -Text $Text `
                 -TextNoData $TextNoData `
                 -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
@@ -93,7 +94,6 @@ function New-DataBlock {
             Write-Verbose "Sending [$SectionDetails] to SQL Server"
             $SqlQuery = Send-SqlInsert -Object $SqlData -SqlSettings $Section -Verbose
             foreach ($Query in $SqlQuery) {
-
                 # if ($Query -like '*Error*') {
                 Write-Color @script:WriteParameters -Text '[i] ', 'MS SQL Output: ', $Query -Color White, White, Yellow
                 # }

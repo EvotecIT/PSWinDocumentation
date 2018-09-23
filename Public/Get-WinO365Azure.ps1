@@ -5,14 +5,14 @@ function Get-WinO365Azure {
     )
     $Data = [ordered] @{}
     if ($TypesRequired -eq $null) {
-        Write-Verbose 'Get-WinO365Azure - TypesRequired is null. Getting all Exchange types.'
+        Write-Verbose 'Get-WinO365Azure - TypesRequired is null. Getting all Office 365 types.'
         $TypesRequired = Get-Types -Types ([O365])  # Gets all types
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureLicensing)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureLicensing"
         $Data.O365UAzureLicensing = Get-MsolAccountSku
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureTenantDomains)) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureTenantDomains, [O365]::O365AzureTenantDomains)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureTenantDomains"
         $Data.O365UAzureTenantDomains = Get-MsolDomain
     }
@@ -28,11 +28,11 @@ function Get-WinO365Azure {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADUsersDeleted"
         $Data.O365UAzureADUsersDeleted = Get-MsolUser -ReturnDeletedUsers
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureADGroups)) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureADGroups, [O365]::O365AzureADGroupMembersUser)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADGroups"
         $Data.O365UAzureADGroups = Get-MsolGroup -All
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureADGroupMembers)) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureADGroupMembers, [O365]::O365AzureADGroupMembersUser)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADGroupMembers"
         $Data.O365UAzureADGroupMembers = Invoke-Command -ScriptBlock {
             $GroupMembers = @()
@@ -48,9 +48,26 @@ function Get-WinO365Azure {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADContacts"
         $Data.O365UAzureADContacts = Get-MsolContact -All
     }
-
     # Below is data that is prepared entirely using data from above (suitable for Word for the most part)
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureADGroupMembersUser)) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureTenantDomains)) {
+        Write-Verbose "Get-WinO365Azure - Getting O365AzureTenantDomains"
+        $Data.O365AzureTenantDomains = Invoke-Command -ScriptBlock {
+            $Domains = @()
+            foreach ($Domain in $Data.O365UAzureTenantDomains) {
+                $Domains += [PsCustomObject] @{
+                    'Domain Name'         = $Domain.Name
+                    'Default'             = $Domain.IsDefault
+                    'Initial'             = $Domain.IsInitial
+                    'Status'              = $Domain.Status
+                    'Verification Method' = $Domain.VerificationMethod
+                    'Capabilities'        = $Domain.Capabilities
+                    'Authentication'      = $Domain.Authentication
+                }
+            }
+            return $Domains
+        }
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureADGroupMembersUser)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADGroupMembersUser"
         $Data.O365AzureADGroupMembersUser = Invoke-Command -ScriptBlock {
             $Members = @()
