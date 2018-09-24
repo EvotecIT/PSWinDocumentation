@@ -4,6 +4,10 @@ function Get-WinADDomainInformation {
         [string] $Domain,
         [Object] $TypesRequired
     )
+    if ([string]::IsNullOrEmpty($Domain)) {
+        Write-Warning 'Get-WinADDomainInformation - $Domain parameter is empty. Try your domain name like ad.evotec.xyz. Skipping for now...'
+        return
+    }
     if ($TypesRequired -eq $null) {
         Write-Verbose 'Get-WinADDomainInformation - TypesRequired is null. Getting all.'
         $TypesRequired = Get-Types -Types ([ActiveDirectory])
@@ -20,6 +24,29 @@ function Get-WinADDomainInformation {
     Write-Verbose "Getting domain information - $Domain DomainComputersFullList"
     $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
 
+
+    if ($TypesRequired -contains [ActiveDirectory]::DomainRIDs) {
+        # Critical for RID Pool Depletion: https://blogs.technet.microsoft.com/askds/2011/09/12/managing-rid-pool-depletion/
+        $Data.DomainRIDs = Invoke-Command -ScriptBlock {
+            Write-Verbose "Getting domain information - $Domain DomainRIDs"
+            #Write-Verbose "Get-WinADDomainInformation - RID Master: $($Data.DomainInformation.RIDMaster) - DN: $($Data.DomainInformation.DistinguishedName)"
+            $rID = [ordered] @{}
+            $rID.'rIDs Master' = $Data.DomainInformation.RIDMaster
+
+            $property = get-adobject "cn=rid manager$,cn=system,$($Data.DomainInformation.DistinguishedName)" -property RidAvailablePool -Server $rID.'rIDs Master'
+            [int32]$totalSIDS = $($property.RidAvailablePool) / ([math]::Pow(2, 32))
+            [int64]$temp64val = $totalSIDS * ([math]::Pow(2, 32))
+            [int32]$currentRIDPoolCount = $($property.RidAvailablePool) - $temp64val
+            [int64]$RidsRemaining = $totalSIDS - $currentRIDPoolCount
+
+            $Rid.'rIDs Available Pool' = $property.RidAvailablePool
+            $rID.'rIDs Total SIDs' = $totalSIDS
+            $rID.'rIDs Issued' = $CurrentRIDPoolCount
+            $rID.'rIDs Remaining' = $RidsRemaining
+            $rID.'rIDs Percentage' = if ($RidsRemaining -eq 0) { $RidsRemaining.ToString("P") } else { ($currentRIDPoolCount / $RidsRemaining * 100).ToString("P") }
+            return $rID
+        }
+    }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
         Write-Verbose "Getting domain information - $Domain DomainGUIDS"
         $Data.DomainGUIDS = Invoke-Command -ScriptBlock {

@@ -18,6 +18,7 @@ Add-Type -TypeDefinition @"
         // Domain Information - Section Main
 
         DomainRootDSE,
+        DomainRIDs,
         DomainAuthenticationPolicies, // Not yet tested
         DomainAuthenticationPolicySilos, // Not yet tested
         DomainCentralAccessPolicies, // Not yet tested
