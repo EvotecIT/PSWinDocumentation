@@ -2,29 +2,44 @@
 
 Overview of this module is available at: https://evotec.xyz/hub/scripts/pswindocumentation-powershell-module/
 
-This module utilizes two projects of mine:
-- [PSWriteWord](https://evotec.xyz/hub/scripts/pswriteword-powershell-module/)
-- [PSWriteExcel](https://evotec.xyz/hub/scripts/pswriteexcel-powershell-module/)
+## This module utilizes two projects of mine:
+- [PSWriteWord](https://evotec.xyz/hub/scripts/pswriteword-powershell-module/) - creating **Microsoft Wor**d without Word installed from PowerShell
+- [PSWriteExcel](https://evotec.xyz/hub/scripts/pswriteexcel-powershell-module/) - creating **Microsoft Excel** without Excel installed from PowerShell
+- [PSSharedGoods](https://github.com/EvotecIT/PSSharedGoods) - bunch of useful functions that I share among all of my projects
 
-For additional functionality it utilizes:
-- [AWSPowershell](https://www.powershellgallery.com/packages/AWSPowerShell/) - **work in progress** - not yet ready
-- ActiveDirectory module - available as part of [RSAT](https://www.microsoft.com/en-us/download/details.aspx?id=45520)
+All 3 modules above are under active development.
 
- Both are under development and going step by step on per need basis.
+##For additional functionality it utilizes:
+- [AWSPowershell](https://www.powershellgallery.com/packages/AWSPowerShell/) - allows connecting to AWS and creating AWS dataset
+- [ActiveDirectory RSAT](https://www.microsoft.com/en-us/download/details.aspx?id=45520) - allows connecting to AD and creating Active Directory dataset
+- [DBATools](https://www.powershellgallery.com/packages/dbatools/) - allows connecting to SQL and sending data to SQL (create table, alter table, inserts)
+
 
 ## Goals
 
 Ultimate goal of this project is to have proper documentation of following services:
 
-- Active Directory
-- Microsoft Exchange
-- Office 365
+- Active Directory - **80% done** (more or less)
+- AWS - **50% done** (more or less)
+- Microsoft Exchange - **20% done** (mostly Excel / SQL export oriented)
+- Office 365 Exchange Online - **20% done** (mostly Excel / SQL export oriented)
+- Office 365 Azure AD - **20% don**e (mostly Excel / SQL export oriented)
 - Windows Server
 - Windows Workstation
 
-I'm heavily open for feature requests and people willing to create data sets. By data sets I mean data prepared to be included in report (usually HashTable, OrderedHashTable, Array or PSCustomobject). This module is smart enough that it can easily convert that data into Word Sections.
+I'm heavily open for feature requests and people willing to create data sets. By data sets I mean data prepared to be included in report (usually HashTable, OrderedHashTable, Array or PSCustomobject). This module is smart enough that it can easily convert that data into Word Sections. Also don't really pay attention to percentage numbers. If you have request I will consier adding it.
 
 ## Updates
+- 0.2.x / 2018.09.23 - [full blog post](https://evotec.xyz/pswindocumentation-export-to-word-excel-sql-of-ad-aws-exchange-o365-exchange-o365-azure-ad/)
+    - Allows Exporting to Microsoft SQL (that's right – export data directly to SQL – complete with create table, alter table and inserts)
+    - Basic data set AWS
+    - Advanced data set Active Directory
+    - Basic data set Microsoft Exchange
+    - Basic data set Office 365 – Exchange Online
+    - Basic data set Office 365 – Azure AD
+    - Prescanning of data headers for exports (unravel hidden data)
+    - Ability to define TableColumnWidths in sections
+
 - 0.1 / 2018.08.23
     - Large release
     - You can read about it in separate [blog post](https://evotec.xyz/pswindocumentation-version-0-1-with-word-excel-export/)
