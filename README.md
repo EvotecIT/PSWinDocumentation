@@ -9,7 +9,7 @@ Overview of this module is available at: https://evotec.xyz/hub/scripts/pswindoc
 
 All 3 modules above are under active development.
 
-##For additional functionality it utilizes:
+## For additional functionality it utilizes:
 - [AWSPowershell](https://www.powershellgallery.com/packages/AWSPowerShell/) - allows connecting to AWS and creating AWS dataset
 - [ActiveDirectory RSAT](https://www.microsoft.com/en-us/download/details.aspx?id=45520) - allows connecting to AD and creating Active Directory dataset
 - [DBATools](https://www.powershellgallery.com/packages/dbatools/) - allows connecting to SQL and sending data to SQL (create table, alter table, inserts)
@@ -24,8 +24,10 @@ Ultimate goal of this project is to have proper documentation of following servi
 - Microsoft Exchange - **20% done** (mostly Excel / SQL export oriented)
 - Office 365 Exchange Online - **20% done** (mostly Excel / SQL export oriented)
 - Office 365 Azure AD - **20% don**e (mostly Excel / SQL export oriented)
-- Windows Server
-- Windows Workstation
+- Office 365 Teams (not started)
+- Office 365 Skype for Business (not started)
+- Windows Server (some basic stuff - not functionable)
+- Windows Workstation (some basic stuff - not functionable)
 
 I'm heavily open for feature requests and people willing to create data sets. By data sets I mean data prepared to be included in report (usually HashTable, OrderedHashTable, Array or PSCustomobject). This module is smart enough that it can easily convert that data into Word Sections. Also don't really pay attention to percentage numbers. If you have request I will consier adding it.
 
