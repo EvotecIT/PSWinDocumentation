@@ -26,6 +26,7 @@ Add-Type -TypeDefinition @"
         DomainClaimTransformPolicies, // Not yet tested
         DomainClaimTypes, // Not yet tested
         DomainFineGrainedPolicies,
+        DomainFineGrainedPoliciesUsers,
         DomainGUIDS,
         DomainDNSSRV,
         DomainDNSA,
@@ -79,5 +80,17 @@ Add-Type -TypeDefinition @"
         // Domain Information - Computer Data
         DomainComputersFullList // Contains all data
 
+        // This requires DSInstall PowerShell Module
+        DomainPasswordQualityReversibleEncryption,
+        DomainPasswordQualityLMHashesArePresent,
+        DomainPasswordQualityFoundInDictionary,
+        DomainPasswordQualitySamePassword,
+        DomainPasswordQualityDefaultPassword,
+        DomainPasswordQualityKerberosAesKeysMissing,
+        DomainPasswordQualityKerberosPreAuthNotRequired,
+        DomainPasswordQualityOnlyDesEcnryptionAllowed,
+        DomainPasswordQualityAllowedToDelegateToService,
+        DomainPasswordQualityNeverExpiring,
+        DomainPasswordQualityNotRequiredPassword
     }
 "@
