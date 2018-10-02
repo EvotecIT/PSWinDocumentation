@@ -82,17 +82,34 @@ Add-Type -TypeDefinition @"
         DomainComputersFullList, // Contains all data
 
         // This requires DSInstall PowerShell Module
-        DomainPasswordQualityClearTextPassword,
-        DomainPasswordQualityLMHash,
-        DomainPasswordQualityEmptyPassword,
-        DomainPasswordQualityWeakPassword,
-        DomainPasswordQualityDefaultComputerPassword,
-        DomainPasswordQualityPasswordNotRequired,
-        DomainPasswordQualityPasswordNeverExpires,
-        DomainPasswordQualityAESKeysMissing,
-        DomainPasswordQualityPreAuthNotRequired,
-        DomainPasswordQualityDESEncryptionOnly,
-        DomainPasswordQualityDelegatableAdmins,
-        DomainPasswordQualityDuplicatePasswordGroups
+        DomainPasswordClearTextPassword,
+        DomainPasswordLMHash,
+        DomainPasswordEmptyPassword,
+        DomainPasswordWeakPassword,
+        DomainPasswordDefaultComputerPassword,
+        DomainPasswordPasswordNotRequired,
+        DomainPasswordPasswordNeverExpires,
+        DomainPasswordAESKeysMissing,
+        DomainPasswordPreAuthNotRequired,
+        DomainPasswordDESEncryptionOnly,
+        DomainPasswordDelegatableAdmins,
+        DomainPasswordDuplicatePasswordGroups,
+
+        DomainPasswordHashesClearTextPassword,
+        DomainPasswordHashesLMHash,
+        DomainPasswordHashesEmptyPassword,
+        DomainPasswordHashesWeakPassword,
+        DomainPasswordHashesDefaultComputerPassword,
+        DomainPasswordHashesPasswordNotRequired,
+        DomainPasswordHashesPasswordNeverExpires,
+        DomainPasswordHashesAESKeysMissing,
+        DomainPasswordHashesPreAuthNotRequired,
+        DomainPasswordHashesDESEncryptionOnly,
+        DomainPasswordHashesDelegatableAdmins,
+        DomainPasswordHashesDuplicatePasswordGroups,
+
+        DomainPasswordStats,
+        DomainPasswordHashesStats
+
     }
 "@
