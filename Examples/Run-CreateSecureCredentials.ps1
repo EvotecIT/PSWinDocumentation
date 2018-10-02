@@ -1,4 +1,4 @@
-$MyPassword = "ZielonyMechanik8"
+$MyPassword = ""
 $FileToSaveSecurePassword = 'C:\Support\GitHub\PSWinDocumentation\Ignore\MySecurePassword.txt'
 
 # Option 1
