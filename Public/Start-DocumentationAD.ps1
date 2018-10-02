@@ -7,12 +7,23 @@ function Start-DocumentationAD {
     $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
     $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
 
+    $ADConfiguration = $Document.DocumentAD.Configuration
+    if ($ADConfiguration.PasswordTests.Use) {
+        $PasswordClearText = $ADConfiguration.PasswordTests.PasswordFilePathClearText
+    } else {
+        $PasswordClearText = ''
+    }
+    if ($ADConfiguration.PasswordTests.UseHashDB) {
+        $PasswordHashes = $ADConfiguration.PasswordTests.PasswordFilePathHash
+    } else {
+        $PasswordHashes = ''
+    }
+
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     $CheckAvailabilityCommandsAD = Test-AvailabilityCommands -Commands 'Get-ADForest', 'Get-ADDomain', 'Get-ADRootDSE', 'Get-ADGroup', 'Get-ADUser', 'Get-ADComputer'
     if ($CheckAvailabilityCommandsAD -notcontains $false) {
         Test-ForestConnectivity
-        $DataInformationAD = Get-WinADForestInformation -TypesRequired $TypesRequired
-
+        $DataInformationAD = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes
     }
 
     $TimeDataOnly.Stop()

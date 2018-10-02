@@ -2,7 +2,9 @@ function Get-WinADForestInformation {
     [CmdletBinding()]
     param (
         [Object] $TypesRequired,
-        [switch] $RequireTypes
+        [switch] $RequireTypes,
+        [string] $PathToPasswords,
+        [string] $PathToPasswordsHashes
     )
     if ($TypesRequired -eq $null) {
         Write-Verbose 'Get-WinADForestInformation - TypesRequired is null. Getting all.'
@@ -166,7 +168,7 @@ function Get-WinADForestInformation {
     $Data.FoundDomains = [ordered]@{}
     $DomainData = @()
     foreach ($Domain in $Data.Domains) {
-        $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain -TypesRequired $TypesRequired
+        $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain -TypesRequired $TypesRequired -PathToPasswords $PathToPasswords -PathToPasswordsHashes $PathToPasswordsHashes
     }
     return $Data
 }

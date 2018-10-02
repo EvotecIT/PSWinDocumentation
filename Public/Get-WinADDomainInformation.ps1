@@ -673,7 +673,8 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordPreAuthNotRequired,
             [ActiveDirectory]::DomainPasswordDESEncryptionOnly,
             [ActiveDirectory]::DomainPasswordDelegatableAdmins,
-            [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups
+            [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups,
+            [ActiveDirectory]::DomainPasswordStats
         )) {
         #$FileClean = 'C:\Users\pklys\OneDrive - Evotec\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
         Write-Verbose "Getting domain password information - $Domain PasswordQualityClearText"
@@ -728,7 +729,8 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordHashesPreAuthNotRequired,
             [ActiveDirectory]::DomainPasswordHashesDESEncryptionOnly,
             [ActiveDirectory]::DomainPasswordHashesDelegatableAdmins,
-            [ActiveDirectory]::DomainPasswordHashesDuplicatePasswordGroups
+            [ActiveDirectory]::DomainPasswordHashesDuplicatePasswordGroups,
+            [ActiveDirectory]::DomainPasswordHashesStats
         )) {
         Write-Verbose "Getting domain password information - $Domain PasswordQualityHashes"
         $PasswordQualityHashes = Get-WinADDomainPasswordQuality -FilePath $PathToPasswordsHashes -DomainInformation $Data -UseHashes -Verbose:$false
