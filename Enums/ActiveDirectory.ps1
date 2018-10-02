@@ -27,6 +27,7 @@ Add-Type -TypeDefinition @"
         DomainClaimTypes, // Not yet tested
         DomainFineGrainedPolicies,
         DomainFineGrainedPoliciesUsers,
+        DomainFineGrainedPoliciesUsersExtended,
         DomainGUIDS,
         DomainDNSSRV,
         DomainDNSA,
@@ -78,19 +79,20 @@ Add-Type -TypeDefinition @"
         DomainEnterpriseAdministratorsRecursive,
 
         // Domain Information - Computer Data
-        DomainComputersFullList // Contains all data
+        DomainComputersFullList, // Contains all data
 
         // This requires DSInstall PowerShell Module
-        DomainPasswordQualityReversibleEncryption,
-        DomainPasswordQualityLMHashesArePresent,
-        DomainPasswordQualityFoundInDictionary,
-        DomainPasswordQualitySamePassword,
-        DomainPasswordQualityDefaultPassword,
-        DomainPasswordQualityKerberosAesKeysMissing,
-        DomainPasswordQualityKerberosPreAuthNotRequired,
-        DomainPasswordQualityOnlyDesEcnryptionAllowed,
-        DomainPasswordQualityAllowedToDelegateToService,
-        DomainPasswordQualityNeverExpiring,
-        DomainPasswordQualityNotRequiredPassword
+        DomainPasswordQualityClearTextPassword,
+        DomainPasswordQualityLMHash,
+        DomainPasswordQualityEmptyPassword,
+        DomainPasswordQualityWeakPassword,
+        DomainPasswordQualityDefaultComputerPassword,
+        DomainPasswordQualityPasswordNotRequired,
+        DomainPasswordQualityPasswordNeverExpires,
+        DomainPasswordQualityAESKeysMissing,
+        DomainPasswordQualityPreAuthNotRequired,
+        DomainPasswordQualityDESEncryptionOnly,
+        DomainPasswordQualityDelegatableAdmins,
+        DomainPasswordQualityDuplicatePasswordGroups
     }
 "@
