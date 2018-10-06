@@ -40,7 +40,7 @@ $Document = [ordered]@{
                 Use                       = $true
                 PasswordFilePathClearText = 'C:\Users\pklys\OneDrive - Evotec\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
                 # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
-                UseHashDB                 = $false
+                UseHashDB                 = $true
                 PasswordFilePathHash      = 'C:\Users\pklys\Downloads\pwned-passwords-ntlm-ordered-by-count\pwned-passwords-ntlm-ordered-by-count.txt'
             }
         }
@@ -673,6 +673,42 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PasswordGroups'
                     ExcelData       = [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups
                 }
+                DomainPasswordHashesWeakPassword                   = [ordered] @{
+                    Use             = $false
+                    TocEnable       = $True
+                    TocText         = 'Password Quality - Leaked Passwords'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::DomainPasswordHashesWeakPassword
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = "Passwords of these accounts have been found in given HASH dictionary (https://haveibeenpwned.com/). It's highely recommended to " `
+                    + "notify those users and ask them to change their passwords asap!"
+                    TextNoData      = 'There were no passwords found that match in given dictionary.'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - LeakedPasswords'
+                    ExcelData       = [ActiveDirectory]::DomainPasswordHashesWeakPassword
+                }
+                DomainPasswordStats                         = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'Password Quality - Statistics'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::DomainPasswordStats
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = "Following table and chart shows password statistics"
+                    ChartEnable     = $True
+                    ChartTitle      = 'Password Statistics'
+                    ChartData       = [ActiveDirectory]::DomainPasswordStats
+                    ChartKeys       = 'Keys'
+                    ChartValues     = 'Values'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - PasswordStats'
+                    ExcelData       = [ActiveDirectory]::DomainPasswordStats
+                }
+                <#
                 DomainPasswordHashesClearTextPassword                   = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
@@ -717,21 +753,6 @@ $Document = [ordered]@{
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - DomainPasswordHashesEmptyPassword'
                     ExcelData       = [ActiveDirectory]::DomainPasswordHashesEmptyPassword
-                }
-                DomainPasswordHashesWeakPassword                   = [ordered] @{
-                    Use             = $true
-                    TocEnable       = $True
-                    TocText         = 'General Information - DomainPasswordHashesWeakPassword'
-                    TocListLevel    = 2
-                    TocListItemType = 'Numbered'
-                    TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainPasswordHashesWeakPassword
-                    TableDesign     = 'ColorfulGridAccent5'
-                    Text            = 'DomainPasswordHashesWeakPassword'
-                    TextNoData      = 'No DomainPasswordHashesWeakPassword'
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - DomainPasswordHashesWeakPassword'
-                    ExcelData       = [ActiveDirectory]::DomainPasswordHashesWeakPassword
                 }
                 DomainPasswordHashesDefaultComputerPassword                   = [ordered] @{
                     Use             = $true
@@ -853,6 +874,7 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - DomainPasswordHashesDuplicatePasswordGroups'
                     ExcelData       = [ActiveDirectory]::DomainPasswordHashesDuplicatePasswordGroups
                 }
+                #>
                 SectionExcelDomainOrganizationalUnitsBasicACL     = [ordered] @{
                     Use            = $true
                     ExcelExport    = $true
