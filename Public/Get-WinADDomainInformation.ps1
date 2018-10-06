@@ -692,10 +692,10 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordHashesDuplicatePasswordGroups,
             [ActiveDirectory]::DomainPasswordHashesStats
         )) {
-        Write-Verbose "Getting domain password information - $Domain DomainPasswordQualityUsers - This will take a while if set!"
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDataUsers - This will take a while if set!"
         $TimeToProcess = Start-TimeLog
         $Data.DomainPasswordDataUsers = Get-ADReplAccount -All -Server $Data.DomainInformation.DnsRoot -NamingContext $Data.DomainInformation.DistinguishedName
-        Write-Verbose "Getting domain password information - $Domain DomainPasswordQualityUsers - Time: $($TimeToProcess | Stop-TimeLog)"
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDataUsers - Time: $($TimeToProcess | Stop-TimeLog)"
     }
 
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
@@ -714,10 +714,10 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups,
             [ActiveDirectory]::DomainPasswordStats
         )) {
-        Write-Verbose "Getting domain password information - $Domain PasswordQuality - This will take a while if set!"
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDataPasswords - This will take a while if set!"
         $TimeToProcess = Start-TimeLog
         $Data.DomainPasswordDataPasswords = Get-WinADDomainPasswordQuality -FilePath $PathToPasswords -DomainInformation $Data -Verbose:$false -PasswordQualityUsers $Data.DomainPasswordDataUsers
-        Write-Verbose "Getting domain password information - $Domain PasswordQuality - Time: $($TimeToProcess | Stop-TimeLog)"
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDataPasswords - Time: $($TimeToProcess | Stop-TimeLog)"
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordClearTextPassword)) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordClearTextPassword"
@@ -784,10 +784,10 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordHashesDuplicatePasswordGroups,
             [ActiveDirectory]::DomainPasswordHashesStats
         )) {
-        Write-Verbose "Getting domain password information - $Domain PasswordQualityByHash - This will take a while if set!"
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDataPasswordsHashes - This will take a while if set!"
         $TimeToProcess = Start-TimeLog
         $Data.DomainPasswordDataPasswordsHashes = Get-WinADDomainPasswordQuality -FilePath $PathToPasswordsHashes -DomainInformation $Data -UseHashes -Verbose:$false -PasswordQualityUsers $Data.DomainPasswordDataUsers
-        Write-Verbose "Getting domain password information - $Domain PasswordQualityByHash - Time: $($TimeToProcess | Stop-TimeLog)"
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDataPasswordsHashes - Time: $($TimeToProcess | Stop-TimeLog)"
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesClearTextPassword)) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesClearTextPassword"
