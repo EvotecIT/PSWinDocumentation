@@ -82,11 +82,10 @@ Add-Type -TypeDefinition @"
         DomainComputersFullList, // Contains all data
 
         // This requires DSInstall PowerShell Module
-        DomainPasswordDataUsers, // All users passwords object. You can ignore it.
-        DomainPasswordDataPasswords, //
-        DomainPasswordDataPasswordsHashes,
+        DomainPasswordDataUsers, // Gathers users data and their passwords
+        DomainPasswordDataPasswords, // Compares Users Password with File
+        DomainPasswordDataPasswordsHashes, // Compares Users Password with File HASH
 
-        DomainPasswordQualityClearText, // This is the main holder. You can ignore it.
         DomainPasswordClearTextPassword,
         DomainPasswordLMHash,
         DomainPasswordEmptyPassword,
@@ -99,22 +98,7 @@ Add-Type -TypeDefinition @"
         DomainPasswordDESEncryptionOnly,
         DomainPasswordDelegatableAdmins,
         DomainPasswordDuplicatePasswordGroups,
-
-        DomainPasswordHashesClearTextPassword,
-        DomainPasswordHashesLMHash,
-        DomainPasswordHashesEmptyPassword,
         DomainPasswordHashesWeakPassword,
-        DomainPasswordHashesDefaultComputerPassword,
-        DomainPasswordHashesPasswordNotRequired,
-        DomainPasswordHashesPasswordNeverExpires,
-        DomainPasswordHashesAESKeysMissing,
-        DomainPasswordHashesPreAuthNotRequired,
-        DomainPasswordHashesDESEncryptionOnly,
-        DomainPasswordHashesDelegatableAdmins,
-        DomainPasswordHashesDuplicatePasswordGroups,
-
         DomainPasswordStats,
-        DomainPasswordHashesStats
-
     }
 "@
