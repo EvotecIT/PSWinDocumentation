@@ -677,43 +677,55 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordStats
         )) {
         #$FileClean = 'C:\Users\pklys\OneDrive - Evotec\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
-        Write-Verbose "Getting domain password information - $Domain PasswordQualityClearText"
+        Write-Verbose "Getting domain password information - $Domain PasswordQuality - This will take a while if set!"
         $PasswordQualityClearText = Get-WinADDomainPasswordQuality -FilePath $PathToPasswords -DomainInformation $Data -Verbose:$false
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordClearTextPassword)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordClearTextPassword"
         $Data.DomainPasswordClearTextPassword = $PasswordQualityClearText.DomainPasswordClearTextPassword
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordLMHash)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordLMHash"
         $Data.DomainPasswordLMHash = $PasswordQualityClearText.DomainPasswordLMHash
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordEmptyPassword)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordEmptyPassword"
         $Data.DomainPasswordEmptyPassword = $PasswordQualityClearText.DomainPasswordEmptyPassword
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordWeakPassword)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordWeakPassword"
         $Data.DomainPasswordWeakPassword = $PasswordQualityClearText.DomainPasswordWeakPassword
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordDefaultComputerPassword)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDefaultComputerPassword"
         $Data.DomainPasswordDefaultComputerPassword = $PasswordQualityClearText.DomainPasswordDefaultComputerPassword
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordPasswordNotRequired)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordPasswordNotRequired"
         $Data.DomainPasswordPasswordNotRequired = $PasswordQualityClearText.DomainPasswordPasswordNotRequired
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordPasswordNeverExpires)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordPasswordNeverExpires"
         $Data.DomainPasswordPasswordNeverExpires = $PasswordQualityClearText.DomainPasswordPasswordNeverExpires
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordAESKeysMissing)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordAESKeysMissing"
         $Data.DomainPasswordAESKeysMissing = $PasswordQualityClearText.DomainPasswordAESKeysMissing
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordPreAuthNotRequired)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordPreAuthNotRequired"
         $Data.DomainPasswordPreAuthNotRequired = $PasswordQualityClearText.DomainPasswordPreAuthNotRequired
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordDESEncryptionOnly)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDESEncryptionOnly"
         $Data.DomainPasswordDESEncryptionOnly = $PasswordQualityClearText.DomainPasswordDESEncryptionOnly
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordDelegatableAdmins)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDelegatableAdmins"
         $Data.DomainPasswordDelegatableAdmins = $PasswordQualityClearText.DomainPasswordDelegatableAdmins
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordDuplicatePasswordGroups"
         $Data.DomainPasswordDuplicatePasswordGroups = $PasswordQualityClearText.DomainPasswordDuplicatePasswordGroups
     }
 
@@ -732,46 +744,59 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordHashesDuplicatePasswordGroups,
             [ActiveDirectory]::DomainPasswordHashesStats
         )) {
-        Write-Verbose "Getting domain password information - $Domain PasswordQualityHashes"
+        Write-Verbose "Getting domain password information - $Domain PasswordQualityHashes - This will take a while if set!"
         $PasswordQualityHashes = Get-WinADDomainPasswordQuality -FilePath $PathToPasswordsHashes -DomainInformation $Data -UseHashes -Verbose:$false
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesClearTextPassword)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesClearTextPassword"
         $Data.DomainPasswordHashesClearTextPassword = $PasswordQualityHashes.DomainPasswordClearTextPassword
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesLMHash)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesLMHash"
         $Data.DomainPasswordHashesLMHash = $PasswordQualityHashes.DomainPasswordLMHash
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesEmptyPassword)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesEmptyPassword"
         $Data.DomainPasswordHashesEmptyPassword = $PasswordQualityHashes.DomainPasswordEmptyPassword
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesWeakPassword)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesWeakPassword"
         $Data.DomainPasswordHashesWeakPassword = $PasswordQualityHashes.DomainPasswordWeakPassword
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesDefaultComputerPassword)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesDefaultComputerPassword"
         $Data.DomainPasswordHashesDefaultComputerPassword = $PasswordQualityHashes.DomainPasswordDefaultComputerPassword
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesPasswordNotRequired)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesPasswordNotRequired"
         $Data.DomainPasswordHashesPasswordNotRequired = $PasswordQualityHashes.DomainPasswordPasswordNotRequired
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesPasswordNeverExpires)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesPasswordNeverExpires"
         $Data.DomainPasswordHashesPasswordNeverExpires = $PasswordQualityHashes.DomainPasswordPasswordNeverExpires
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesAESKeysMissing)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesAESKeysMissing"
         $Data.DomainPasswordHashesAESKeysMissing = $PasswordQualityHashes.DomainPasswordAESKeysMissing
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesPreAuthNotRequired)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesPreAuthNotRequired"
         $Data.DomainPasswordHashesPreAuthNotRequired = $PasswordQualityHashes.DomainPasswordPreAuthNotRequired
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesDESEncryptionOnly)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesDESEncryptionOnly"
         $Data.DomainPasswordHashesDESEncryptionOnly = $PasswordQualityHashes.DomainPasswordDESEncryptionOnly
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesDelegatableAdmins)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesDelegatableAdmins"
         $Data.DomainPasswordHashesDelegatableAdmins = $PasswordQualityHashes.DomainPasswordDelegatableAdmins
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesDuplicatePasswordGroups)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesDuplicatePasswordGroups"
         $Data.DomainPasswordHashesDuplicatePasswordGroups = $PasswordQualityHashes.DomainPasswordDelegatableAdmins
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordStats)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordStats"
         $Data.DomainPasswordStats = Invoke-Command -ScriptBlock {
             $Stats = [ordered] @{}
             $Stats.'Clear Text Passwords' = Get-ObjectCount -Object $Data.DomainPasswordClearTextPassword
@@ -791,6 +816,7 @@ function Get-WinADDomainInformation {
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesStats)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesStats"
         $Data.DomainPasswordHashesStats = Invoke-Command -ScriptBlock {
             $StatsHash = [ordered] @{}
             $StatsHash.'Clear Text Passwords' = Get-ObjectCount -Object $Data.DomainPasswordHashesClearTextPassword
