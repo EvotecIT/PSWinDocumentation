@@ -4,7 +4,7 @@
     RootModule        = 'PSWinDocumentation.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.1'
+    ModuleVersion     = '0.3.0'
 
     # ID used to uniquely identify this module
     GUID              = '6bd80c20-e606-4e31-9f88-9ad305256f23'
@@ -22,7 +22,7 @@
     Description       = 'Simple project generating Active Directory, AWS, Exchange, Office 365 (Exchange, Azure AD) documentation to Microsoft Word, Microsoft Excel and Microsoft SQL. More things to follow...'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    # PowerShellVersion = ''
+    PowerShellVersion = '5.1'
 
     # Name of the Windows PowerShell host required by this module
     # PowerShellHostName = ''
@@ -42,33 +42,13 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules   = @('PSWriteWord', 'PSWriteExcel', 'PSWriteColor', 'PSSharedGoods')
 
-    # Assemblies that must be loaded prior to importing this module
-    # RequiredAssemblies = @()
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
     ScriptsToProcess  = @('Enums\ActiveDirectory.ps1', 'Enums\AWS.ps1', 'Enums\Exchange.ps1', 'Enums\O365.ps1')
 
-    # Type files (.ps1xml) to be loaded when importing this module
-    # TypesToProcess = @()
-
-    # Format files (.ps1xml) to be loaded when importing this module
-    # FormatsToProcess = @()
-
-    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    # NestedModules = @()
-
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     #FunctionsToExport = '*'
     FunctionsToExport = 'Start-Documentation', 'Start-ActiveDirectoryDocumentation', 'Get-WinADForestInformation', 'Get-WinADDomainInformation', 'Get-WinAWSInformation', 'Get-WinO365Azure', 'Get-WinO365Exchange', 'Get-WinExchangeInformation', 'Start-WinDocumentationWorkstation'
-
-    # DSC resources to export from this module
-    # DscResourcesToExport = @()
-
-    # List of all modules packaged with this module
-    # ModuleList = @()
-
-    # List of all files packaged with this module
-    #FileList          = 'PSWinDocumentation.psm1', 'PSWinDocumentation.psd1'
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
     PrivateData       = @{
