@@ -2,6 +2,7 @@ function Get-WinADDomainPasswordQuality {
     [CmdletBinding()]
     param (
         $DomainInformation,
+        $PasswordQualityUsers,
         [string] $FilePath,
         [switch] $UseHashes
     )
@@ -13,8 +14,16 @@ function Get-WinADDomainPasswordQuality {
         Write-Verbose "Get-WinADDomainPasswordQuality - File path doesn't exists, using hashes set to $UseHashes"
         return
     }
+    if ($DomainInformation -eq $null) {
+        Write-Verbose "Get-WinADDomainPasswordQuality - No DomainInformation given, no alternative approach either. Terminating password quality check."
+        return
+    }
     $Data = [ordered] @{}
-    $Data.PasswordQualityUsers = Get-ADReplAccount -All -Server $DomainInformation.DomainInformation.DnsRoot -NamingContext $DomainInformation.DomainInformation.DistinguishedName
+    if ($PasswordQualityUsers) {
+        $Data.PasswordQualityUsers = $PasswordQualityUsers
+    } else {
+        $Data.PasswordQualityUsers = Get-ADReplAccount -All -Server $DomainInformation.DomainInformation.DnsRoot -NamingContext $DomainInformation.DomainInformation.DistinguishedName
+    }
     $Data.PasswordQuality = Invoke-Command -ScriptBlock {
         if ($UseHashes) {
             $Results = $Data.PasswordQualityUsers | Test-PasswordQuality -WeakPasswordHashesFile $FilePath -IncludeDisabledAccounts

@@ -2,7 +2,7 @@ Import-Module PSWriteWord
 Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
-Import-Module PSSharedGoods
+Import-Module PSSharedGoods -Force
 Import-Module DbaTools
 Import-Module ActiveDirectory
 Import-Module AWSPowerShell

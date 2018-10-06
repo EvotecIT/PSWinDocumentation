@@ -82,6 +82,11 @@ Add-Type -TypeDefinition @"
         DomainComputersFullList, // Contains all data
 
         // This requires DSInstall PowerShell Module
+        DomainPasswordDataUsers, // All users passwords object. You can ignore it.
+        DomainPasswordDataPasswords, //
+        DomainPasswordDataPasswordsHashes,
+
+        DomainPasswordQualityClearText, // This is the main holder. You can ignore it.
         DomainPasswordClearTextPassword,
         DomainPasswordLMHash,
         DomainPasswordEmptyPassword,
