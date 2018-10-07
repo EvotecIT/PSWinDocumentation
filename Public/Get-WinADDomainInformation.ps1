@@ -37,7 +37,7 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainComputersUnknownCount
         )) {
         Write-Verbose "Getting domain information - $Domain DomainComputersAll"
-        $Data.DomainComputersAll = $Data.DomainComputersFullList  | Select-Object Name, SamAccountName, Enabled, PasswordLastSet, IPv4Address, IPv6Address, DNSHostName, ManagedBy, OperatingSystem*, PasswordNeverExpires, PasswordNotRequired, UserPrincipalName, LastLogonDate, LockedOut, LogonCount, CanonicalName, SID, Created, Modified, Deleted, MemberOf
+        $Data.DomainComputersAll = $Data.DomainComputersFullList  | Select-Object SamAccountName, Enabled, OperatingSystem, PasswordLastSet, IPv4Address, IPv6Address, Name, DNSHostName, ManagedBy, OperatingSystemVersion, OperatingSystemHotfix, OperatingSystemServicePack , PasswordNeverExpires, PasswordNotRequired, UserPrincipalName, LastLogonDate, LockedOut, LogonCount, CanonicalName, SID, Created, Modified, Deleted, MemberOf
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainComputersAllCount) {
         Write-Verbose "Getting domain information - $Domain DomainComputersAllCount"

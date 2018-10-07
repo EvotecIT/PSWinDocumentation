@@ -23,12 +23,23 @@ function New-DataBlock {
         ### Preparing chart data
         $ChartData = (Get-WinDocumentationData -DataToGet $Section.ChartData -Object $Forest -Domain $Domain)
         if ($ChartData) {
-            if ($Section.ChartKeys -eq 'Keys' -and $Section.ChartValues -eq 'Values') {
-                $ChartKeys = (Convert-KeyToKeyValue $ChartData).Keys
-                $ChartValues = (Convert-KeyToKeyValue $ChartData).Values
-            } else {
+            if ($Section.ChartKeys -is [string]) {
+                if ($Section.ChartKeys -eq 'Keys' -and $Section.ChartValues -eq 'Values') {
+                    # This covers this types
+                    #ChartKeys       = 'System Name','System Count'
+                    #ChartValues     = 'System Count'
+                    $ChartKeys = (Convert-KeyToKeyValue $ChartData).Keys
+                    $ChartValues = (Convert-KeyToKeyValue $ChartData).Values
+                } else {
+                    # This is for types like ChartKeys = 'Group Name'  ChartValues = 'Members Count'
+                    $ChartKeys = (Convert-KeyToKeyValue $ChartData)."$($Section.ChartKeys)"
+                    $ChartValues = (Convert-KeyToKeyValue $ChartData)."$($Section.ChartValues)"
+                }
+            } elseif ($Section.ChartKeys -is [Array]) {
                 $ChartKeys = (Convert-TwoArraysIntoOne -Object $ChartData.($Section.ChartKeys[0]) -ObjectToAdd $ChartData.($Section.ChartKeys[1]))
                 $ChartValues = ($ChartData.($Section.ChartValues))
+            } else {
+                # not implemented
             }
         }
 
