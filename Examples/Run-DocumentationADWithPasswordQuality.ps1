@@ -332,19 +332,19 @@ $Document = [ordered]@{
                     ExcelData           = [ActiveDirectory]::DomainGroupPoliciesDetails
                 }
                 SectionDomainGroupPoliciesACL                     = [ordered] @{
-                    Use                 = $true
-                    TocEnable           = $True
-                    TocText             = 'General Information - Group Policies ACL'
-                    TocListLevel        = 1
-                    TocListItemType     = 'Numbered'
-                    TocHeadingType      = 'Heading2'
-                    TableData           = [ActiveDirectory]::DomainGroupPoliciesACL
-                    TableMaximumColumns = 6
-                    TableDesign         = 'ColorfulGridAccent5'
-                    Text                = "Following table contains group policies ACL for <Domain>"
-                    ExcelExport         = $true
-                    ExcelWorkSheet      = '<Domain> - GroupPoliciesACL'
-                    ExcelData           = [ActiveDirectory]::DomainGroupPoliciesACL
+                    Use            = $true
+                    #TocEnable           = $True
+                    #TocText             = 'General Information - Group Policies ACL'
+                    #TocListLevel        = 1
+                    #TocListItemType     = 'Numbered'
+                    #TocHeadingType      = 'Heading2'
+                    #TableData           = [ActiveDirectory]::DomainGroupPoliciesACL
+                    #TableMaximumColumns = 6
+                    #TableDesign         = 'ColorfulGridAccent5'
+                    #Text                = "Following table contains group policies ACL for <Domain>"
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - GroupPoliciesACL'
+                    ExcelData      = [ActiveDirectory]::DomainGroupPoliciesACL
                 }
                 SectionDomainDNSSrv                               = [ordered] @{
                     Use                  = $true
@@ -388,18 +388,19 @@ $Document = [ordered]@{
                     ExcelData           = [ActiveDirectory]::DomainTrusts
                 }
                 SectionDomainOrganizationalUnits                  = [ordered] @{
-                    Use             = $true
-                    TocEnable       = $True
-                    TocText         = 'General Information - Organizational Units'
-                    TocListLevel    = 1
-                    TocListItemType = 'Numbered'
-                    TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainOrganizationalUnits
-                    TableDesign     = 'ColorfulGridAccent5'
-                    Text            = "Following table contains all OU's created in <Domain>"
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - OrganizationalUnits'
-                    ExcelData       = [ActiveDirectory]::DomainOrganizationalUnits
+                    Use                 = $true
+                    TocEnable           = $True
+                    TocText             = 'General Information - Organizational Units'
+                    TocListLevel        = 1
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [ActiveDirectory]::DomainOrganizationalUnits
+                    TableDesign         = 'ColorfulGridAccent5'
+                    TableMaximumColumns = 4
+                    Text                = "Following table contains all OU's created in <Domain>"
+                    ExcelExport         = $true
+                    ExcelWorkSheet      = '<Domain> - OrganizationalUnits'
+                    ExcelData           = [ActiveDirectory]::DomainOrganizationalUnits
                 }
                 SectionDomainPriviligedGroup                      = [ordered] @{
                     Use             = $False
@@ -420,40 +421,21 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PriviligedGroupMembers'
                     ExcelData       = [ActiveDirectory]::DomainGroupsPriviliged
                 }
-                SectionDomainAdministrators                       = [ordered] @{
-                    Use             = $true
-                    TocEnable       = $True
-                    TocText         = 'General Information - Domain Administrators'
-                    TocListLevel    = 1
-                    TocListItemType = 'Numbered'
-                    TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainAdministratorsRecursive
-                    TableDesign     = 'ColorfulGridAccent5'
-                    Text            = 'Following users have highest priviliges and are able to control a lot of Windows resources.'
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - DomainAdministrators'
-                    ExcelData       = [ActiveDirectory]::DomainAdministratorsRecursive
-                }
-                SectionEnterpriseAdministrators                   = [ordered] @{
-                    Use             = $true
-                    TocEnable       = $True
-                    TocText         = 'General Information - Enterprise Administrators'
-                    TocListLevel    = 1
-                    TocListItemType = 'Numbered'
-                    TocHeadingType  = 'Heading2'
-                    TableData       = [ActiveDirectory]::DomainEnterpriseAdministratorsRecursive
-                    TableDesign     = 'ColorfulGridAccent5'
-                    Text            = 'Following users have highest priviliges across Forest and are able to control a lot of Windows resources.'
-                    TextNoData      = 'No Enterprise Administrators users were defined for this domain.'
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - EnterpriseAdministrators'
-                    ExcelData       = [ActiveDirectory]::DomainEnterpriseAdministratorsRecursive
+                SectionDomainUsers                                = [ordered] @{
+                    Use              = $true
+                    TocEnable        = $True
+                    TocText          = 'General Information - Domain Users in <Domain>'
+                    TocListLevel     = 1
+                    TocListItemType  = [ListItemType]::Numbered
+                    TocHeadingType   = [HeadingType]::Heading1
+                    PageBreaksBefore = 1
+                    Text             = 'Following section covers users information for domain <Domain>. '
                 }
                 SectionDomainUsersCount                           = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Users Count'
-                    TocListLevel    = 1
+                    TocListLevel    = 2
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading2'
                     TableData       = [ActiveDirectory]::DomainUsersCount
@@ -470,22 +452,154 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - UsersCount'
                     ExcelData       = [ActiveDirectory]::DomainUsersCount
                 }
-                SectionPasswordQuality    = [ordered] @{
-                    ### Enables section
+                SectionDomainAdministrators                       = [ordered] @{
                     Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Domain Administrators'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::DomainAdministratorsRecursive
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = 'Following users have highest priviliges and are able to control a lot of Windows resources.'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - DomainAdministrators'
+                    ExcelData       = [ActiveDirectory]::DomainAdministratorsRecursive
+                }
+                SectionEnterpriseAdministrators                   = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Enterprise Administrators'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::DomainEnterpriseAdministratorsRecursive
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = 'Following users have highest priviliges across Forest and are able to control a lot of Windows resources.'
+                    TextNoData      = 'No Enterprise Administrators users were defined for this domain.'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - EnterpriseAdministrators'
+                    ExcelData       = [ActiveDirectory]::DomainEnterpriseAdministratorsRecursive
+                }
+                SectionDomainComputers                            = [ordered] @{
+                    Use              = $true
+                    TocEnable        = $True
+                    TocText          = 'General Information - Computer Objects in <Domain>'
+                    TocListLevel     = 1
+                    TocListItemType  = [ListItemType]::Numbered
+                    TocHeadingType   = [HeadingType]::Heading1
+                    PageBreaksBefore = 1
+                    Text             = 'Following section covers computers information for domain <Domain>. '
+                }
+                DomainComputers                                   = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Computers'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::DomainComputers
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = 'Following client computers are created in <Domain>.'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - DomainComputers'
+                    ExcelData       = [ActiveDirectory]::DomainComputers
+                }
+                DomainComputersCount                              = [ordered] @{
+                    Use             = $true
+                    TableData       = [ActiveDirectory]::DomainComputersCount
+                    TableDesign     = 'ColorfulGridAccent5'
+                    TableTitleMerge = $False
+                    TableTitleText  = 'Computers Count'
+                    Text            = "Following table and chart shows number of computers and their versions"
+                    ChartEnable     = $True
+                    ChartTitle      = 'Computers Count'
+                    ChartData       = [ActiveDirectory]::DomainComputersCount
+                    ChartKeys       = 'System Name'
+                    ChartValues     = 'System Count'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - DomainComputersCount'
+                    ExcelData       = [ActiveDirectory]::DomainComputersCount
+                }
+                DomainServers                                     = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Servers'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::DomainServers
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = 'Following client computers are created in <Domain>.'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - DomainComputers'
+                    ExcelData       = [ActiveDirectory]::DomainServers
+                }
+                DomainServersCount                                = [ordered] @{
+                    Use             = $true
+                    TableData       = [ActiveDirectory]::DomainServersCount
+                    TableDesign     = 'ColorfulGridAccent5'
+                    TableTitleMerge = $False
+                    TableTitleText  = 'Servers Count'
+                    Text            = "Following table and chart shows number of servers and their versions"
+                    ChartEnable     = $True
+                    ChartTitle      = 'Servers Count'
+                    ChartData       = [ActiveDirectory]::DomainServersCount
+                    ChartKeys       = 'System Name'
+                    ChartValues     = 'System Count'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - DomainServersCount'
+                    ExcelData       = [ActiveDirectory]::DomainServersCount
+                }
+                DomainComputersUnknown                            = [ordered] @{
+                    Use             = $true
+                    TocEnable       = $True
+                    TocText         = 'General Information - Unknown Computer Objects'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    TableData       = [ActiveDirectory]::DomainComputersUnknown
+                    TableDesign     = 'ColorfulGridAccent5'
+                    Text            = 'Following client computers are not asisgned to clients or computers in <Domain>.'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - ComputersUnknown'
+                    ExcelData       = [ActiveDirectory]::DomainComputersUnknown
+                }
+                DomainComputersUnknownCount                       = [ordered] @{
+                    Use             = $true
+                    TableData       = [ActiveDirectory]::DomainComputersUnknownCount
+                    TableDesign     = 'ColorfulGridAccent5'
+                    TableTitleMerge = $False
+                    TableTitleText  = 'Unknown Computers Count'
+                    Text            = "Following table and chart shows number of unknown object computers in domain."
+                    ChartEnable     = $True
+                    ChartTitle      = 'Unknown Computers Count'
+                    ChartData       = [ActiveDirectory]::DomainComputersUnknownCount
+                    ChartKeys       = 'System Name'
+                    ChartValues     = 'System Count'
+                    ExcelExport     = $true
+                    ExcelWorkSheet  = '<Domain> - ComputersUnknownCount'
+                    ExcelData       = [ActiveDirectory]::DomainComputersUnknownCount
+                }
+
+
+
+                SectionPasswordQuality                            = [ordered] @{
+                    ### Enables section
+                    Use              = $true
 
                     ### Decides how TOC should be visible
-                    TocEnable       = $True
-                    TocText         = 'Domain Password Quality'
-                    TocListLevel    = 1
-                    TocListItemType = [ListItemType]::Numbered
-                    TocHeadingType  = [HeadingType]::Heading1
+                    TocEnable        = $True
+                    TocText          = 'Domain Password Quality'
+                    TocListLevel     = 1
+                    TocListItemType  = [ListItemType]::Numbered
+                    TocHeadingType   = [HeadingType]::Heading1
 
                     ### Text is added before table/list
-                    Text            = "This section provides overview about password quality used in <Domain>. One should review if all those potentially" `
-                    + " dangerous approaches to password quality should be left as is or addressed in one way or another."
-                    TextAlignment   = [Alignment]::Both
-                    PageBreaksAfter = 0
+                    Text             = "This section provides overview about password quality used in <Domain>. One should review if all those potentially" `
+                        + " dangerous approaches to password quality should be left as is or addressed in one way or another."
+                    TextAlignment    = [Alignment]::Both
+                    PageBreaksAfter  = 0
                     PageBreaksBefore = 1
                 }
                 DomainPasswordClearTextPassword                   = [ordered] @{
@@ -503,7 +617,7 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PasswordClearText'
                     ExcelData       = [ActiveDirectory]::DomainPasswordClearTextPassword
                 }
-                DomainPasswordLMHash                   = [ordered] @{
+                DomainPasswordLMHash                              = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Passwords with LM Hash'
@@ -513,14 +627,14 @@ $Document = [ordered]@{
                     TableData       = [ActiveDirectory]::DomainPasswordLMHash
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = 'LM-hashes is the oldest password storage used by Windows, dating back to OS/2 system.' `
-                    + ' Due to the limited charset allowed, they are fairly easy to crack. Following accounts are affected:'
+                        + ' Due to the limited charset allowed, they are fairly easy to crack. Following accounts are affected:'
                     TextNoData      = 'LM-hashes is the oldest password storage used by Windows, dating back to OS/2 system.' `
-                    + ' There were no accounts found that use LM Hashes.'
+                        + ' There were no accounts found that use LM Hashes.'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - PasswordLMHash'
                     ExcelData       = [ActiveDirectory]::DomainPasswordLMHash
                 }
-                DomainPasswordEmptyPassword                   = [ordered] @{
+                DomainPasswordEmptyPassword                       = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Empty Passwords'
@@ -535,7 +649,7 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PasswordEmpty'
                     ExcelData       = [ActiveDirectory]::DomainPasswordEmptyPassword
                 }
-                DomainPasswordWeakPassword                   = [ordered] @{
+                DomainPasswordWeakPassword                        = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Known passwords'
@@ -545,13 +659,13 @@ $Document = [ordered]@{
                     TableData       = [ActiveDirectory]::DomainPasswordWeakPassword
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = "Passwords of these accounts have been found in given dictionary. It's highely recommended to " `
-                    + "notify those users and ask them to change their passwords asap!"
+                        + "notify those users and ask them to change their passwords asap!"
                     TextNoData      = 'There were no passwords found that match given dictionary.'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - PasswordKnown'
                     ExcelData       = [ActiveDirectory]::DomainPasswordWeakPassword
                 }
-                DomainPasswordDefaultComputerPassword                   = [ordered] @{
+                DomainPasswordDefaultComputerPassword             = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Default Computer Password'
@@ -566,7 +680,7 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PasswordDefaultComputer'
                     ExcelData       = [ActiveDirectory]::DomainPasswordDefaultComputerPassword
                 }
-                DomainPasswordPasswordNotRequired                   = [ordered] @{
+                DomainPasswordPasswordNotRequired                 = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Password Not Required'
@@ -576,13 +690,13 @@ $Document = [ordered]@{
                     TableData       = [ActiveDirectory]::DomainPasswordPasswordNotRequired
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = 'These accounts are not required to have a password. For some accounts it may be perfectly acceptable ' `
-                    + ' but for some it may not. Those accounts should be reviewed and accepted or changed to proper security.'
+                        + ' but for some it may not. Those accounts should be reviewed and accepted or changed to proper security.'
                     TextNoData      = 'There were no accounts found that does not require password.'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - PasswordNotRequired'
                     ExcelData       = [ActiveDirectory]::DomainPasswordPasswordNotRequired
                 }
-                DomainPasswordPasswordNeverExpires                   = [ordered] @{
+                DomainPasswordPasswordNeverExpires                = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Non expiring passwords'
@@ -592,13 +706,13 @@ $Document = [ordered]@{
                     TableData       = [ActiveDirectory]::DomainPasswordPasswordNeverExpires
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = 'Following account have do not expire password policy set on them. Those accounts should be reviewed whether ' `
-                    + 'allowing them to never expire is good idea and accepted risk.'
+                        + 'allowing them to never expire is good idea and accepted risk.'
                     TextNoData      = 'There are no accounts in <Domain> that never expire.'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - PasswordNeverExpire'
                     ExcelData       = [ActiveDirectory]::DomainPasswordPasswordNeverExpires
                 }
-                DomainPasswordAESKeysMissing                   = [ordered] @{
+                DomainPasswordAESKeysMissing                      = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - AES Keys Missing'
@@ -613,7 +727,7 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PasswordAESMissing'
                     ExcelData       = [ActiveDirectory]::DomainPasswordAESKeysMissing
                 }
-                DomainPasswordPreAuthNotRequired                   = [ordered] @{
+                DomainPasswordPreAuthNotRequired                  = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Kerberos Pre-Auth Not Required'
@@ -658,7 +772,7 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PasswordDelegatable'
                     ExcelData       = [ActiveDirectory]::DomainPasswordDelegatableAdmins
                 }
-                DomainPasswordDuplicatePasswordGroups                   = [ordered] @{
+                DomainPasswordDuplicatePasswordGroups             = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Groups of Users With Same Password'
@@ -673,7 +787,7 @@ $Document = [ordered]@{
                     ExcelWorkSheet  = '<Domain> - PasswordGroups'
                     ExcelData       = [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups
                 }
-                DomainPasswordHashesWeakPassword                   = [ordered] @{
+                DomainPasswordHashesWeakPassword                  = [ordered] @{
                     Use             = $false
                     TocEnable       = $True
                     TocText         = 'Password Quality - Leaked Passwords'
@@ -683,13 +797,13 @@ $Document = [ordered]@{
                     TableData       = [ActiveDirectory]::DomainPasswordHashesWeakPassword
                     TableDesign     = 'ColorfulGridAccent5'
                     Text            = "Passwords of these accounts have been found in given HASH dictionary (https://haveibeenpwned.com/). It's highely recommended to " `
-                    + "notify those users and ask them to change their passwords asap!"
+                        + "notify those users and ask them to change their passwords asap!"
                     TextNoData      = 'There were no passwords found that match in given dictionary.'
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - LeakedPasswords'
                     ExcelData       = [ActiveDirectory]::DomainPasswordHashesWeakPassword
                 }
-                DomainPasswordStats                         = [ordered] @{
+                DomainPasswordStats                               = [ordered] @{
                     Use             = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Statistics'

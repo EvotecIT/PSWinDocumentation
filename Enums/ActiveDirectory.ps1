@@ -61,20 +61,16 @@ Add-Type -TypeDefinition @"
 
         // Domain Information - User Data
         DomainUsersFullList, // Contains all data
-
         DomainUsers,
+        DomainUsersCount,
         DomainUsersAll,
         DomainUsersSystemAccounts,
         DomainUsersNeverExpiring,
         DomainUsersNeverExpiringInclDisabled,
         DomainUsersExpiredInclDisabled,
         DomainUsersExpiredExclDisabled,
-
-        DomainUsersCount,
-
         DomainAdministrators,
         DomainAdministratorsRecursive,
-
         DomainEnterpriseAdministrators,
         DomainEnterpriseAdministratorsRecursive,
 
@@ -82,18 +78,17 @@ Add-Type -TypeDefinition @"
         DomainComputersFullList, // Contains all data
         DomainComputersAll,
         DomainComputersAllCount,
-
         DomainComputers,
         DomainComputersCount,
-
         DomainServers,
         DomainServersCount,
+        DomainComputersUnknown,
+        DomainComputersUnknownCount,
 
         // This requires DSInstall PowerShell Module
         DomainPasswordDataUsers, // Gathers users data and their passwords
         DomainPasswordDataPasswords, // Compares Users Password with File
         DomainPasswordDataPasswordsHashes, // Compares Users Password with File HASH
-
         DomainPasswordClearTextPassword,
         DomainPasswordLMHash,
         DomainPasswordEmptyPassword,
