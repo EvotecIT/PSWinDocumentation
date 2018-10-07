@@ -34,37 +34,37 @@ function Get-WinADDomainPasswordQuality {
     }
 
     $Data.DomainPasswordClearTextPassword = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.ClearTextPassword -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.ClearTextPassword -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordLMHash = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.LMHash  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.LMHash  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordEmptyPassword = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.EmptyPassword  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.EmptyPassword  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordWeakPassword = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.WeakPassword  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.WeakPassword  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordDefaultComputerPassword = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.DefaultComputerPassword  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.DefaultComputerPassword  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordPasswordNotRequired = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.PasswordNotRequired  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.PasswordNotRequired  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordPasswordNeverExpires = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.PasswordNeverExpires  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.PasswordNeverExpires  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordAESKeysMissing = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.AESKeysMissing  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList  $Data.PasswordQuality.AESKeysMissing  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordPreAuthNotRequired = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.PreAuthNotRequired  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.PreAuthNotRequired  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordDESEncryptionOnly = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.DESEncryptionOnly -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.DESEncryptionOnly -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordDelegatableAdmins = Invoke-Command -ScriptBlock {
-        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.DelegatableAdmins  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersFullList
+        return Get-WinADAccounts -UserNameList $Data.PasswordQuality.DelegatableAdmins  -ADCatalog $DomainInformation.DomainUsersAll, $DomainInformation.DomainComputersAll
     }
     $Data.DomainPasswordDuplicatePasswordGroups = Invoke-Command -ScriptBlock {
         $Value = @()
@@ -79,7 +79,7 @@ function Get-WinADDomainPasswordQuality {
                     #'Found User'      = $User
                 }
                 $FullUserInformation = $DomainInformation.DomainUsersAll | Where { $_.SamAccountName -eq $User }
-                $FullComputerInformation = $DomainInformation.DomainComputersFullList | Where { $_.SamAccountName -eq $User }
+                $FullComputerInformation = $DomainInformation.DomainComputersAll | Where { $_.SamAccountName -eq $User }
                 if ($FullUserInformation) {
                     $MergedObject = Merge-Objects -Object1 $FoundUser -Object2 $FullUserInformation
                 }

@@ -26,7 +26,29 @@ function Get-WinADDomainInformation {
     Write-Verbose "Getting domain information - $Domain DomainComputersFullList"
     $Data.DomainComputersFullList = Get-ADComputer -Server $Domain -Filter * -ResultPageSize 500000 -Properties * | Select-Object * -ExcludeProperty *Certificate, PropertyNames, *Properties, PropertyCount, Certificates, nTSecurityDescriptor
 
+    if ($TypesRequired -contains [ActiveDirectory]::DomainComputersAll) {
+        $Data.DomainComputersAll = $Data.DomainComputersFullList  | Select-Object Name, SamAccountName, Enabled, IPv4Address, IPv6Address, DNSHostName, ManagedBy, OperatingSystem*, PasswordLastSet, PasswordNeverExpires, PasswordNotRequired, UserPrincipalName, LastLogonDate, LockedOut, LogonCount, CanonicalName, SID, Created, Modified, Deleted, MemberOf
+    }
 
+    if ($TypesRequired -contains [ActiveDirectory]::DomainServers) {
+        $Data.DomainServers = $Data.DomainComputersAll | Where-Object { $_.OperatingSystem -like 'Windows Server*' }
+    }
+
+    if ($TypesRequired -contains [ActiveDirectory]::DomainComputers) {
+        $Data.DomainComputers = $Data.DomainComputersAll | Where-Object { $_.OperatingSystem -notlike 'Windows Server*' -and $_.OperatingSystem -ne $null }
+    }
+
+    if ($TypesRequired -contains [ActiveDirectory]::DomainComputersAllCount) {
+        $Data.DomainComputersAllCount = $Data.DomainComputersAll | Group-Object -Property OperatingSystem | Select-Object @{ L = 'System Name'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'Unknown' } }} , @{ L = 'System Count'; Expression = { $_.Count }}
+    }
+
+    if ($TypesRequired -contains [ActiveDirectory]::DomainComputersCount) {
+        $Data.DomainComputersCount = $Data.DomainComputers | Group-Object -Property OperatingSystem | Select-Object @{ L = 'System Name'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'N/A' } }} , @{ L = 'System Count'; Expression = { $_.Count }}
+    }
+
+    if ($TypesRequired -contains [ActiveDirectory]::DomainServersCount) {
+        $Data.DomainServersCount = $Data.DomainServers | Group-Object -Property OperatingSystem | Select-Object @{ L = 'System Name'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'N/A' } }} , @{ L = 'System Count'; Expression = { $_.Count }}
+    }
     if ($TypesRequired -contains [ActiveDirectory]::DomainRIDs) {
         # Critical for RID Pool Depletion: https://blogs.technet.microsoft.com/askds/2011/09/12/managing-rid-pool-depletion/
         $Data.DomainRIDs = Invoke-Command -ScriptBlock {

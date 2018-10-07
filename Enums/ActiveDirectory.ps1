@@ -80,6 +80,14 @@ Add-Type -TypeDefinition @"
 
         // Domain Information - Computer Data
         DomainComputersFullList, // Contains all data
+        DomainComputersAll,
+        DomainComputersAllCount,
+
+        DomainComputers,
+        DomainComputersCount,
+
+        DomainServers,
+        DomainServersCount,
 
         // This requires DSInstall PowerShell Module
         DomainPasswordDataUsers, // Gathers users data and their passwords
