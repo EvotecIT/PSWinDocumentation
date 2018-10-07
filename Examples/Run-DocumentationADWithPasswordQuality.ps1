@@ -572,18 +572,10 @@ $Document = [ordered]@{
                     TableTitleMerge = $False
                     TableTitleText  = 'Unknown Computers Count'
                     Text            = "Following table and chart shows number of unknown object computers in domain."
-                    ChartEnable     = $True
-                    ChartTitle      = 'Unknown Computers Count'
-                    ChartData       = [ActiveDirectory]::DomainComputersUnknownCount
-                    ChartKeys       = 'System Name'
-                    ChartValues     = 'System Count'
-                    ExcelExport     = $true
+                    ExcelExport     = $false
                     ExcelWorkSheet  = '<Domain> - ComputersUnknownCount'
                     ExcelData       = [ActiveDirectory]::DomainComputersUnknownCount
                 }
-
-
-
                 SectionPasswordQuality                            = [ordered] @{
                     ### Enables section
                     Use              = $true

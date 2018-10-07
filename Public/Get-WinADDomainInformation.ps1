@@ -36,30 +36,36 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainComputersUnknown,
             [ActiveDirectory]::DomainComputersUnknownCount
         )) {
+        Write-Verbose "Getting domain information - $Domain DomainComputersAll"
         $Data.DomainComputersAll = $Data.DomainComputersFullList  | Select-Object Name, SamAccountName, Enabled, PasswordLastSet, IPv4Address, IPv6Address, DNSHostName, ManagedBy, OperatingSystem*, PasswordNeverExpires, PasswordNotRequired, UserPrincipalName, LastLogonDate, LockedOut, LogonCount, CanonicalName, SID, Created, Modified, Deleted, MemberOf
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainComputersAllCount) {
+        Write-Verbose "Getting domain information - $Domain DomainComputersAllCount"
         $Data.DomainComputersAllCount = $Data.DomainComputersAll | Group-Object -Property OperatingSystem | Select-Object @{ L = 'System Name'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'Unknown' } }} , @{ L = 'System Count'; Expression = { $_.Count }}
     }
-
     if ($TypesRequired -contains [ActiveDirectory]::DomainServers) {
+        Write-Verbose "Getting domain information - $Domain DomainServers"
         $Data.DomainServers = $Data.DomainComputersAll | Where-Object { $_.OperatingSystem -like 'Windows Server*' }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainServersCount) {
+        Write-Verbose "Getting domain information - $Domain DomainServersCount"
         $Data.DomainServersCount = $Data.DomainServers | Group-Object -Property OperatingSystem | Select-Object @{ L = 'System Name'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'N/A' } }} , @{ L = 'System Count'; Expression = { $_.Count }}
     }
-
     if ($TypesRequired -contains [ActiveDirectory]::DomainComputers) {
+        Write-Verbose "Getting domain information - $Domain DomainComputers"
         $Data.DomainComputers = $Data.DomainComputersAll | Where-Object { $_.OperatingSystem -notlike 'Windows Server*' -and $_.OperatingSystem -ne $null }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainComputersCount) {
+        Write-Verbose "Getting domain information - $Domain DomainComputersCount"
         $Data.DomainComputersCount = $Data.DomainComputers | Group-Object -Property OperatingSystem | Select-Object @{ L = 'System Name'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'N/A' } }} , @{ L = 'System Count'; Expression = { $_.Count }}
     }
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainComputersUnknown) {
+        Write-Verbose "Getting domain information - $Domain DomainComputersUnknown"
         $Data.DomainComputersUnknown = $Data.DomainComputersAll | Where-Object { $_.OperatingSystem -eq $null }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainComputersUnknownCount) {
+        Write-Verbose "Getting domain information - $Domain DomainComputersUnknownCount"
         $Data.DomainComputersUnknownCount = $Data.DomainComputersUnknown | Group-Object -Property OperatingSystem | Select-Object @{ L = 'System Name'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'Unknown' } }} , @{ L = 'System Count'; Expression = { $_.Count }}
     }
 
