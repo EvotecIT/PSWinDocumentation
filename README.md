@@ -68,7 +68,7 @@ I'm heavily open for feature requests and people willing to create data sets. By
 
 ### Active Directory
 
-Following is** very incomplete list** of things that are done or are planned in near future. I really need to update that.
+Following is *very incomplete list** of things that are done or are planned in near future. I really need to update that.
 
 - [x] Forest Summary
 - [x] Forest FSMO Roles
