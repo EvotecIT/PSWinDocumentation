@@ -40,7 +40,7 @@ $Document = [ordered]@{
                 Use                       = $true
                 PasswordFilePathClearText = 'C:\Users\pklys\OneDrive - Evotec\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
                 # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
-                UseHashDB                 = $true
+                UseHashDB                 = $false
                 PasswordFilePathHash      = 'C:\Users\pklys\Downloads\pwned-passwords-ntlm-ordered-by-count\pwned-passwords-ntlm-ordered-by-count.txt'
             }
         }
