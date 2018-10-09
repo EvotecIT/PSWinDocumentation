@@ -9,7 +9,13 @@ function Get-WinGroupMembers {
     if ($Option -eq 'Recursive') {
         $GroupMembersRecursive = @()
         foreach ($Group in $Groups) {
-            $GroupMembership = Get-ADGroupMember -Server $Domain -Identity $Group.'Group SID' -Recursive
+            try {
+                $GroupMembership = Get-ADGroupMember -Server $Domain -Identity $Group.'Group SID' -Recursive -ErrorAction Stop
+            } catch {
+                $ErrorMessage = $_.Exception.Message -replace "`n", " " -replace "`r", " "
+                Write-Warning "Couldn't get information about group $($Group.Name) with SID $($Group.'Group SID') error: $ErrorMessage"
+                continue
+            }
             foreach ($Member in $GroupMembership) {
                 $Object = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $Member.DistinguishedName)
                 $GroupMembersRecursive += [ordered] @{
