@@ -182,47 +182,48 @@ function Get-WinADDomainInformation {
         $Data.DomainTrustsClean = (Get-ADTrust -Server $Domain -Filter * -Properties *)
         $Data.DomainTrusts = Invoke-Command -ScriptBlock {
             $DomainPDC = $Data.DomainFSMO.'PDC Emulator'
-            $Trust = $Data.DomainTrustsClean
-
-            $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue -Verbose:$false | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
-
-            if ($Trust) {
-                $ReturnData = [ordered] @{
-                    'Trust Source'               = $Domain
-                    'Trust Target'               = $Trust.Target
-                    'Trust Direction'            = $Trust.Direction
-                    'Trust Attributes'           = Set-TrustAttributes -Value $Trust.TrustAttributes
-                    #'Trust OK'                   = $TrustWMI.TrustIsOK
-                    #'Trust Status'               = $TrustWMI.TrustStatus
-                    'Trust Status'               = if ($TrustWMI -ne $null) { $TrustWMI.TrustStatusString } else { 'N/A' }
-                    'Forest Transitive'          = $Trust.ForestTransitive
-                    'Selective Authentication'   = $Trust.SelectiveAuthentication
-                    'SID Filtering Forest Aware' = $Trust.SIDFilteringForestAware
-                    'SID Filtering Quarantined'  = $Trust.SIDFilteringQuarantined
-                    'Disallow Transivity'        = $Trust.DisallowTransivity
-                    'Intra Forest'               = $Trust.IntraForest
-                    'Tree Parent?'               = $Trust.IsTreeParent
-                    'Tree Root?'                 = $Trust.IsTreeRoot
-                    'TGTDelegation'              = $Trust.TGTDelegation
-                    'TrustedPolicy'              = $Trust.TrustedPolicy
-                    'TrustingPolicy'             = $Trust.TrustingPolicy
-                    'TrustType'                  = $Trust.TrustType
-                    'UplevelOnly'                = $Trust.UplevelOnly
-                    'UsesAESKeys'                = $Trust.UsesAESKeys
-                    'UsesRC4Encryption'          = $Trust.UsesRC4Encryption
-                    'Trust Source DC'            = if ($TrustWMI -ne $null) { $TrustWMI.PSComputerName } else { 'N/A' }
-                    'Trust Target DC'            = if ($TrustWMI -ne $null) { $TrustWMI.TrustedDCName.Replace('\\', '') } else { 'N/A'}
-                    'Trust Source DN'            = $Trust.Source
-                    'ObjectGUID'                 = $Trust.ObjectGUID
-                    'Created'                    = $Trust.Created
-                    'Modified'                   = $Trust.Modified
-                    'Deleted'                    = $Trust.Deleted
-                    'SID'                        = $Trust.securityIdentifier
+            $Trusts = $Data.DomainTrustsClean
+            if ($Trusts) {
+                $ReturnData = @()
+                foreach ($Trust in $Trusts) {
+                    $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue -Verbose:$false | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
+                    $ReturnData += [ordered] @{
+                        'Trust Source'               = $Domain
+                        'Trust Target'               = $Trust.Target
+                        'Trust Direction'            = $Trust.Direction
+                        'Trust Attributes'           = if ($Trust.TrustAttributes -is [int]) { Set-TrustAttributes -Value $Trust.TrustAttributes } else { 'Error - needs fixing'}
+                        #'Trust OK'                   = $TrustWMI.TrustIsOK
+                        #'Trust Status'               = $TrustWMI.TrustStatus
+                        'Trust Status'               = if ($TrustWMI -ne $null) { $TrustWMI.TrustStatusString } else { 'N/A' }
+                        'Forest Transitive'          = $Trust.ForestTransitive
+                        'Selective Authentication'   = $Trust.SelectiveAuthentication
+                        'SID Filtering Forest Aware' = $Trust.SIDFilteringForestAware
+                        'SID Filtering Quarantined'  = $Trust.SIDFilteringQuarantined
+                        'Disallow Transivity'        = $Trust.DisallowTransivity
+                        'Intra Forest'               = $Trust.IntraForest
+                        'Tree Parent?'               = $Trust.IsTreeParent
+                        'Tree Root?'                 = $Trust.IsTreeRoot
+                        'TGTDelegation'              = $Trust.TGTDelegation
+                        'TrustedPolicy'              = $Trust.TrustedPolicy
+                        'TrustingPolicy'             = $Trust.TrustingPolicy
+                        'TrustType'                  = $Trust.TrustType
+                        'UplevelOnly'                = $Trust.UplevelOnly
+                        'UsesAESKeys'                = $Trust.UsesAESKeys
+                        'UsesRC4Encryption'          = $Trust.UsesRC4Encryption
+                        'Trust Source DC'            = if ($TrustWMI -ne $null) { $TrustWMI.PSComputerName } else { 'N/A' }
+                        'Trust Target DC'            = if ($TrustWMI -ne $null) { $TrustWMI.TrustedDCName.Replace('\\', '') } else { 'N/A'}
+                        'Trust Source DN'            = $Trust.Source
+                        'ObjectGUID'                 = $Trust.ObjectGUID
+                        'Created'                    = $Trust.Created
+                        'Modified'                   = $Trust.Modified
+                        'Deleted'                    = $Trust.Deleted
+                        'SID'                        = $Trust.securityIdentifier
+                    }
                 }
+                return Format-TransposeTable $ReturnData
             } else {
-                $ReturnData = $null
+                return
             }
-            return Format-TransposeTable $ReturnData
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
