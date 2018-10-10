@@ -24,6 +24,9 @@ function Start-DocumentationAD {
     if ($CheckAvailabilityCommandsAD -notcontains $false) {
         Test-ForestConnectivity
         $DataInformationAD = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes
+    } else {
+        Write-Warning "Active Directory documentation can't be started as commands are unavailable. Check if you have Active Directory module available (part of RSAT) and try again."
+        return
     }
 
     $TimeDataOnly.Stop()
