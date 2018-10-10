@@ -1,6 +1,6 @@
 Import-Module PSWriteWord
 Import-Module PSWriteExcel
-Import-Module PSWinDocumentation
+Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module PSSharedGoods
 #Import-Module DbaTools
@@ -32,7 +32,7 @@ $Document = [ordered]@{
         ExportWord    = $true
         ExportExcel   = $true
         ExportSql     = $false
-        ExportXML     = $true
+        ExportXML     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xlsx"
         FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
