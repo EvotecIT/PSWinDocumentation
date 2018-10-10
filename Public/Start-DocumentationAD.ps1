@@ -3,10 +3,6 @@ function Start-DocumentationAD {
     param(
         $Document
     )
-    $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
-    $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
-    $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
-
     $ADConfiguration = $Document.DocumentAD.Configuration
     if ($ADConfiguration.PasswordTests.Use) {
         $PasswordClearText = $ADConfiguration.PasswordTests.PasswordFilePathClearText
@@ -22,12 +18,18 @@ function Start-DocumentationAD {
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     if ($Document.DocumentAD.Configuration.OfflineMode.Use) {
         # Offline mode
-        $DataInformationAD = Get-WinDataFromXML -FilePath $Document.DocumentAD.Configuration.OfflineMode.XMLPath -Type [ActiveDirectory]
+        if ($Document.DocumentAD.ExportXML) {
+            Write-Warning "You can't run AD Documentation in 'offline mode' with 'ExportXML' set to true. Please turn off one of the options."
+            return
+        } else {
+            $DataInformationAD = Get-WinDataFromXML -FilePath $Document.DocumentAD.Configuration.OfflineMode.XMLPath -Type [ActiveDirectory]
+        }
     } else {
         # Online mode
         $CheckAvailabilityCommandsAD = Test-AvailabilityCommands -Commands 'Get-ADForest', 'Get-ADDomain', 'Get-ADRootDSE', 'Get-ADGroup', 'Get-ADUser', 'Get-ADComputer'
         if ($CheckAvailabilityCommandsAD -notcontains $false) {
             Test-ForestConnectivity
+            $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
             $DataInformationAD = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes
 
         } else {
@@ -50,6 +52,9 @@ function Start-DocumentationAD {
         if ($Document.DocumentAD.ExportExcel) {
             $ExcelDocument = New-ExcelDocument
         }
+
+        $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
+        $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
         ### Start Sections
         foreach ($DataInformation in $DataInformationAD) {
             foreach ($Section in $ADSectionsForest) {

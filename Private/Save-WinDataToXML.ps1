@@ -1,6 +1,7 @@
 function Save-WinDataToXML {
+    [cmdletbinding()]
     param(
-        [bool] $Export,
+        [nullable[bool]] $Export,
         [string] $Type,
         $Data,
         [string] $FilePath,
