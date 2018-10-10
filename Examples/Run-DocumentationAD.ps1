@@ -3,7 +3,7 @@ Import-Module PSWriteExcel
 Import-Module PSWinDocumentation
 Import-Module PSWriteColor
 Import-Module PSSharedGoods
-Import-Module DbaTools
+#Import-Module DbaTools
 Import-Module ActiveDirectory
 
 $Document = [ordered]@{

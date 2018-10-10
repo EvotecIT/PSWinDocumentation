@@ -3,9 +3,8 @@ Import-Module PSWriteExcel
 Import-Module PSWinDocumentation #-Force
 Import-Module PSWriteColor
 Import-Module PSSharedGoods #-Force
-Import-Module DbaTools
+#Import-Module DbaTools
 Import-Module ActiveDirectory
-Import-Module AWSPowerShell
 
 $Document = [ordered]@{
     Configuration = [ordered] @{
@@ -506,20 +505,20 @@ $Document = [ordered]@{
                     ExcelData       = [ActiveDirectory]::DomainComputers
                 }
                 DomainComputersCount                              = [ordered] @{
-                    Use             = $true
-                    TableData       = [ActiveDirectory]::DomainComputersCount
-                    TableDesign     = 'ColorfulGridAccent5'
-                    TableTitleMerge = $true
-                    TableTitleText  = 'Computers Count'
-                    Text            = "Following table and chart shows number of computers and their versions"
-                    ChartEnable     = $True
-                    ChartTitle      = 'Computers Count'
-                    ChartData       = [ActiveDirectory]::DomainComputersCount
-                    ChartKeys       = 'System Name','System Count'
-                    ChartValues     = 'System Count'
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - DomainComputersCount'
-                    ExcelData       = [ActiveDirectory]::DomainComputersCount
+                    Use                   = $true
+                    TableData             = [ActiveDirectory]::DomainComputersCount
+                    TableDesign           = 'ColorfulGridAccent5'
+                    TableTitleMerge       = $true
+                    TableTitleText        = 'Computers Count'
+                    Text                  = "Following table and chart shows number of computers and their versions"
+                    ChartEnable           = $True
+                    ChartTitle            = 'Computers Count'
+                    ChartData             = [ActiveDirectory]::DomainComputersCount
+                    ChartKeys             = 'System Name', 'System Count'
+                    ChartValues           = 'System Count'
+                    ExcelExport           = $true
+                    ExcelWorkSheet        = '<Domain> - DomainComputersCount'
+                    ExcelData             = [ActiveDirectory]::DomainComputersCount
                     EmptyParagraphsBefore = 1
                 }
                 DomainServers                                     = [ordered] @{
@@ -537,20 +536,20 @@ $Document = [ordered]@{
                     ExcelData       = [ActiveDirectory]::DomainServers
                 }
                 DomainServersCount                                = [ordered] @{
-                    Use             = $true
-                    TableData       = [ActiveDirectory]::DomainServersCount
-                    TableDesign     = 'ColorfulGridAccent5'
-                    TableTitleMerge = $true
-                    TableTitleText  = 'Servers Count'
-                    Text            = "Following table and chart shows number of servers and their versions"
-                    ChartEnable     = $True
-                    ChartTitle      = 'Servers Count'
-                    ChartData       = [ActiveDirectory]::DomainServersCount
-                    ChartKeys       = 'System Name','System Count'
-                    ChartValues     = 'System Count'
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - DomainServersCount'
-                    ExcelData       = [ActiveDirectory]::DomainServersCount
+                    Use                   = $true
+                    TableData             = [ActiveDirectory]::DomainServersCount
+                    TableDesign           = 'ColorfulGridAccent5'
+                    TableTitleMerge       = $true
+                    TableTitleText        = 'Servers Count'
+                    Text                  = "Following table and chart shows number of servers and their versions"
+                    ChartEnable           = $True
+                    ChartTitle            = 'Servers Count'
+                    ChartData             = [ActiveDirectory]::DomainServersCount
+                    ChartKeys             = 'System Name', 'System Count'
+                    ChartValues           = 'System Count'
+                    ExcelExport           = $true
+                    ExcelWorkSheet        = '<Domain> - DomainServersCount'
+                    ExcelData             = [ActiveDirectory]::DomainServersCount
                     EmptyParagraphsBefore = 1
                 }
                 DomainComputersUnknown                            = [ordered] @{
@@ -568,15 +567,15 @@ $Document = [ordered]@{
                     ExcelData       = [ActiveDirectory]::DomainComputersUnknown
                 }
                 DomainComputersUnknownCount                       = [ordered] @{
-                    Use             = $true
-                    TableData       = [ActiveDirectory]::DomainComputersUnknownCount
-                    TableDesign     = 'ColorfulGridAccent5'
-                    TableTitleMerge = $true
-                    TableTitleText  = 'Unknown Computers Count'
-                    Text            = "Following table and chart shows number of unknown object computers in domain."
-                    ExcelExport     = $false
-                    ExcelWorkSheet  = '<Domain> - ComputersUnknownCount'
-                    ExcelData       = [ActiveDirectory]::DomainComputersUnknownCount
+                    Use                   = $true
+                    TableData             = [ActiveDirectory]::DomainComputersUnknownCount
+                    TableDesign           = 'ColorfulGridAccent5'
+                    TableTitleMerge       = $true
+                    TableTitleText        = 'Unknown Computers Count'
+                    Text                  = "Following table and chart shows number of unknown object computers in domain."
+                    ExcelExport           = $false
+                    ExcelWorkSheet        = '<Domain> - ComputersUnknownCount'
+                    ExcelData             = [ActiveDirectory]::DomainComputersUnknownCount
                     EmptyParagraphsBefore = 1
                 }
                 SectionPasswordQuality                            = [ordered] @{
@@ -821,7 +820,7 @@ $Document = [ordered]@{
                     TableData       = [ActiveDirectory]::DomainPasswordStats
                     TableDesign     = 'ColorfulGridAccent5'
                     TableTitleMerge = $true
-                    TableTitleText = 'Password Quality Statistics'
+                    TableTitleText  = 'Password Quality Statistics'
                     Text            = "Following table and chart shows password statistics"
                     ChartEnable     = $True
                     ChartTitle      = 'Password Statistics'
