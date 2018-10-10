@@ -32,8 +32,10 @@ $Document = [ordered]@{
         ExportWord    = $true
         ExportExcel   = $true
         ExportSql     = $false
+        ExportXML     = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xlsx"
+        FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
         Configuration = [ordered] @{
             PasswordTests = @{
                 Use                       = $false
@@ -41,6 +43,10 @@ $Document = [ordered]@{
                 # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
                 UseHashDB                 = $false
                 PasswordFilePathHash      = 'C:\Users\pklys\Downloads\pwned-passwords-ntlm-ordered-by-count\pwned-passwords-ntlm-ordered-by-count.txt'
+            }
+            OfflineMode   = @{
+                Use     = $true
+                XMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
             }
         }
         Sections      = [ordered] @{
