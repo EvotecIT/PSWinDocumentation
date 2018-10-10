@@ -4,7 +4,7 @@
     RootModule        = 'PSWinDocumentation.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.3.2'
+    ModuleVersion     = '0.3.3'
 
     # ID used to uniquely identify this module
     GUID              = '6bd80c20-e606-4e31-9f88-9ad305256f23'
