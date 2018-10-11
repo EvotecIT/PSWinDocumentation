@@ -28,6 +28,7 @@ Add-Type -TypeDefinition @"
         O365UAzureADGroupMembers,
 
         // Prepared O365 Azure Data
+        O365AzureLicensing,
         O365AzureTenantDomains,
         O365AzureADGroupMembersUser
     }
