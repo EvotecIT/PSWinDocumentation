@@ -30,6 +30,11 @@ Add-Type -TypeDefinition @"
         // Prepared O365 Azure Data
         O365AzureLicensing,
         O365AzureTenantDomains,
-        O365AzureADGroupMembersUser
+        O365AzureADGroupMembersUser,
+
+
+        O365AzureADUsersStatisticsByCountry,
+        O365AzureADUsersStatisticsByCity,
+        O365AzureADUsersStatisticsByCountryCity
     }
 "@

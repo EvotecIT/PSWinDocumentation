@@ -48,7 +48,12 @@ function Get-WinO365Azure {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureSubscription"
         $Data.O365UAzureSubscription = Get-MsolSubscription
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureADUsers)) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
+            [O365]::O365UAzureADUsers,
+            [O365]::O365AzureADUsersStatisticsByCountry,
+            [O365]::O365AzureADUsersStatisticsByCity,
+            [O365]::O365AzureADUsersStatisticsByCountryCity
+        )) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADUsers"
         $Data.O365UAzureADUsers = Get-MsolUser -All
     }
@@ -118,6 +123,18 @@ function Get-WinO365Azure {
             }
             return $Members
         }
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureADUsersStatisticsByCountry)) {
+        Write-Verbose "Get-WinO365Azure - Getting O365AzureADUsersStatisticsByCountry"
+        $Data.O365AzureADUsersStatisticsByCountry = $Data.O365UAzureADUsers | Group-Object Country | Select-Object @{ L = 'Country'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'Unknown' } }} , @{ L = 'Users Count'; Expression = { $_.Count }} | Sort-Object 'Country'
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureADUsersStatisticsByCity)) {
+        Write-Verbose "Get-WinO365Azure - Getting O365AzureADUsersStatisticsByCity"
+        $Data.O365AzureADUsersStatisticsByCity = $Data.O365UAzureADUsers | Group-Object City | Select-Object @{ L = 'City'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'Unknown' } }} , @{ L = 'Users Count'; Expression = { $_.Count }} | Sort-Object 'City'
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureADUsersStatisticsByCountryCity)) {
+        Write-Verbose "Get-WinO365Azure - Getting O365AzureADUsersStatisticsByCountryCity"
+        $Data.O365AzureADUsersStatisticsByCountryCity = $Data.O365UAzureADUsers |  Group-Object Country, City | Select-Object @{ L = 'Country, City'; Expression = { if ($_.Name -ne '') { $_.Name } else { 'Unknown' } }} , @{ L = 'Users Count'; Expression = { $_.Count }} | Sort-Object 'Country, City'
     }
     return $Data
 }
