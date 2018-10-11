@@ -20,9 +20,11 @@ function Get-WinO365Azure {
                 $LicensesTotal = $License.ActiveUnits + $License.WarningUnits
                 $LicensesUsed = $License.ConsumedUnits
                 $LicensesLeft = $LicensesTotal - $LicensesUsed
+                $LicenseName = $($Global:O365SKU).Item("$($License.SkuPartNumber)")
+                if ($LicenseName -eq $null) { $LicenseName = $License.SkuPartNumber}
 
                 $Licenses += [PSCustomObject] @{
-                    Name                 = $($Global:O365SKU).Item("$($License.SkuPartNumber)")
+                    Name                 = $LicenseName
                     'Licenses Total'     = $LicensesTotal
                     'Licenses Used'      = $LicensesUsed
                     'Licenses Left'      = $LicensesLeft
@@ -37,7 +39,7 @@ function Get-WinO365Azure {
                     SKUID                = $License.SkuId
                 }
             }
-            return $Licenses
+            return $Licenses | Sort-Object Name
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureTenantDomains, [O365]::O365AzureTenantDomains)) {
