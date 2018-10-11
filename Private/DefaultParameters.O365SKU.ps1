@@ -115,4 +115,5 @@ $Global:O365SKU = @{
     "MCOPSTN2"                           = "Domestic and International Calling Plan"
     "FLOW_P1"                            = "Microsoft Flow Plan 1"
     "FLOW_P2"                            = "Microsoft Flow Plan 2"
+    "POWERAPPS_VIRAL"                    = "Microsoft PowerApps Plan 2"
 }
