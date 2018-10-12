@@ -29,10 +29,12 @@ Add-Type -TypeDefinition @"
 
         // Prepared O365 Azure Data
         O365AzureLicensing,
+        O365AzureSubscription,
         O365AzureTenantDomains,
+
         O365AzureADGroupMembersUser,
 
-
+        O365AzureADUsersMFA,
         O365AzureADUsersStatisticsByCountry,
         O365AzureADUsersStatisticsByCity,
         O365AzureADUsersStatisticsByCountryCity
