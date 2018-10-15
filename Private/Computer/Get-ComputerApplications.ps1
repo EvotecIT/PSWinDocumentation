@@ -1,4 +1,3 @@
-
 function Get-ComputerApplications {
     param(
         $ComputerName = $Env:COMPUTERNAME
