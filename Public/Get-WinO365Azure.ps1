@@ -32,8 +32,8 @@ function Get-WinO365Azure {
                     'Licenses Trial'     = $License.WarningUnits
                     'Licenses LockedOut' = $License.LockedOutUnits
                     'Licenses Suspended' = $License.SuspendedUnits
-                    'Percent Used'       = ($LicensesUsed / $LicensesTotal).ToString("P")
-                    'Percent Left'       = ($LicensesLeft / $LicensesTotal).ToString("P")
+                    'Percent Used'       = if ($LicensesTotal -eq 0) { '100%' } else { ($LicensesUsed / $LicensesTotal).ToString("P") }
+                    'Percent Left'       = if ($LicensesTotal -eq 0) { '0%' } else { ($LicensesLeft / $LicensesTotal).ToString("P") }
                     SKU                  = $License.SkuPartNumber
                     SKUAccount           = $License.AccountSkuId
                     SKUID                = $License.SkuId
