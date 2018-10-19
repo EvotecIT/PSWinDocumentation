@@ -4,7 +4,7 @@
     RootModule        = 'PSWinDocumentation.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.3.3'
+    ModuleVersion     = '0.3.4'
 
     # ID used to uniquely identify this module
     GUID              = '6bd80c20-e606-4e31-9f88-9ad305256f23'
@@ -54,7 +54,7 @@
     PrivateData       = @{
 
         PSData = @{
-            #Prerelease = ''
+            Prerelease = 'Alpha1'
             # Tags applied to this module. These help with module discovery in online galleries.
             Tags       = @('documentation', 'windows', 'word', 'workstation', 'activedirectory', 'ad', 'excel', 'sql', 'azure', 'azuread', 'exchange', 'office365', 'aws')
 
