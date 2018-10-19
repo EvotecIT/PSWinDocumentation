@@ -711,6 +711,9 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordLMHash,
             [ActiveDirectory]::DomainPasswordEmptyPassword,
             [ActiveDirectory]::DomainPasswordWeakPassword,
+            [ActiveDirectory]::DomainPasswordWeakPasswordEnabled,
+            [ActiveDirectory]::DomainPasswordWeakPasswordDisabled,
+            [ActiveDirectory]::DomainPasswordWeakPasswordList,
             [ActiveDirectory]::DomainPasswordDefaultComputerPassword,
             [ActiveDirectory]::DomainPasswordPasswordNotRequired,
             [ActiveDirectory]::DomainPasswordPasswordNeverExpires,
@@ -720,7 +723,9 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordDelegatableAdmins,
             [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups,
             [ActiveDirectory]::DomainPasswordStats,
-            [ActiveDirectory]::DomainPasswordHashesWeakPassword
+            [ActiveDirectory]::DomainPasswordHashesWeakPassword,
+            [ActiveDirectory]::DomainPasswordHashesWeakPasswordEnabled,
+            [ActiveDirectory]::DomainPasswordHashesWeakPasswordDisabled
         )) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordDataUsers - This will take a while if set!"
         $TimeToProcess = Start-TimeLog
@@ -734,6 +739,9 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordLMHash,
             [ActiveDirectory]::DomainPasswordEmptyPassword,
             [ActiveDirectory]::DomainPasswordWeakPassword,
+            [ActiveDirectory]::DomainPasswordWeakPasswordEnabled,
+            [ActiveDirectory]::DomainPasswordWeakPasswordDisabled,
+            [ActiveDirectory]::DomainPasswordWeakPasswordList,
             [ActiveDirectory]::DomainPasswordDefaultComputerPassword,
             [ActiveDirectory]::DomainPasswordPasswordNotRequired,
             [ActiveDirectory]::DomainPasswordPasswordNeverExpires,
@@ -743,15 +751,23 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainPasswordDelegatableAdmins,
             [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups,
             [ActiveDirectory]::DomainPasswordStats,
-            [ActiveDirectory]::DomainPasswordHashesWeakPassword
+            [ActiveDirectory]::DomainPasswordHashesWeakPassword,
+            [ActiveDirectory]::DomainPasswordHashesWeakPasswordEnabled,
+            [ActiveDirectory]::DomainPasswordHashesWeakPasswordDisabled
         )) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordDataPasswords - This will take a while if set!"
+        Write-Verbose "Getting domain password information - $Domain Passwords Path: $PathToPasswords"
         $TimeToProcess = Start-TimeLog
         $Data.DomainPasswordDataPasswords = Get-WinADDomainPasswordQuality -FilePath $PathToPasswords -DomainInformation $Data -Verbose:$false -PasswordQualityUsers $Data.DomainPasswordDataUsers
         Write-Verbose "Getting domain password information - $Domain DomainPasswordDataPasswords - Time: $($TimeToProcess | Stop-TimeLog)"
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainPasswordHashesWeakPassword)) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
+            [ActiveDirectory]::DomainPasswordHashesWeakPassword,
+            [ActiveDirectory]::DomainPasswordHashesWeakPasswordEnabled,
+            [ActiveDirectory]::DomainPasswordHashesWeakPasswordDisabled
+        )) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordDataPasswordsHashes - This will take a while if set!"
+        Write-Verbose "Getting domain password information - $Domain Passwords Hashes Path: $PathToPasswordsHashes"
         $TimeToProcess = Start-TimeLog
         $Data.DomainPasswordDataPasswordsHashes = Get-WinADDomainPasswordQuality -FilePath $PathToPasswordsHashes -DomainInformation $Data -UseHashes -Verbose:$false -PasswordQualityUsers $Data.DomainPasswordDataUsers
         Write-Verbose "Getting domain password information - $Domain DomainPasswordDataPasswordsHashes - Time: $($TimeToProcess | Stop-TimeLog)"
@@ -778,7 +794,19 @@ function Get-WinADDomainInformation {
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordWeakPassword)) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordWeakPassword"
-        $Data.DomainPasswordWeakPassword = $PasswordsQuality.DomainPasswordWeakPassword
+        $Data.DomainPasswordWeakPassword = $Data.DomainPasswordDataPasswords.DomainPasswordWeakPassword
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordWeakPasswordEnabled)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordWeakPasswordEnabled"
+        $Data.DomainPasswordWeakPasswordEnabled = $Data.DomainPasswordDataPasswords.DomainPasswordWeakPasswordEnabled
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordWeakPasswordDisabled)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordWeakPasswordDisabled"
+        $Data.DomainPasswordWeakPasswordDisabled = $Data.DomainPasswordDataPasswords.DomainPasswordWeakPasswordDisabled
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordWeakPasswordList)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordWeakPasswordList"
+        $Data.DomainPasswordWeakPasswordList = $Data.DomainPasswordDataPasswords.DomainPasswordWeakPasswordList
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordDefaultComputerPassword)) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordDefaultComputerPassword"
@@ -816,6 +844,14 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesWeakPassword"
         $Data.DomainPasswordHashesWeakPassword = $Data.DomainPasswordDataPasswordsHashes.DomainPasswordWeakPassword
     }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesWeakPasswordEnabled)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesWeakPasswordEnabled"
+        $Data.DomainPasswordHashesWeakPasswordEnabled = $Data.DomainPasswordDataPasswordsHashes.DomainPasswordWeakPasswordEnabled
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordHashesWeakPasswordDisabled)) {
+        Write-Verbose "Getting domain password information - $Domain DomainPasswordHashesWeakPasswordDisabled"
+        $Data.DomainPasswordHashesWeakPasswordDisabled = $Data.DomainPasswordDataPasswordsHashes.DomainPasswordWeakPasswordDisabled
+    }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @( [ActiveDirectory]::DomainPasswordStats)) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordStats"
         $Data.DomainPasswordStats = Invoke-Command -ScriptBlock {
@@ -824,8 +860,16 @@ function Get-WinADDomainInformation {
             $Stats.'LM Hashes' = Get-ObjectCount -Object $PasswordsQuality.DomainPasswordLMHash
             $Stats.'Empty Passwords' = Get-ObjectCount -Object $PasswordsQuality.DomainPasswordEmptyPassword
             $Stats.'Weak Passwords' = Get-ObjectCount -Object $PasswordsQuality.DomainPasswordWeakPassword
+            $Stats.'Weak Passwords Enabled' = Get-ObjectCount -Object $PasswordsQuality.DomainPasswordWeakPasswordEnabled
+            $Stats.'Weak Passwords Disabled' = Get-ObjectCount -Object $PasswordsQuality.DomainPasswordWeakPasswordDisabled
             if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainPasswordHashesWeakPassword)) {
                 $Stats.'Weak Passwords (HASH)' = Get-ObjectCount -Object $Data.DomainPasswordDataPasswordsHashes.DomainPasswordHashesWeakPassword
+            }
+            if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainPasswordHashesWeakPasswordEnabled)) {
+                $Stats.'Weak Passwords (HASH) Enabled' = Get-ObjectCount -Object $Data.DomainPasswordDataPasswordsHashes.DomainPasswordHashesWeakPasswordEnabled
+            }
+            if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainPasswordHashesWeakPasswordDisabled)) {
+                $Stats.'Weak Passwords (HASH) Disabled' = Get-ObjectCount -Object $Data.DomainPasswordDataPasswordsHashes.DomainPasswordHashesWeakPasswordDisabled
             }
             $Stats.'Default Computer Passwords' = Get-ObjectCount -Object $PasswordsQuality.DomainPasswordDefaultComputerPassword
             $Stats.'Password Not Required' = Get-ObjectCount -Object $PasswordsQuality.DomainPasswordPasswordNotRequired

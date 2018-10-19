@@ -36,17 +36,18 @@ $Document = [ordered]@{
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xlsx"
         Configuration = [ordered] @{
             PasswordTests = @{
-                Use                       = $true
-                PasswordFilePathClearText = 'C:\Users\pklys\OneDrive - Evotec\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
+                Use                       = $false
+                PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
                 # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
-                UseHashDB                 = $false
-                PasswordFilePathHash      = 'C:\Users\pklys\Downloads\pwned-passwords-ntlm-ordered-by-count\pwned-passwords-ntlm-ordered-by-count.txt'
+                UseHashDB                 = $true
+                PasswordFilePathHash      = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords-Hashes.txt'
             }
         }
         Sections      = [ordered] @{
             SectionForest = [ordered] @{
                 SectionTOC                    = [ordered] @{
                     Use                  = $true
+                    WordExport           = $true
                     TocGlobalDefinition  = $true
                     TocGlobalTitle       = 'Table of content'
                     TocGlobalRightTabPos = 15
@@ -56,7 +57,7 @@ $Document = [ordered]@{
                 SectionForestIntroduction     = [ordered] @{
                     ### Enables section
                     Use             = $true
-
+                    WordExport      = $true
                     ### Decides how TOC should be visible
                     TocEnable       = $True
                     TocText         = 'Scope'
@@ -79,6 +80,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSummary          = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Forest Summary'
                     TocListLevel    = 0
@@ -96,6 +98,7 @@ $Document = [ordered]@{
                 }
                 SectionForestFSMO             = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::ForestFSMO
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -108,6 +111,7 @@ $Document = [ordered]@{
                 }
                 SectionForestOptionalFeatures = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::ForestOptionalFeatures
                     TableDesign           = [TableDesign]::ColorfulGridAccent5
                     TableTitleMerge       = $true
@@ -121,6 +125,7 @@ $Document = [ordered]@{
                 }
                 SectionForestUPNSuffixes      = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     Text                  = "Following UPN suffixes were created in this forest:"
                     TextNoData            = "No UPN suffixes were created in this forest."
                     ListType              = 'Bulleted'
@@ -132,6 +137,7 @@ $Document = [ordered]@{
                 }
                 SectionForesSPNSuffixes       = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     Text                  = "Following SPN suffixes were created in this forest:"
                     TextNoData            = "No SPN suffixes were created in this forest."
                     ListType              = 'Bulleted'
@@ -143,6 +149,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSites1           = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Sites'
                     TocListLevel    = 1
@@ -157,6 +164,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSites2           = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::ForestSites2
                     TableDesign           = 'ColorfulGridAccent5'
                     Text                  = "Forest Sites list can be found below"
@@ -173,6 +181,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSubnets1         = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TocEnable             = $True
                     TocText               = 'General Information - Subnets'
                     TocListLevel          = 1
@@ -188,6 +197,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSubnets2         = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::ForestSubnets2
                     TableDesign           = 'ColorfulGridAccent5'
                     Text                  = "Table below contains information regarding relation between Subnets and sites"
@@ -198,6 +208,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSiteLinks        = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Site Links'
                     TocListLevel    = 1
@@ -214,10 +225,12 @@ $Document = [ordered]@{
             SectionDomain = [ordered] @{
                 SectionPageBreak                                  = [ordered] @{
                     Use              = $True
+                    WordExport       = $true
                     PageBreaksBefore = 1
                 }
                 SectionDomainStarter                              = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Domain <Domain>'
                     TocListLevel    = 0
@@ -226,6 +239,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainIntroduction                         = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TocEnable             = $True
                     TocText               = 'General Information - Domain Summary'
                     TocListLevel          = 1
@@ -239,6 +253,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainControllers                          = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Domain Controllers'
                     TocListLevel        = 1
@@ -255,6 +270,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainFSMO                                 = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::DomainFSMO
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -267,6 +283,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainDefaultPasswordPolicy                = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Password Policies'
                     TocListLevel    = 1
@@ -283,6 +300,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainFineGrainedPolicies                  = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Fine Grained Password Policies'
                     TocListLevel        = 1
@@ -303,6 +321,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainGroupPolicies                        = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Group Policies'
                     TocListLevel    = 1
@@ -317,6 +336,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainGroupPoliciesDetails                 = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Group Policies Details'
                     TocListLevel        = 1
@@ -347,6 +367,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainDNSSrv                               = [ordered] @{
                     Use                  = $true
+                    WordExport           = $true
                     TocEnable            = $True
                     TocText              = 'General Information - DNS A/SRV Records'
                     TocListLevel         = 1
@@ -363,6 +384,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainDNSA                                 = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TableData           = [ActiveDirectory]::DomainDNSA
                     TableMaximumColumns = 10
                     TableDesign         = 'ColorfulGridAccent5'
@@ -373,6 +395,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainTrusts                               = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Trusts'
                     TocListLevel        = 1
@@ -388,6 +411,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainOrganizationalUnits                  = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Organizational Units'
                     TocListLevel        = 1
@@ -403,6 +427,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainPriviligedGroup                      = [ordered] @{
                     Use             = $False
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Priviliged Groups'
                     TocListLevel    = 1
@@ -422,6 +447,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainUsers                                = [ordered] @{
                     Use              = $true
+                    WordExport       = $true
                     TocEnable        = $True
                     TocText          = 'General Information - Domain Users in <Domain>'
                     TocListLevel     = 1
@@ -432,6 +458,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainUsersCount                           = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Users Count'
                     TocListLevel    = 2
@@ -453,6 +480,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainAdministrators                       = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Domain Administrators'
                     TocListLevel    = 2
@@ -467,6 +495,7 @@ $Document = [ordered]@{
                 }
                 SectionEnterpriseAdministrators                   = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Enterprise Administrators'
                     TocListLevel    = 2
@@ -482,6 +511,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainComputers                            = [ordered] @{
                     Use              = $true
+                    WordExport       = $true
                     TocEnable        = $True
                     TocText          = 'General Information - Computer Objects in <Domain>'
                     TocListLevel     = 1
@@ -492,6 +522,7 @@ $Document = [ordered]@{
                 }
                 DomainComputers                                   = [ordered] @{
                     Use             = $true
+                    WordExport      = $false
                     TocEnable       = $True
                     TocText         = 'General Information - Computers'
                     TocListLevel    = 2
@@ -506,6 +537,7 @@ $Document = [ordered]@{
                 }
                 DomainComputersCount                              = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::DomainComputersCount
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -523,6 +555,7 @@ $Document = [ordered]@{
                 }
                 DomainServers                                     = [ordered] @{
                     Use             = $true
+                    WordExport      = $false
                     TocEnable       = $True
                     TocText         = 'General Information - Servers'
                     TocListLevel    = 2
@@ -537,6 +570,7 @@ $Document = [ordered]@{
                 }
                 DomainServersCount                                = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::DomainServersCount
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -554,6 +588,7 @@ $Document = [ordered]@{
                 }
                 DomainComputersUnknown                            = [ordered] @{
                     Use             = $true
+                    WordExport      = $false
                     TocEnable       = $True
                     TocText         = 'General Information - Unknown Computer Objects'
                     TocListLevel    = 2
@@ -581,7 +616,7 @@ $Document = [ordered]@{
                 SectionPasswordQuality                            = [ordered] @{
                     ### Enables section
                     Use              = $true
-
+                    WordExport       = $true
                     ### Decides how TOC should be visible
                     TocEnable        = $True
                     TocText          = 'Domain Password Quality'
@@ -598,6 +633,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordClearTextPassword                   = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Passwords with Reversible Encryption'
                     TocListLevel        = 2
@@ -614,6 +650,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordLMHash                              = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Passwords with LM Hash'
                     TocListLevel        = 2
@@ -632,6 +669,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordEmptyPassword                       = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Empty Passwords'
                     TocListLevel        = 2
@@ -646,25 +684,104 @@ $Document = [ordered]@{
                     ExcelWorkSheet      = '<Domain> - PasswordEmpty'
                     ExcelData           = [ActiveDirectory]::DomainPasswordEmptyPassword
                 }
-                DomainPasswordWeakPassword                        = [ordered] @{
+                DomainPasswordWeakTOC                             = [ordered] @{
+                    Use             = $true
+                    WordExport      = $true
+                    TocEnable       = $True
+                    TocText         = 'Password Quality - Known passwords'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    #TableData       = [ActiveDirectory]::DomainPasswordWeakPasswordList
+                }
+
+                DomainPasswordWeakPasswordEnabled                 = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
-                    TocText             = 'Password Quality - Known passwords'
-                    TocListLevel        = 2
+                    TocText             = 'Password Quality - Known passwords (Enabled)'
+                    TocListLevel        = 3
                     TocListItemType     = 'Numbered'
                     TocHeadingType      = 'Heading2'
-                    TableData           = [ActiveDirectory]::DomainPasswordWeakPassword
+                    TableData           = [ActiveDirectory]::DomainPasswordWeakPasswordEnabled
                     TableMaximumColumns = 4
                     TableDesign         = 'ColorfulGridAccent5'
                     Text                = "Passwords of these accounts have been found in given dictionary. It's highely recommended to " `
-                        + "notify those users and ask them to change their passwords asap!"
-                    TextNoData          = 'There were no passwords found that match given dictionary.'
+                        + "notify those users and ask them to change their passwords asap! Those accounts are ENABLED accounts!"
+                    TextNoData          = 'There were no passwords found that match given dictionary for users that are enabled.'
+                }
+                DomainPasswordWeakPasswordDisabled                = [ordered] @{
+                    Use                 = $true
+                    WordExport          = $true
+                    TocEnable           = $True
+                    TocText             = 'Password Quality - Known passwords (Disabled)'
+                    TocListLevel        = 3
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [ActiveDirectory]::DomainPasswordWeakPasswordDisabled
+                    TableMaximumColumns = 4
+                    TableDesign         = 'ColorfulGridAccent5'
+                    Text                = "Passwords of these accounts have been found in given dictionary. Those users are disaled so the impact " `
+                        + "is minimal but it's still recommended to change those passwords to something with higher degree of complexity."
+                    TextNoData          = 'There were no passwords found that match given dictionary for users that are disabled.'
+                }
+                DomainPasswordWeakPasswordAll                     = [ordered] @{
+                    Use            = $true
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - PasswordKnown'
+                    ExcelData      = [ActiveDirectory]::DomainPasswordWeakPassword
+                }
+                DomainPasswordWeakTOC                             = [ordered] @{
+                    Use             = $true
+                    WordExport      = $true
+                    TocEnable       = $True
+                    TocText         = 'Password Quality - Known passwords HASHES'
+                    TocListLevel    = 2
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading2'
+                    #TableData       = [ActiveDirectory]::DomainPasswordWeakPasswordList
+                }
+                DomainPasswordHashesWeakPassword                  = [ordered] @{
+                    # exports only to Excel - this will give you all enabled/disabled within same Excel WorkSheet
+                    # export to word is done below with split to enabled/disabled
+                    Use                 = $false
                     ExcelExport         = $true
-                    ExcelWorkSheet      = '<Domain> - PasswordKnown'
-                    ExcelData           = [ActiveDirectory]::DomainPasswordWeakPassword
+                    ExcelWorkSheet      = '<Domain> - LeakedPasswords'
+                    ExcelData           = [ActiveDirectory]::DomainPasswordHashesWeakPassword
+                }
+                DomainPasswordHashesWeakPasswordEnabled                = [ordered] @{
+                    Use                 = $false
+                    WordExport          = $true
+                    TocEnable           = $True
+                    TocText             = 'Password Quality - Leaked Passwords (Enabled)'
+                    TocListLevel        = 3
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [ActiveDirectory]::DomainPasswordHashesWeakPasswordEnabled
+                    TableDesign         = 'ColorfulGridAccent5'
+                    TableMaximumColumns = 4
+                    Text                = "Passwords of these accounts have been found in given HASH dictionary (https://haveibeenpwned.com/). It's highely recommended to " `
+                        + "notify those users and ask them to change their passwords asap! Those accounts are enabled and still in use!"
+                    TextNoData          = 'There were no passwords found that match in given HASH dictionary for users that are enabled.'
+                }
+                DomainPasswordHashesWeakPasswordDisabled                 = [ordered] @{
+                    Use                 = $false
+                    WordExport          = $true
+                    TocEnable           = $True
+                    TocText             = 'Password Quality - Leaked Passwords (Disabled)'
+                    TocListLevel        = 3
+                    TocListItemType     = 'Numbered'
+                    TocHeadingType      = 'Heading2'
+                    TableData           = [ActiveDirectory]::DomainPasswordHashesWeakPasswordDisabled
+                    TableDesign         = 'ColorfulGridAccent5'
+                    TableMaximumColumns = 4
+                    Text                = "Passwords of these accounts have been found in given HASH dictionary (https://haveibeenpwned.com/). " `
+                        + "Those users are disabled so the impact is minimal but it's still recommended to change those passwords to something with higher degree of complexity."
+                    TextNoData          = 'There were no passwords found that match in given HASH dictionary for users that are disabled.'
                 }
                 DomainPasswordDefaultComputerPassword             = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Default Computer Password'
                     TocListLevel        = 2
@@ -681,6 +798,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordPasswordNotRequired                 = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Password Not Required'
                     TocListLevel        = 2
@@ -698,8 +816,9 @@ $Document = [ordered]@{
                 }
                 DomainPasswordPasswordNeverExpires                = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
-                    TocText             = 'Password Quality - Non expiring passwords'
+                    TocText             = 'Password Quality - Non-expiring passwords'
                     TocListLevel        = 2
                     TocListItemType     = 'Numbered'
                     TocHeadingType      = 'Heading2'
@@ -715,6 +834,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordAESKeysMissing                      = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - AES Keys Missing'
                     TocListLevel        = 2
@@ -731,6 +851,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordPreAuthNotRequired                  = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Kerberos Pre-Auth Not Required'
                     TocListLevel        = 2
@@ -747,6 +868,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordDESEncryptionOnly                   = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Only DES Encryption Allowed'
                     TocListLevel        = 2
@@ -763,6 +885,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordDelegatableAdmins                   = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Delegatable to Service'
                     TocListLevel        = 2
@@ -779,6 +902,7 @@ $Document = [ordered]@{
                 }
                 DomainPasswordDuplicatePasswordGroups             = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Groups of Users With Same Password'
                     TocListLevel        = 2
@@ -793,25 +917,9 @@ $Document = [ordered]@{
                     ExcelWorkSheet      = '<Domain> - PasswordGroups'
                     ExcelData           = [ActiveDirectory]::DomainPasswordDuplicatePasswordGroups
                 }
-                DomainPasswordHashesWeakPassword                  = [ordered] @{
-                    Use                 = $false
-                    TocEnable           = $True
-                    TocText             = 'Password Quality - Leaked Passwords'
-                    TocListLevel        = 2
-                    TocListItemType     = 'Numbered'
-                    TocHeadingType      = 'Heading2'
-                    TableData           = [ActiveDirectory]::DomainPasswordHashesWeakPassword
-                    TableDesign         = 'ColorfulGridAccent5'
-                    TableMaximumColumns = 4
-                    Text                = "Passwords of these accounts have been found in given HASH dictionary (https://haveibeenpwned.com/). It's highely recommended to " `
-                        + "notify those users and ask them to change their passwords asap!"
-                    TextNoData          = 'There were no passwords found that match in given dictionary.'
-                    ExcelExport         = $true
-                    ExcelWorkSheet      = '<Domain> - LeakedPasswords'
-                    ExcelData           = [ActiveDirectory]::DomainPasswordHashesWeakPassword
-                }
                 DomainPasswordStats                               = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'Password Quality - Statistics'
                     TocListLevel    = 2

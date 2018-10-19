@@ -11,6 +11,12 @@ function Start-DocumentationAD {
     }
     if ($ADConfiguration.PasswordTests.UseHashDB) {
         $PasswordHashes = $ADConfiguration.PasswordTests.PasswordFilePathHash
+        if ($PasswordClearText -eq '') {
+            # creates temporary file to provide required data that is based on existance of this file
+            $TemporaryFile = New-TemporaryFile
+            'Passw0rd' | Out-File -FilePath $TemporaryFile.FullName
+            $PasswordClearText = $TemporaryFile.FullName
+        }
     } else {
         $PasswordHashes = ''
     }

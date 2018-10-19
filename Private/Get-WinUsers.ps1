@@ -17,6 +17,7 @@ function Get-WinUsers {
             'EmailAddress'                      = $U.EmailAddress
             'PasswordExpired'                   = $U.PasswordExpired
             'PasswordLastSet'                   = $U.PasswordLastSet
+            'Password Last Changed'             = if ($U.PasswordLastSet -ne $Null) { "$(-$($U.PasswordLastSet - [DateTime]::Today).Days) days" } else { 'N/A'}
             'PasswordNotRequired'               = $U.PasswordNotRequired
             'PasswordNeverExpires'              = $U.PasswordNeverExpires
             'Enabled'                           = $U.Enabled
@@ -50,3 +51,11 @@ function Get-WinUsers {
     }
     return Format-TransposeTable -Object $UserList
 }
+
+<# List of fields
+'Name', 'UserPrincipalName', 'SamAccountName', 'Enabled', 'PasswordLastSet,'Password Last Changed', 'PasswordExpired', 'PasswordNeverExpires', 'PasswordNotRequired',
+'EmailAddress', 'Display Name', 'Given Name', 'Surname', 'Manager', 'Manager Email',
+'DateExpiry', "DaysToExpire", "AccountExpirationDate", "AccountLockoutTime", "AllowReversiblePasswordEncryption", "BadLogonCount",
+"CannotChangePassword", "CanonicalName", "Description", "DistinguishedName", "EmployeeID", "EmployeeNumber", "LastBadPasswordAttempt",
+"LastLogonDate", "Created", "Modified", "Protected", "Primary Group", "Member Of", "Domain"
+#>

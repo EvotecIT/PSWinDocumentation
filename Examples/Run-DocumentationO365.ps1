@@ -51,6 +51,7 @@ $Document = [ordered]@{
         Sections      = [ordered] @{
             SectionO365TOC                          = [ordered] @{
                 Use                  = $true
+                WordExport           = $true
                 TocGlobalDefinition  = $true
                 TocGlobalTitle       = 'Table of content'
                 TocGlobalRightTabPos = 15
@@ -60,7 +61,7 @@ $Document = [ordered]@{
             SectionO365Introduction                 = [ordered] @{
                 ### Enables section
                 Use             = $true
-
+                WordExport      = $true
                 ### Decides how TOC should be visible
                 TocEnable       = $True
                 TocText         = 'Scope'
@@ -76,6 +77,7 @@ $Document = [ordered]@{
             }
             SectionO365ExchangeMailBoxes            = [ordered] @{
                 Use             = $true
+                WordExport      = $true
                 TocEnable       = $True
                 TocText         = 'General Information - O365ExchangeMailBoxes'
                 TocListLevel    = 0
@@ -91,7 +93,7 @@ $Document = [ordered]@{
             }
             O365AzureTenantDomains                  = [ordered] @{
                 Use                 = $true
-
+                WordExport          = $true
                 TocEnable           = $True
                 TocText             = 'General Information - Office 365 Domains'
                 TocListLevel        = 0
@@ -110,7 +112,7 @@ $Document = [ordered]@{
             }
             O365AzureADGroupMembersUser             = [ordered] @{
                 Use             = $true
-
+                WordExport      = $true
                 TocEnable       = $True
                 TocText         = 'General Information - O365AzureADGroupMembersUser'
                 TocListLevel    = 0
@@ -169,8 +171,6 @@ $Document = [ordered]@{
                 ExcelWorkSheet = 'O365AzureADContacts'
                 ExcelData      = [O365]::O365UAzureADContacts
             }
-
-
             O365ExchangeMailBoxes                   = [ordered] @{
                 Use            = $true
                 ExcelExport    = $true

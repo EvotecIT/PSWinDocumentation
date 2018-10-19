@@ -41,6 +41,7 @@ $Document = [ordered]@{
         Sections      = [ordered] @{
             SectionTOC             = [ordered] @{
                 Use                  = $true
+                WordExport           = $true
                 TocGlobalDefinition  = $true
                 TocGlobalTitle       = 'Table of content'
                 TocGlobalRightTabPos = 15
@@ -50,7 +51,7 @@ $Document = [ordered]@{
             SectionAWSIntroduction = [ordered] @{
                 ### Enables section
                 Use             = $true
-
+                WordExport      = $true
                 ### Decides how TOC should be visible
                 TocEnable       = $True
                 TocText         = 'Scope'
@@ -66,6 +67,7 @@ $Document = [ordered]@{
             }
             SectionEC2             = [ordered] @{
                 Use             = $true
+                WordExport      = $true
                 TocEnable       = $True
                 TocText         = 'General Information - EC2'
                 TocListLevel    = 0
@@ -88,6 +90,7 @@ $Document = [ordered]@{
             }
             SectionRDS             = [ordered] @{
                 Use             = $true
+                WordExport      = $true
                 TocEnable       = $True
                 TocText         = 'General Information - RDS Details'
                 TocListLevel    = 0
@@ -102,6 +105,7 @@ $Document = [ordered]@{
             }
             SectionELB             = [ordered] @{
                 Use             = $true
+                WordExport      = $true
                 TocEnable       = $True
                 TocText         = 'General Information - Load Balancers'
                 TocListLevel    = 0
@@ -116,6 +120,7 @@ $Document = [ordered]@{
             }
             SectionVPC             = [ordered] @{
                 Use             = $true
+                WordExport      = $true
                 TocEnable       = $True
                 TocText         = 'General Information - Networking'
                 TocListLevel    = 0
@@ -130,6 +135,7 @@ $Document = [ordered]@{
             }
             SectionEIP             = [ordered] @{
                 Use             = $true
+                WordExport      = $true
                 TocEnable       = $True
                 TocText         = 'General Information - Elastic IPs'
                 TocListLevel    = 0
@@ -144,6 +150,7 @@ $Document = [ordered]@{
             }
             SectionIAM             = [ordered] @{
                 Use             = $true
+                WordExport      = $true
                 TocEnable       = $True
                 TocText         = 'General Information - IAM Users'
                 TocListLevel    = 0

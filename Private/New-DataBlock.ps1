@@ -53,7 +53,7 @@ function New-DataBlock {
 
         #Write-Verbose "Table Data $($TableData.Count)"
 
-        if ($WordDocument) {
+        if ($WordDocument -and $Section.WordExport) {
             Write-Verbose "Generating WORD Section for [$SectionDetails]"
             $WordDocument | New-WordBlock `
                 -TocGlobalDefinition $Section.TocGlobalDefinition`

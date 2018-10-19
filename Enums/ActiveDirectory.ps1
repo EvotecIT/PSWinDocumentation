@@ -89,10 +89,15 @@ public enum ActiveDirectory {
     DomainPasswordDataUsers, // Gathers users data and their passwords
     DomainPasswordDataPasswords, // Compares Users Password with File
     DomainPasswordDataPasswordsHashes, // Compares Users Password with File HASH
-    DomainPasswordClearTextPassword,
+    DomainPasswordClearTextPassword, // include both enabled / disabled accounts
+    DomainPasswordClearTextPasswordEnabled,  // include only enabled
+    DomainPasswordClearTextPasswordDisabled, // include only disabled
     DomainPasswordLMHash,
     DomainPasswordEmptyPassword,
     DomainPasswordWeakPassword,
+    DomainPasswordWeakPasswordEnabled,
+    DomainPasswordWeakPasswordDisabled,
+    DomainPasswordWeakPasswordList, // Password List from file..
     DomainPasswordDefaultComputerPassword,
     DomainPasswordPasswordNotRequired,
     DomainPasswordPasswordNeverExpires,
@@ -102,6 +107,8 @@ public enum ActiveDirectory {
     DomainPasswordDelegatableAdmins,
     DomainPasswordDuplicatePasswordGroups,
     DomainPasswordHashesWeakPassword,
+    DomainPasswordHashesWeakPasswordEnabled,
+    DomainPasswordHashesWeakPasswordDisabled,
     DomainPasswordStats,
 }
 "@
