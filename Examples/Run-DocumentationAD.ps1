@@ -26,33 +26,27 @@ $Document = [ordered]@{
         Debug          = @{
             Verbose = $false
         }
-    }
-    DocumentAD    = [ordered] @{
+    }    DocumentAD    = [ordered] @{
         Enable        = $true
         ExportWord    = $true
         ExportExcel   = $true
         ExportSql     = $false
-        ExportXML     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xlsx"
-        FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
         Configuration = [ordered] @{
             PasswordTests = @{
                 Use                       = $false
-                PasswordFilePathClearText = 'C:\Users\pklys\OneDrive - Evotec\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
+                PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
                 # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
                 UseHashDB                 = $false
-                PasswordFilePathHash      = 'C:\Users\pklys\Downloads\pwned-passwords-ntlm-ordered-by-count\pwned-passwords-ntlm-ordered-by-count.txt'
-            }
-            OfflineMode   = @{
-                Use     = $true
-                XMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
+                PasswordFilePathHash      = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords-Hashes.txt'
             }
         }
         Sections      = [ordered] @{
             SectionForest = [ordered] @{
                 SectionTOC                    = [ordered] @{
                     Use                  = $true
+                    WordExport           = $true
                     TocGlobalDefinition  = $true
                     TocGlobalTitle       = 'Table of content'
                     TocGlobalRightTabPos = 15
@@ -62,7 +56,7 @@ $Document = [ordered]@{
                 SectionForestIntroduction     = [ordered] @{
                     ### Enables section
                     Use             = $true
-
+                    WordExport      = $true
                     ### Decides how TOC should be visible
                     TocEnable       = $True
                     TocText         = 'Scope'
@@ -85,6 +79,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSummary          = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Forest Summary'
                     TocListLevel    = 0
@@ -102,6 +97,7 @@ $Document = [ordered]@{
                 }
                 SectionForestFSMO             = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::ForestFSMO
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -114,6 +110,7 @@ $Document = [ordered]@{
                 }
                 SectionForestOptionalFeatures = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::ForestOptionalFeatures
                     TableDesign           = [TableDesign]::ColorfulGridAccent5
                     TableTitleMerge       = $true
@@ -127,6 +124,7 @@ $Document = [ordered]@{
                 }
                 SectionForestUPNSuffixes      = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     Text                  = "Following UPN suffixes were created in this forest:"
                     TextNoData            = "No UPN suffixes were created in this forest."
                     ListType              = 'Bulleted'
@@ -138,6 +136,7 @@ $Document = [ordered]@{
                 }
                 SectionForesSPNSuffixes       = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     Text                  = "Following SPN suffixes were created in this forest:"
                     TextNoData            = "No SPN suffixes were created in this forest."
                     ListType              = 'Bulleted'
@@ -149,6 +148,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSites1           = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Sites'
                     TocListLevel    = 1
@@ -163,6 +163,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSites2           = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::ForestSites2
                     TableDesign           = 'ColorfulGridAccent5'
                     Text                  = "Forest Sites list can be found below"
@@ -179,6 +180,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSubnets1         = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TocEnable             = $True
                     TocText               = 'General Information - Subnets'
                     TocListLevel          = 1
@@ -194,6 +196,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSubnets2         = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::ForestSubnets2
                     TableDesign           = 'ColorfulGridAccent5'
                     Text                  = "Table below contains information regarding relation between Subnets and sites"
@@ -204,6 +207,7 @@ $Document = [ordered]@{
                 }
                 SectionForestSiteLinks        = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Site Links'
                     TocListLevel    = 1
@@ -220,10 +224,12 @@ $Document = [ordered]@{
             SectionDomain = [ordered] @{
                 SectionPageBreak                                  = [ordered] @{
                     Use              = $True
+                    WordExport       = $true
                     PageBreaksBefore = 1
                 }
                 SectionDomainStarter                              = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Domain <Domain>'
                     TocListLevel    = 0
@@ -232,6 +238,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainIntroduction                         = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TocEnable             = $True
                     TocText               = 'General Information - Domain Summary'
                     TocListLevel          = 1
@@ -245,6 +252,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainControllers                          = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Domain Controllers'
                     TocListLevel        = 1
@@ -261,6 +269,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainFSMO                                 = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::DomainFSMO
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -273,6 +282,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainDefaultPasswordPolicy                = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Password Policies'
                     TocListLevel    = 1
@@ -289,6 +299,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainFineGrainedPolicies                  = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Fine Grained Password Policies'
                     TocListLevel        = 1
@@ -309,6 +320,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainGroupPolicies                        = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Group Policies'
                     TocListLevel    = 1
@@ -323,6 +335,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainGroupPoliciesDetails                 = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Group Policies Details'
                     TocListLevel        = 1
@@ -353,6 +366,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainDNSSrv                               = [ordered] @{
                     Use                  = $true
+                    WordExport           = $true
                     TocEnable            = $True
                     TocText              = 'General Information - DNS A/SRV Records'
                     TocListLevel         = 1
@@ -369,6 +383,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainDNSA                                 = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TableData           = [ActiveDirectory]::DomainDNSA
                     TableMaximumColumns = 10
                     TableDesign         = 'ColorfulGridAccent5'
@@ -379,6 +394,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainTrusts                               = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Trusts'
                     TocListLevel        = 1
@@ -394,6 +410,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainOrganizationalUnits                  = [ordered] @{
                     Use                 = $true
+                    WordExport          = $true
                     TocEnable           = $True
                     TocText             = 'General Information - Organizational Units'
                     TocListLevel        = 1
@@ -409,6 +426,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainPriviligedGroup                      = [ordered] @{
                     Use             = $False
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Priviliged Groups'
                     TocListLevel    = 1
@@ -428,6 +446,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainUsers                                = [ordered] @{
                     Use              = $true
+                    WordExport       = $true
                     TocEnable        = $True
                     TocText          = 'General Information - Domain Users in <Domain>'
                     TocListLevel     = 1
@@ -438,6 +457,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainUsersCount                           = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Users Count'
                     TocListLevel    = 2
@@ -459,6 +479,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainAdministrators                       = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Domain Administrators'
                     TocListLevel    = 2
@@ -473,6 +494,7 @@ $Document = [ordered]@{
                 }
                 SectionEnterpriseAdministrators                   = [ordered] @{
                     Use             = $true
+                    WordExport      = $true
                     TocEnable       = $True
                     TocText         = 'General Information - Enterprise Administrators'
                     TocListLevel    = 2
@@ -488,6 +510,7 @@ $Document = [ordered]@{
                 }
                 SectionDomainComputers                            = [ordered] @{
                     Use              = $true
+                    WordExport       = $true
                     TocEnable        = $True
                     TocText          = 'General Information - Computer Objects in <Domain>'
                     TocListLevel     = 1
@@ -498,6 +521,7 @@ $Document = [ordered]@{
                 }
                 DomainComputers                                   = [ordered] @{
                     Use             = $true
+                    WordExport      = $false
                     TocEnable       = $True
                     TocText         = 'General Information - Computers'
                     TocListLevel    = 2
@@ -512,6 +536,7 @@ $Document = [ordered]@{
                 }
                 DomainComputersCount                              = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::DomainComputersCount
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -529,6 +554,7 @@ $Document = [ordered]@{
                 }
                 DomainServers                                     = [ordered] @{
                     Use             = $true
+                    WordExport      = $false
                     TocEnable       = $True
                     TocText         = 'General Information - Servers'
                     TocListLevel    = 2
@@ -543,6 +569,7 @@ $Document = [ordered]@{
                 }
                 DomainServersCount                                = [ordered] @{
                     Use                   = $true
+                    WordExport            = $true
                     TableData             = [ActiveDirectory]::DomainServersCount
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
@@ -560,6 +587,7 @@ $Document = [ordered]@{
                 }
                 DomainComputersUnknown                            = [ordered] @{
                     Use             = $true
+                    WordExport      = $false
                     TocEnable       = $True
                     TocText         = 'General Information - Unknown Computer Objects'
                     TocListLevel    = 2
@@ -713,6 +741,6 @@ $Document = [ordered]@{
             }
         }
     }
-}
+
 
 Start-Documentation -Document $Document -Verbose
