@@ -19,6 +19,7 @@ function New-DataBlock {
         $ExcelData = Get-WinDocumentationData -DataToGet $Section.ExcelData -Object $Forest -Domain $Domain
         $ListData = Get-WinDocumentationData -DataToGet $Section.ListData -Object $Forest -Domain $Domain
         $SqlData = Get-WinDocumentationData -DataToGet $Section.SqlData -Object $Forest -Domain $Domain
+        $TextBasedData = Get-WindocumentationData -DataToGet $Section.TextBasedData -Object $Forest -Domain $Domain
 
         ### Preparing chart data
         $ChartData = (Get-WinDocumentationData -DataToGet $Section.ChartData -Object $Forest -Domain $Domain)
@@ -87,7 +88,9 @@ function New-DataBlock {
                 -ChartValues $ChartValues `
                 -ListBuilderContent $ListBuilderContent `
                 -ListBuilderType $Section.ListBuilderType `
-                -ListBuilderLevel $Section.ListBuilderLevel
+                -ListBuilderLevel $Section.ListBuilderLevel `
+                -TextBasedData $TextBasedData `
+                -TextBasedDataAlignment $Section.TextSpecialAlignment
         }
         if ($Excel -and $Section.ExcelExport) {
             if ($Section.ExcelWorkSheet -eq '') {

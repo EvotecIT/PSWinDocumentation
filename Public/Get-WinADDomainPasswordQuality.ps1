@@ -87,7 +87,7 @@ function Get-WinADDomainPasswordQuality {
             return ''
         } else {
             $Passwords = Get-Content -Path $FilePath
-            return $Passwords -join ','
+            return $Passwords -join ', '
         }
     }
     $Data.DomainPasswordDefaultComputerPassword = Invoke-Command -ScriptBlock {

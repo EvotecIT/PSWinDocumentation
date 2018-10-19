@@ -4,7 +4,7 @@ function Get-TypesRequired {
         [hashtable[]] $Sections
     )
     $TypesRequired = New-ArrayList
-    $Types = 'TableData', 'ListData', 'ChartData', 'SqlData', 'ExcelData'
+    $Types = 'TableData', 'ListData', 'ChartData', 'SqlData', 'ExcelData', 'TextBasedData'
     foreach ($Section in $Sections) {
         $Keys = Get-ObjectKeys -Object $Section
         foreach ($Key in $Keys) {

@@ -12,6 +12,7 @@ function Get-WinDocumentationText {
         $T = $T.Replace('<Domain>', $Domain)
         $T = $T.Replace('<DomainNetBios>', $Forest.FoundDomains.$Domain.DomainInformation.NetBIOSName)
         $T = $T.Replace('<DomainDN>', $Forest.FoundDomains.$Domain.DomainInformation.DistinguishedName)
+        $T = $T.Replace('<DomainPasswordWeakPasswordList>', $Forest.FoundDomains.$Domain.DomainPasswordDataPasswords.DomainPasswordWeakPasswordList)
         $Array += $T
     }
     return $Array
