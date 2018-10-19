@@ -1,4 +1,4 @@
-Import-Module PSWriteWord
+Import-Module PSWriteWord #-Force
 Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
@@ -36,7 +36,7 @@ $Document = [ordered]@{
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xlsx"
         Configuration = [ordered] @{
             PasswordTests = @{
-                Use                       = $false
+                Use                       = $true
                 PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
                 # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
                 UseHashDB                 = $true
@@ -692,9 +692,13 @@ $Document = [ordered]@{
                     TocListLevel    = 2
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading2'
-                    #TableData       = [ActiveDirectory]::DomainPasswordWeakPasswordList
-                }
+                    Text            = 'Following section covers passwords from a known, defined list of passwords that are often too easy. ' `
+                        + 'Following passwords have been defined on the list and people below have been found ' `
+                        + 'guilty of using one of those passwords: <DomainPasswordWeakPasswordList>'
 
+                    #TextBasedData          = [ActiveDirectory]::DomainPasswordWeakPasswordList
+                    #TextBasedDataAlignment = [Alignment]::both
+                }
                 DomainPasswordWeakPasswordEnabled                 = [ordered] @{
                     Use                 = $true
                     WordExport          = $true
@@ -731,7 +735,7 @@ $Document = [ordered]@{
                     ExcelWorkSheet = '<Domain> - PasswordKnown'
                     ExcelData      = [ActiveDirectory]::DomainPasswordWeakPassword
                 }
-                DomainPasswordWeakTOC                             = [ordered] @{
+                DomainPasswordHashesWeakTOC                       = [ordered] @{
                     Use             = $true
                     WordExport      = $true
                     TocEnable       = $True
@@ -739,17 +743,17 @@ $Document = [ordered]@{
                     TocListLevel    = 2
                     TocListItemType = 'Numbered'
                     TocHeadingType  = 'Heading2'
-                    #TableData       = [ActiveDirectory]::DomainPasswordWeakPasswordList
+                    Text            = 'Following section covers passwords that have been floating around web from various leaks. '
                 }
                 DomainPasswordHashesWeakPassword                  = [ordered] @{
                     # exports only to Excel - this will give you all enabled/disabled within same Excel WorkSheet
                     # export to word is done below with split to enabled/disabled
-                    Use                 = $false
-                    ExcelExport         = $true
-                    ExcelWorkSheet      = '<Domain> - LeakedPasswords'
-                    ExcelData           = [ActiveDirectory]::DomainPasswordHashesWeakPassword
+                    Use            = $false
+                    ExcelExport    = $true
+                    ExcelWorkSheet = '<Domain> - LeakedPasswords'
+                    ExcelData      = [ActiveDirectory]::DomainPasswordHashesWeakPassword
                 }
-                DomainPasswordHashesWeakPasswordEnabled                = [ordered] @{
+                DomainPasswordHashesWeakPasswordEnabled           = [ordered] @{
                     Use                 = $false
                     WordExport          = $true
                     TocEnable           = $True
@@ -764,7 +768,7 @@ $Document = [ordered]@{
                         + "notify those users and ask them to change their passwords asap! Those accounts are enabled and still in use!"
                     TextNoData          = 'There were no passwords found that match in given HASH dictionary for users that are enabled.'
                 }
-                DomainPasswordHashesWeakPasswordDisabled                 = [ordered] @{
+                DomainPasswordHashesWeakPasswordDisabled          = [ordered] @{
                     Use                 = $false
                     WordExport          = $true
                     TocEnable           = $True
