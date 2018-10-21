@@ -33,10 +33,19 @@ $Document = [ordered]@{
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xlsx"
+        FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xml"
         Configuration = [ordered] @{
-            AWSAccessKey = ''
-            AWSSecretKey = ''
-            AWSRegion    = ''
+            OfflineMode = @{
+                Use     = $false
+                XMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xml"
+            }
+        }
+        Services      = [ordered] @{
+            AWS = [ordered] @{
+                AWSAccessKey = ''
+                AWSSecretKey = ''
+                AWSRegion    = ''
+            }
         }
         Sections      = [ordered] @{
             SectionTOC             = [ordered] @{

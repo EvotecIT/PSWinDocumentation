@@ -20,7 +20,7 @@ function Start-DocumentationAWS {
         # Online mode
         $CheckCredentials = Test-ConfigurationCredentials -Configuration $Document.DocumentAWS.Configuration
         if ($CheckCredentials) {
-            $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Document.DocumentAWS.Configuration.AWSAccessKey -AWSSecretKey $Document.DocumentAWS.Configuration.AWSSecretKey -AWSRegion $Document.DocumentAWS.Configuration.AWSRegion
+            $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Document.DocumentAWS.Services.AWS.AWSAccessKey -AWSSecretKey $Document.DocumentAWS.Services.AWS.AWSSecretKey -AWSRegion $Document.DocumentAWS.Services.AWS.AWSRegion
         }
     }
     $TimeDataOnly.Stop()
