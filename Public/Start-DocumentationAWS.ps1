@@ -5,11 +5,21 @@ function Start-DocumentationAWS {
     )
     $CheckCredentials = Test-ConfigurationCredentials -Configuration $Document.DocumentAWS.Configuration
     if ($CheckCredentials) {
-        $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAWS.Sections
         $DataSections = Get-ObjectKeys -Object $Document.DocumentAWS.Sections
-
         $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-        $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Document.DocumentAWS.Configuration.AWSAccessKey -AWSSecretKey $Document.DocumentAWS.Configuration.AWSSecretKey -AWSRegion $Document.DocumentAWS.Configuration.AWSRegion
+        if ($Document.DocumentAWS.Configuration.OfflineMode.Use) {
+            # Offline mode
+            if ($Document.DocumentAWS.ExportXML) {
+                Write-Warning "You can't run AWS Documentation in 'offline mode' with 'ExportXML' set to true. Please turn off one of the options."
+                return
+            } else {
+                $DataInformation = Get-WinDataFromXML -FilePath $Document.DocumentAWS.Configuration.OfflineMode.XMLPath -Type [ActiveDirectory]
+            }
+        } else {
+            # Online mode
+            $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAWS.Sections
+            $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Document.DocumentAWS.Configuration.AWSAccessKey -AWSSecretKey $Document.DocumentAWS.Configuration.AWSSecretKey -AWSRegion $Document.DocumentAWS.Configuration.AWSRegion
+        }
         $TimeDataOnly.Stop()
 
         $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
