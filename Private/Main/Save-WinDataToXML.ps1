@@ -9,11 +9,12 @@ function Save-WinDataToXML {
     )
     if ($IsOffline) {
         # This means data is loaded from xml so it doesn't need to be resaved to XML
+        Write-Verbose "Save-WinDataToXML - Exporting $Type data to XML to path $FilePath skipped. Running in offline mode."
         return
     }
     if ($Export) {
         if ($FilePath) {
-            Write-Verbose "Exporting $Type data to XML to path $FilePath"
+            Write-Verbose "Save-WinDataToXML - Exporting $Type data to XML to path $FilePath"
             try {
                 $Data | Export-Clixml -Path $FilePath -ErrorAction Stop
             } catch {

@@ -19,19 +19,22 @@ function Get-WinServiceData {
                         return
                     }
                     # Build Session
-                    $SessionAzure = Connect-WinAzure -SessionName $Service.SessionName `
+                    $Session = Connect-WinAzure -SessionName $Service.SessionName `
                         -Username $Credentials.Username `
                         -Password $Credentials.Password `
                         -AsSecure:$Credentials.PasswordAsSecure `
                         -FromFile:$Credentials.PasswordFromFile -Verbose
 
                     # Failed connecting to session
-                    if (-not $Session) {
-                        return
-                    }
+                    #if (-not $Session) {
+                    #    return
+                    #}
 
                     ## Gather Data
                     $DataInformation = Get-WinO365Azure -TypesRequired $TypesRequired
+                    if ($Service.ExportXML) {
+                        Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.ExportXMLPath -Data $DataInformation -Type [O365] -IsOffline:(-not $Service.OnlineMode)
+                    }
                     ## Plan for disconnect here
 
                     ## Return Data
@@ -72,7 +75,7 @@ function Get-WinServiceData {
                     ## Gather Data
                     $DataInformation = Get-WinO365Exchange -TypesRequired $TypesRequired
                     if ($Service.ExportXML) {
-                        Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.ExportXMLPath -Data $DataInformation -Type [O365] -IsOffline:(-not $Service.OnelineMode)
+                        Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.ExportXMLPath -Data $DataInformation -Type [O365] -IsOffline:(-not $Service.OnlineMode)
                     }
 
                     ## Plan for disconnect here

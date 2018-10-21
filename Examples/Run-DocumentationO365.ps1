@@ -1,4 +1,4 @@
-Import-Module PSWriteWord -Force
+Import-Module PSWriteWord #-Force
 Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
@@ -30,7 +30,6 @@ $Document = [ordered]@{
         Enable        = $true
         ExportWord    = $true
         ExportExcel   = $true
-        ExportXML     = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportO365.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportO365.xlsx"
         Services      = [ordered] @{
@@ -46,7 +45,7 @@ $Document = [ordered]@{
                     OnlineMode    = $true
 
                     ExportXML     = $true
-                    ExportXMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
+                    ExportXMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365Azure.xml"
 
                     Prefix        = ''
                     SessionName   = 'O365Azure' # MSOL
@@ -56,7 +55,7 @@ $Document = [ordered]@{
                     OnlineMode    = $true
 
                     ExportXML     = $true
-                    ExportXMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
+                    ExportXMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365AzureAD.xml"
 
                     SessionName   = 'O365AzureAD' # Azure
                     Prefix        = ''
@@ -66,7 +65,7 @@ $Document = [ordered]@{
                     OnlineMode     = $true
 
                     ExportXML      = $true
-                    ExportXMLPath  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
+                    ExportXMLPath  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365ExchangeOnline.xml"
 
                     Authentication = 'Basic'
                     ConnectionURI  = 'https://outlook.office365.com/powershell-liveid/'

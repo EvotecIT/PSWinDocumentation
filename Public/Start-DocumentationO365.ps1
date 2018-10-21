@@ -8,15 +8,11 @@ function Start-DocumentationO365 {
 
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
-    $DataInformation = @()
+    $DataInformation = @{}
     $DataInformation += Get-WinServiceData -Credentials $Document.DocumentOffice365.Services.Office365.Credentials `
         -Service $Document.DocumentOffice365.Services.Office365.Azure `
         -TypesRequired $TypesRequired `
         -Type 'Azure'
-    $DataInformation += Get-WinServiceData -Credentials $Document.DocumentOffice365.Services.Office365.Credentials `
-        -Service $Document.DocumentOffice365.Services.Office365.AzureAD `
-        -TypesRequired $TypesRequired `
-        -Type 'AzureAD'
     $DataInformation += Get-WinServiceData -Credentials $Document.DocumentOffice365.Services.Office365.Credentials `
         -Service $Document.DocumentOffice365.Services.Office365.ExchangeOnline `
         -TypesRequired $TypesRequired `
@@ -38,16 +34,14 @@ function Start-DocumentationO365 {
         }
 
         ### Start Sections
-        foreach ($Data in $DataInformation) {
-            foreach ($Section in $DataSections) {
-                $WordDocument = New-DataBlock `
-                    -WordDocument $WordDocument `
-                    -Section $Document.DocumentOffice365.Sections.$Section `
-                    -Forest $Data `
-                    -Excel $ExcelDocument `
-                    -SectionName $Section `
-                    -Sql $Document.DocumentOffice365.ExportSQL
-            }
+        foreach ($Section in $DataSections) {
+            $WordDocument = New-DataBlock `
+                -WordDocument $WordDocument `
+                -Section $Document.DocumentOffice365.Sections.$Section `
+                -Forest $DataInformation `
+                -Excel $ExcelDocument `
+                -SectionName $Section `
+                -Sql $Document.DocumentOffice365.ExportSQL
         }
         ### End Sections
 
