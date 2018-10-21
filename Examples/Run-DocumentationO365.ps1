@@ -41,31 +41,31 @@ $Document = [ordered]@{
                     PasswordFromFile = $true
                 }
                 Azure          = [ordered] @{
-                    Use           = $true
-                    OnlineMode    = $true
+                    Use         = $true
+                    OnlineMode  = $true
 
-                    ExportXML     = $true
-                    ExportXMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365Azure.xml"
+                    ExportXML   = $true
+                    FilePathXML = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365Azure.xml"
 
-                    Prefix        = ''
-                    SessionName   = 'O365Azure' # MSOL
+                    Prefix      = ''
+                    SessionName = 'O365Azure' # MSOL
                 }
                 AzureAD        = [ordered] @{
-                    Use           = $true
-                    OnlineMode    = $true
+                    Use         = $true
+                    OnlineMode  = $true
 
-                    ExportXML     = $true
-                    ExportXMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365AzureAD.xml"
+                    ExportXML   = $true
+                    FilePathXML = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365AzureAD.xml"
 
-                    SessionName   = 'O365AzureAD' # Azure
-                    Prefix        = ''
+                    SessionName = 'O365AzureAD' # Azure
+                    Prefix      = ''
                 }
                 ExchangeOnline = [ordered] @{
                     Use            = $true
                     OnlineMode     = $true
 
                     ExportXML      = $true
-                    ExportXMLPath  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365ExchangeOnline.xml"
+                    FilePathXML    = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365ExchangeOnline.xml"
 
                     Authentication = 'Basic'
                     ConnectionURI  = 'https://outlook.office365.com/powershell-liveid/'
