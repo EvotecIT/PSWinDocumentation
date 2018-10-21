@@ -16,6 +16,7 @@ Add-Type -TypeDefinition @"
         O365UExchangeRecipientsPermissions,
         O365UExchangeMailUsers,
         O365UExchangeMailBoxes,
+        O365UExchangeInboxRules,
 
         // Clean O365 Azure Data
         O365UAzureLicensing,

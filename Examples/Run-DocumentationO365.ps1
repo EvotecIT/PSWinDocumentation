@@ -1,6 +1,6 @@
-Import-Module PSWriteWord
+Import-Module PSWriteWord -Force
 Import-Module PSWriteExcel
-Import-Module PSWinDocumentation
+Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module PSSharedGoods
 Import-Module AWSPowerShell
@@ -30,23 +30,50 @@ $Document = [ordered]@{
         Enable        = $true
         ExportWord    = $true
         ExportExcel   = $true
+        ExportXML     = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportO365.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportO365.xlsx"
-        Configuration = [ordered] @{
-            O365ExchangeUse            = $true
-            O365AzureADUse             = $true
+        Services      = [ordered] @{
+            Office365 = [ordered] @{
+                Credentials    = [ordered] @{
+                    Username         = 'przemyslaw.klys@evotec.pl'
+                    Password         = 'C:\Support\Important\Password-O365-Evotec.txt'
+                    PasswordAsSecure = $true
+                    PasswordFromFile = $true
+                }
+                Azure          = [ordered] @{
+                    Use           = $true
+                    OnlineMode    = $true
 
-            O365Username               = 'przemyslaw.klys@evotec.pl'
-            O365Password               = 'C:\Users\pklys\OneDrive - Evotec\Support\GitHub\PSWinDocumentation\Ignore\MySecurePassword.txt'
-            O365PasswordAsSecure       = $true
-            O365PasswordFromFile       = $true
+                    ExportXML     = $true
+                    ExportXMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
 
-            O365ExchangeSessionName    = 'O365ExchangeOnline'
-            O365ExchangeAuthentication = 'Basic'
-            O365ExchangeURI            = 'https://outlook.office365.com/powershell-liveid/'
+                    Prefix        = ''
+                    SessionName   = 'O365Azure' # MSOL
+                }
+                AzureAD        = [ordered] @{
+                    Use           = $true
+                    OnlineMode    = $true
 
-            O365AzureSessionName       = 'O365Azure'
+                    ExportXML     = $true
+                    ExportXMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
 
+                    SessionName   = 'O365AzureAD' # Azure
+                    Prefix        = ''
+                }
+                ExchangeOnline = [ordered] @{
+                    Use            = $true
+                    OnlineMode     = $true
+
+                    ExportXML      = $true
+                    ExportXMLPath  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
+
+                    Authentication = 'Basic'
+                    ConnectionURI  = 'https://outlook.office365.com/powershell-liveid/'
+                    Prefix         = 'O365'
+                    SessionName    = 'O365Exchange'
+                }
+            }
         }
         Sections      = [ordered] @{
             SectionO365TOC                          = [ordered] @{
