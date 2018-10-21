@@ -1,7 +1,7 @@
 function Test-ConfigurationCredentials {
     [CmdletBinding()]
     param (
-        $Configuration,
+        [Object] $Configuration,
         $AllowEmptyKeys
     )
     foreach ($Key in $Configuration.Keys) {

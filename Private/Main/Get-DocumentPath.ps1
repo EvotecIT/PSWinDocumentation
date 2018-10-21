@@ -6,7 +6,8 @@ function Get-DocumentPath {
     )
     if ($Document.Configuration.Prettify.UseBuiltinTemplate) {
         #Write-Verbose 'Get-DocumentPath - Option 1'
-        $WordDocument = Get-WordDocument -FilePath "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
+        #$WordDocument = Get-WordDocument -FilePath "$((get-item $PSScriptRoot).Parent.FullName)\Templates\WordTemplate.docx"
+        $WordDocument = Get-WordDocument -FilePath "$($MyInvocation.MyCommand.Module.ModuleBase)\Templates\WordTemplate.docx"
     } else {
         if ($Document.Configuration.Prettify.CustomTemplatePath) {
             if (Test-File -File $Document.Configuration.Prettify.CustomTemplatePath -FileName 'CustomTemplatePath' -eq 0) {

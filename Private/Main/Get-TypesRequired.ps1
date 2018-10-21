@@ -16,6 +16,6 @@ function Get-TypesRequired {
             }
         }
     }
-    Write-Verbose "Get-TypesRequired - FinalList: $($TypesRequired -join ' ,')"
+    Write-Verbose "Get-TypesRequired - FinalList: $($TypesRequired -join ', ')"
     return $TypesRequired
 }
