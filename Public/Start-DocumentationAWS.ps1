@@ -25,9 +25,11 @@ function Start-DocumentationAWS {
     }
     $TimeDataOnly.Stop()
     ### End AWS Data
-
     $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
+    # Saves data to XML is required - skipped when Offline mode is on
     if ($DataInformation) {
+        Save-WinDataToXML -Export $Document.DocumentAWS.ExportXML -FilePath $Document.DocumentAWS.FilePathXML -Data $DataInformationAD -Type [AWS] -IsOffline:$Document.DocumentAWS.Configuration.OfflineMode.Use
+
         ### Starting WORD
         if ($Document.DocumentAWS.ExportWord) {
             $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAWS.FilePathWord

@@ -50,6 +50,8 @@ function Start-DocumentationExchange {
     $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
     if ($DataInformation) {
+        Save-WinDataToXML -Export $Document.DocumentExchange.ExportXML -FilePath $Document.DocumentExchange.FilePathXML -Data $DataInformationAD -Type [Exchange] -IsOffline:$Document.DocumentExchange.Configuration.OfflineMode.Use
+
         ### Starting WORD
         if ($Document.DocumentExchange.ExportWord) {
             $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentExchange.FilePathWord
