@@ -32,9 +32,15 @@ $Document = [ordered]@{
         ExportWord    = $true
         ExportExcel   = $true
         ExportSql     = $false
+        ExportXML = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xlsx"
+        FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
         Configuration = [ordered] @{
+            OfflineMode   = @{
+                Use     = $false
+                XMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
+            }
             PasswordTests = @{
                 Use                       = $true
                 PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'

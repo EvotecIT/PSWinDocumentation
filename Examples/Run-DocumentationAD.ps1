@@ -26,14 +26,21 @@ $Document = [ordered]@{
         Debug          = @{
             Verbose = $false
         }
-    }    DocumentAD    = [ordered] @{
+    }
+    DocumentAD    = [ordered] @{
         Enable        = $true
         ExportWord    = $true
         ExportExcel   = $true
         ExportSql     = $false
+        ExportXML     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xlsx"
+        FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
         Configuration = [ordered] @{
+            OfflineMode   = @{
+                Use     = $true
+                XMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
+            }
             PasswordTests = @{
                 Use                       = $false
                 PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
@@ -741,6 +748,5 @@ $Document = [ordered]@{
             }
         }
     }
-
-
+}
 Start-Documentation -Document $Document -Verbose

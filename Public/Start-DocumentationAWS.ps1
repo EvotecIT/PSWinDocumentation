@@ -3,26 +3,31 @@ function Start-DocumentationAWS {
     param(
         $Document
     )
-    $CheckCredentials = Test-ConfigurationCredentials -Configuration $Document.DocumentAWS.Configuration
-    if ($CheckCredentials) {
-        $DataSections = Get-ObjectKeys -Object $Document.DocumentAWS.Sections
-        $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-        if ($Document.DocumentAWS.Configuration.OfflineMode.Use) {
-            # Offline mode
-            if ($Document.DocumentAWS.ExportXML) {
-                Write-Warning "You can't run AWS Documentation in 'offline mode' with 'ExportXML' set to true. Please turn off one of the options."
-                return
-            } else {
-                $DataInformation = Get-WinDataFromXML -FilePath $Document.DocumentAWS.Configuration.OfflineMode.XMLPath -Type [ActiveDirectory]
-            }
+    $DataSections = Get-ObjectKeys -Object $Document.DocumentAWS.Sections
+    $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAWS.Sections
+
+    ### Start AWS Data
+    $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
+    if ($Document.DocumentAWS.Configuration.OfflineMode.Use) {
+        # Offline mode
+        if ($Document.DocumentAWS.ExportXML) {
+            Write-Warning "You can't run AWS Documentation in 'offline mode' with 'ExportXML' set to true. Please turn off one of the options."
+            return
         } else {
-            # Online mode
-            $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAWS.Sections
+            $DataInformation = Get-WinDataFromXML -FilePath $Document.DocumentAWS.Configuration.OfflineMode.XMLPath -Type [AWS]
+        }
+    } else {
+        # Online mode
+        $CheckCredentials = Test-ConfigurationCredentials -Configuration $Document.DocumentAWS.Configuration
+        if ($CheckCredentials) {
             $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Document.DocumentAWS.Configuration.AWSAccessKey -AWSSecretKey $Document.DocumentAWS.Configuration.AWSSecretKey -AWSRegion $Document.DocumentAWS.Configuration.AWSRegion
         }
-        $TimeDataOnly.Stop()
+    }
+    $TimeDataOnly.Stop()
+    ### End AWS Data
 
-        $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
+    $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
+    if ($DataInformation) {
         ### Starting WORD
         if ($Document.DocumentAWS.ExportWord) {
             $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAWS.FilePathWord
@@ -50,10 +55,13 @@ function Start-DocumentationAWS {
         if ($Document.DocumentAWS.ExportExcel) {
             $ExcelData = Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentAWS.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenExcel
         }
-        $TimeDocuments.Stop()
-        $TimeTotal.Stop()
-        Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"
-        Write-Verbose "Time to create documents: $($TimeDocuments.Elapsed)"
-        Write-Verbose "Time total: $($TimeTotal.Elapsed)"
+    } else {
+        Write-Warning "There was no data to process AWS documentation. Check configuration."
     }
+    $TimeDocuments.Stop()
+    $TimeTotal.Stop()
+    Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"
+    Write-Verbose "Time to create documents: $($TimeDocuments.Elapsed)"
+    Write-Verbose "Time total: $($TimeTotal.Elapsed)"
+
 }

@@ -1,6 +1,6 @@
 # Source for SKU: https://thelazyadministrator.com/2018/03/19/get-friendly-license-name-for-all-users-in-office-365-using-powershell/
 # May needs updates later on
-$Global:O365SKU = @{
+$Script:O365SKU = @{
     "O365_BUSINESS_ESSENTIALS"           = "Office 365 Business Essentials"
     "O365_BUSINESS_PREMIUM"              = "Office 365 Business Premium"
     "DESKLESSPACK"                       = "Office 365 (Plan K1)"

@@ -228,3 +228,11 @@ More suggestions are welcome.
 
 ### Windows Workstation doc
 - [ ] Currently not defined. Feel free to make feature requests
+
+
+
+### Statistics
+
+For a domain of 2379 accounts - report took
+
+For a domain
