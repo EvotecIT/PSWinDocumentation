@@ -7,7 +7,13 @@ function Get-AWSSubnetDetails {
     )
 
     $NetworkDetailsList = New-Object System.Collections.ArrayList
-    $Subnets = Get-EC2Subnet -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion
+    try {
+        $Subnets = Get-EC2Subnet -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion
+    } catch {
+        $ErrorMessage = $_.Exception.Message
+        Write-Warning "Get-AWSSubnetDetails - Error: $ErrorMessage"
+        return
+    }
 
     foreach ($subnet in $Subnets) {
         $SN = [pscustomobject] @{

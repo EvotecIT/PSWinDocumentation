@@ -8,7 +8,7 @@ function Start-DocumentationO365 {
 
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
-    $DataInformation = @{}
+    $DataInformation = [ordered]@{}
     $DataInformation += Get-WinServiceData -Credentials $Document.DocumentOffice365.Services.Office365.Credentials `
         -Service $Document.DocumentOffice365.Services.Office365.Azure `
         -TypesRequired $TypesRequired `
@@ -24,8 +24,7 @@ function Start-DocumentationO365 {
     $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     ### Starting WORD
 
-    if ($DataInformation) {
-
+    if ($DataInformation.Count -gt 0) {
         if ($Document.DocumentOffice365.ExportWord) {
             $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentOffice365.FilePathWord
         }
@@ -53,11 +52,13 @@ function Start-DocumentationO365 {
         if ($Document.DocumentOffice365.ExportExcel) {
             $ExcelData = Save-ExcelDocument -ExcelDocument $ExcelDocument -FilePath $Document.DocumentOffice365.FilePathExcel -OpenWorkBook:$Document.Configuration.Options.OpenExcel
         }
-
-        $TimeDocuments.Stop()
-        $TimeTotal.Stop()
-        Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"
-        Write-Verbose "Time to create documents: $($TimeDocuments.Elapsed)"
-        Write-Verbose "Time total: $($TimeTotal.Elapsed)"
+    } else {
+        Write-Warning "There was no data to process Office 365 documentation. Check configuration."
     }
+
+    $TimeDocuments.Stop()
+    $TimeTotal.Stop()
+    Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"
+    Write-Verbose "Time to create documents: $($TimeDocuments.Elapsed)"
+    Write-Verbose "Time total: $($TimeTotal.Elapsed)"
 }

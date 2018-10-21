@@ -1,9 +1,9 @@
 function Get-WinAWSInformation {
     [CmdletBinding()]
     param(
-        [string] $AWSAccessKey,
-        [string] $AWSSecretKey,
-        [string] $AWSRegion,
+        [alias('AccessKey')][string] $AWSAccessKey,
+        [alias('SecretKey')][string] $AWSSecretKey,
+        [alias('Region')][string] $AWSRegion,
         [Object] $TypesRequired
     )
     $Data = [ordered] @{}

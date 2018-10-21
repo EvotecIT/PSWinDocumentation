@@ -7,7 +7,13 @@ function Get-AWSRDSDetails {
     )
 
     $RDSDetailsList = New-Object System.Collections.ArrayList
-    $RDSInstances = Get-RDSDBInstance -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion
+    try {
+        $RDSInstances = Get-RDSDBInstance -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion
+    } catch {
+        $ErrorMessage = $_.Exception.Message
+        Write-Warning "Get-AWSRDSDetails - Error: $ErrorMessage"
+        return
+    }
 
     foreach ($instance in $RDSInstances) {
         $RDS = [pscustomobject] @{

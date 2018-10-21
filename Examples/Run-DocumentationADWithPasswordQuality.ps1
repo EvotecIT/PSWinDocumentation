@@ -32,21 +32,34 @@ $Document = [ordered]@{
         ExportWord    = $true
         ExportExcel   = $true
         ExportSql     = $false
-        ExportXML = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xlsx"
-        FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
-        Configuration = [ordered] @{
-            OfflineMode   = @{
-                Use     = $false
-                XMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
-            }
-            PasswordTests = @{
-                Use                       = $true
-                PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
-                # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
-                UseHashDB                 = $true
-                PasswordFilePathHash      = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords-Hashes.txt'
+        Services      = [ordered] @{
+            OnPremises = [ordered] @{
+                Credentials     = [ordered] @{
+                    Username         = ''
+                    Password         = ''
+                    PasswordAsSecure = $true
+                    PasswordFromFile = $true
+                }
+                ActiveDirectory = [ordered] @{
+                    Use           = $true
+                    OnlineMode    = $true
+
+                    ExportXML     = $true
+                    FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
+
+                    Prefix        = ''
+                    SessionName   = 'ActiveDirectory' # MSOL
+
+                    PasswordTests = @{
+                        Use                       = $true
+                        PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
+                        # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
+                        UseHashDB                 = $false
+                        PasswordFilePathHash      = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords-Hashes.txt'
+                    }
+                }
             }
         }
         Sections      = [ordered] @{

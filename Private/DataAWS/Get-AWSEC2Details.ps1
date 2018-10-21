@@ -7,7 +7,14 @@ function Get-AWSEC2Details {
     )
 
     $EC2DetailsList = New-Object System.Collections.ArrayList
-    $EC2Instances = Get-EC2Instance -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion
+
+    try {
+        $EC2Instances = Get-EC2Instance -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion
+    } catch {
+        $ErrorMessage = $_.Exception.Message
+        Write-Warning "Get-AWSEC2Details - Error: $ErrorMessage"
+        return
+    }
 
     foreach ($instance in $EC2Instances) {
         $ec2 = [pscustomobject] @{

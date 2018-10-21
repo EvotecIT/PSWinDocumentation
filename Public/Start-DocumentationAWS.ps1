@@ -3,33 +3,22 @@ function Start-DocumentationAWS {
     param(
         $Document
     )
+    $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
+
     $DataSections = Get-ObjectKeys -Object $Document.DocumentAWS.Sections
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAWS.Sections
 
-    ### Start AWS Data
-    $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-    if ($Document.DocumentAWS.Configuration.OfflineMode.Use) {
-        # Offline mode
-        if ($Document.DocumentAWS.ExportXML) {
-            Write-Warning "You can't run AWS Documentation in 'offline mode' with 'ExportXML' set to true. Please turn off one of the options."
-            return
-        } else {
-            $DataInformation = Get-WinDataFromXML -FilePath $Document.DocumentAWS.Configuration.OfflineMode.XMLPath -Type [AWS]
-        }
-    } else {
-        # Online mode
-        $CheckCredentials = Test-ConfigurationCredentials -Configuration $Document.DocumentAWS.Configuration
-        if ($CheckCredentials) {
-            $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Document.DocumentAWS.Services.AWS.AWSAccessKey -AWSSecretKey $Document.DocumentAWS.Services.AWS.AWSSecretKey -AWSRegion $Document.DocumentAWS.Services.AWS.AWSRegion
-        }
-    }
+    $DataInformation = [ordered] @{}
+    $DataInformation += Get-WinServiceData -Credentials $Document.DocumentAWS.Services.Amazon.Credentials `
+        -Service $Document.DocumentAWS.Services.Amazon.AWS `
+        -TypesRequired $TypesRequired `
+        -Type 'AWS'
+
     $TimeDataOnly.Stop()
-    ### End AWS Data
+
     $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     # Saves data to XML is required - skipped when Offline mode is on
-    if ($DataInformation) {
-        Save-WinDataToXML -Export $Document.DocumentAWS.ExportXML -FilePath $Document.DocumentAWS.FilePathXML -Data $DataInformationAD -Type [AWS] -IsOffline:$Document.DocumentAWS.Configuration.OfflineMode.Use
-
+    if ($DataInformation.Count -gt 0) {
         ### Starting WORD
         if ($Document.DocumentAWS.ExportWord) {
             $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentAWS.FilePathWord

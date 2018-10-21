@@ -34,6 +34,34 @@ $Document = [ordered]@{
         ExportSql     = $true
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-Report.xlsx"
+        Services      = [ordered] @{
+            OnPremises = [ordered] @{
+                Credentials     = [ordered] @{
+                    Username         = ''
+                    Password         = ''
+                    PasswordAsSecure = $true
+                    PasswordFromFile = $true
+                }
+                ActiveDirectory = [ordered] @{
+                    Use           = $true
+                    OnlineMode    = $true
+
+                    ExportXML     = $true
+                    FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
+
+                    Prefix        = ''
+                    SessionName   = 'ActiveDirectory' # MSOL
+
+                    PasswordTests = @{
+                        Use                       = $false
+                        PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
+                        # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
+                        UseHashDB                 = $false
+                        PasswordFilePathHash      = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords-Hashes.txt'
+                    }
+                }
+            }
+        }
         Sections      = [ordered] @{
             SectionForest = [ordered] @{
                 <#

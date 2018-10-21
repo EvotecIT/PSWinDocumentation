@@ -3,53 +3,19 @@ function Start-DocumentationAD {
     param(
         $Document
     )
-    $ADConfiguration = $Document.DocumentAD.Configuration
-    if ($ADConfiguration.PasswordTests.Use) {
-        $PasswordClearText = $ADConfiguration.PasswordTests.PasswordFilePathClearText
-    } else {
-        $PasswordClearText = ''
-    }
-    if ($ADConfiguration.PasswordTests.UseHashDB) {
-        $PasswordHashes = $ADConfiguration.PasswordTests.PasswordFilePathHash
-        if ($PasswordClearText -eq '') {
-            # creates temporary file to provide required data that is based on existance of this file
-            $TemporaryFile = New-TemporaryFile
-            'Passw0rd' | Out-File -FilePath $TemporaryFile.FullName
-            $PasswordClearText = $TemporaryFile.FullName
-        }
-    } else {
-        $PasswordHashes = ''
-    }
-
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
-    if ($Document.DocumentAD.Configuration.OfflineMode.Use) {
-        # Offline mode
-        if ($Document.DocumentAD.ExportXML) {
-            Write-Warning "You can't run AD Documentation in 'offline mode' with 'ExportXML' set to true. Please turn off one of the options."
-            return
-        } else {
-            $DataInformationAD = Get-WinDataFromXML -FilePath $Document.DocumentAD.Configuration.OfflineMode.XMLPath -Type [ActiveDirectory]
-        }
-    } else {
-        # Online mode
-        $CheckAvailabilityCommandsAD = Test-AvailabilityCommands -Commands 'Get-ADForest', 'Get-ADDomain', 'Get-ADRootDSE', 'Get-ADGroup', 'Get-ADUser', 'Get-ADComputer'
-        if ($CheckAvailabilityCommandsAD -notcontains $false) {
-            Test-ForestConnectivity
-            $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
-            $DataInformationAD = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes
+    $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
 
-        } else {
-            Write-Warning "Active Directory documentation can't be started as commands are unavailable. Check if you have Active Directory module available (part of RSAT) and try again."
-            return
-        }
-    }
+    $DataInformationAD = Get-WinServiceData -Credentials $Document.DocumentAD.Services.OnPremises.Credentials `
+        -Service $Document.DocumentAD.Services.OnPremises.ActiveDirectory `
+        -TypesRequired $TypesRequired `
+        -Type 'ActiveDirectory'
+
     $TimeDataOnly.Stop()
     $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
     # Saves data to XML is required - skipped when Offline mode is on
     if ($DataInformationAD) {
-        Save-WinDataToXML -Export $Document.DocumentAD.ExportXML -FilePath $Document.DocumentAD.FilePathXML -Data $DataInformationAD -Type [ActiveDirectory] -IsOffline:$Document.DocumentAD.Configuration.OfflineMode.Use
-
         if ($Document.DocumentAD.ExportExcel -or $Document.DocumentAD.ExportWord -or $Document.DocumentAD.ExportSQL) {
 
             ### Starting WORD

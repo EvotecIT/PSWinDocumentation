@@ -7,7 +7,13 @@ function Get-AWSElasticIpDetails {
     )
 
     $EIPDetailsList = New-Object System.Collections.ArrayList
-    $EIPs = Get-EC2Address -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion
+    try {
+        $EIPs = Get-EC2Address -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion
+    } catch {
+        $ErrorMessage = $_.Exception.Message
+        Write-Warning "Get-AWSElasticIpDetails - Error: $ErrorMessage"
+        return
+    }
 
     foreach ($eip in $EIPs) {
         $ElasticIP = [pscustomobject] @{

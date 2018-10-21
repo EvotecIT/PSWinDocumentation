@@ -7,8 +7,14 @@ function Get-AWSLBDetails {
     )
 
     $LBDetailsList = New-Object System.Collections.ArrayList
-    $ELBs = Get-ELBLoadBalancer -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion # Classic Load Balancers
-    $ALBs = Get-ELB2LoadBalancer -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion # Application Load Balancers
+    try {
+        $ELBs = Get-ELBLoadBalancer -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion # Classic Load Balancers
+        $ALBs = Get-ELB2LoadBalancer -AccessKey $AWSAccessKey -SecretKey $AWSSecretKey -Region $AWSRegion # Application Load Balancers
+    } catch {
+        $ErrorMessage = $_.Exception.Message
+        Write-Warning "Get-AWSLBDetails - Error: $ErrorMessage"
+        return
+    }
 
     foreach ($lb in $ELBs) {
         $LB = [pscustomobject] @{

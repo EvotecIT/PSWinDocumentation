@@ -1,6 +1,6 @@
 Import-Module PSWriteWord
 Import-Module PSWriteExcel
-Import-Module PSWinDocumentation
+Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
 Import-Module PSSharedGoods
 Import-Module AWSPowerShell
@@ -33,18 +33,23 @@ $Document = [ordered]@{
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xlsx"
-        FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xml"
-        Configuration = [ordered] @{
-            OfflineMode = @{
-                Use     = $false
-                XMLPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xml"
-            }
-        }
         Services      = [ordered] @{
-            AWS = [ordered] @{
-                AWSAccessKey = ''
-                AWSSecretKey = ''
-                AWSRegion    = ''
+            Amazon = [ordered] @{
+                Credentials = [ordered] @{
+                    AccessKey = ''
+                    SecretKey = ''
+                    Region    = 'eu-west-1'
+                }
+                AWS         = [ordered] @{
+                    Use         = $true
+                    OnlineMode  = $true
+
+                    ExportXML   = $true
+                    FilePathXML = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xml"
+
+                    Prefix      = ''
+                    SessionName = 'AWS'
+                }
             }
         }
         Sections      = [ordered] @{
@@ -173,7 +178,6 @@ $Document = [ordered]@{
                 ExcelData       = [AWS]::AWSIAMDetails
             }
         }
-
     }
 }
 

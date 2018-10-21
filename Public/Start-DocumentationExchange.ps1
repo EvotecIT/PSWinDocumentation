@@ -8,50 +8,17 @@ function Start-DocumentationExchange {
 
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
-    ### Start Exchange Data
-    if ($Document.DocumentExchange.Configuration.OfflineMode.Use) {
-        # Offline mode
-        if ($Document.DocumentExchange.ExportXML) {
-            Write-Warning "You can't run Microsoft Exchange Documentation in 'offline mode' with 'ExportXML' set to true. Please turn off one of the options."
-            return
-        } else {
-            $DataInformation = Get-WinDataFromXML -FilePath $Document.DocumentExchange.Configuration.OfflineMode.XMLPath -Type [Exchange]
-        }
-    } else {
-        # Online mode
-        $CheckCredentials = Test-ConfigurationCredentials -Configuration $Document.DocumentExchange.Configuration -AllowEmptyKeys 'Username', 'Password'
-        if ($CheckCredentials) {
-            if ($Document.DocumentExchange.Configuration.PasswordFromFile) {
-                if (Test-Path $Document.DocumentExchange.Configuration.PasswordFromFile) {
-                    $Password = Get-Content $Document.DocumentExchange.Configuration.PasswordFromFile
-                }
-            } else {
-                $Password = $Document.DocumentExchange.Configuration.Password
-            }
-            $Session = Connect-WinExchange -SessionName $Document.DocumentExchange.Configuration.ExchangeSessionName `
-                -ConnectionURI $Document.DocumentExchange.Configuration.ExchangeURI `
-                -Authentication $Document.DocumentExchange.Configuration.ExchangeAuthentication `
-                -Username $Document.DocumentExchange.Configuration.Username `
-                -Password $Password `
-                -AsSecure:$Document.DocumentExchange.Configuration.PasswordAsSecure
+    $DataInformation = [ordered]@{}
+    $DataInformation += Get-WinServiceData -Credentials $Document.DocumentExchange.Services.OnPremises.Credentials `
+        -Service $Document.DocumentExchange.Services.OnPremises.Exchange `
+        -TypesRequired $TypesRequired `
+        -Type 'ExchangeOnline'
 
-            $CurrentVerbosePreference = $VerbosePreference; $VerbosePreference = 'SilentlyContinue' # weird but -Verbose:$false doesn't do anything
-            $ImportedSession = Import-PSSession -Session $Session -AllowClobber -DisableNameChecking -Verbose:$false
-            $VerbosePreference = $CurrentVerbosePreference
-
-            $CheckAvailabilityCommands = Test-AvailabilityCommands -Commands 'Get-ExchangeServer', 'Get-MailboxDatabase', 'Get-PublicFolderDatabase'
-            if ($CheckAvailabilityCommands -notcontains $false) {
-                $DataInformation = Get-WinExchangeInformation -TypesRequired $TypesRequired
-            }
-        }
-    }
     $TimeDataOnly.Stop()
     # End Exchange Data
     $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
-    if ($DataInformation) {
-        Save-WinDataToXML -Export $Document.DocumentExchange.ExportXML -FilePath $Document.DocumentExchange.FilePathXML -Data $DataInformationAD -Type [Exchange] -IsOffline:$Document.DocumentExchange.Configuration.OfflineMode.Use
-
+    if ($DataInformation.Count -gt 0) {
         ### Starting WORD
         if ($Document.DocumentExchange.ExportWord) {
             $WordDocument = Get-DocumentPath -Document $Document -FinalDocumentLocation $Document.DocumentExchange.FilePathWord
