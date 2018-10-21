@@ -8,7 +8,13 @@ function Get-WinO365Exchange {
         Write-Verbose 'Get-WinO365Exchange - TypesRequired is null. Getting all O365UExchange types.'
         $TypesRequired = Get-Types -Types ([O365])  # Gets all types
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeMailBoxes, [O365]::O365UExchangeMailboxesJunk, [O365]::O365UExchangeMailboxesRooms, [O365]::O365UExchangeMailboxesEquipment)) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
+            [O365]::O365UExchangeMailBoxes,
+            [O365]::O365UExchangeMailboxesJunk,
+            [O365]::O365UExchangeMailboxesRooms,
+            [O365]::O365UExchangeMailboxesEquipment,
+            [O365]::O365UExchangeInboxRules
+        )) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeMailBoxes"
         $Data.O365UExchangeMailBoxes = Get-O365Mailbox -ResultSize unlimited
     }
@@ -73,14 +79,14 @@ function Get-WinO365Exchange {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeContacts"
         $Data.O365UExchangeContacts = Get-O365Contact -ResultSize unlimited
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeContacts)) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeInboxRules)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeContacts"
-$InboxRules = @()
         $Data.O365UExchangeInboxRules = Invoke-Command -ScriptBlock {
+            $InboxRules = @()
             foreach ($Mailbox in $Data.O365UExchangeMailBoxes) {
                 $InboxRules += Get-O365InboxRule -Mailbox $Mailbox.UserPrincipalName
             }
-
+            return $InboxRules
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeContacts)) {
