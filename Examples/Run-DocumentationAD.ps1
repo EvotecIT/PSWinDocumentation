@@ -44,7 +44,7 @@ $Document = [ordered]@{
                 }
                 ActiveDirectory = [ordered] @{
                     Use           = $true
-                    OnlineMode    = $true
+                    OnlineMode    = $false
 
                     ExportXML     = $true
                     FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"

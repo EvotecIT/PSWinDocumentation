@@ -142,6 +142,7 @@ function Get-WinServiceData {
             }
             return $DataInformation
         } else {
+            Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.FilePathXML). Hang on..."
             $DataInformation = Get-WinDataFromXML -FilePath $Service.FilePathXML -Type $Type
             return $DataInformation
         }
