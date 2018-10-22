@@ -39,10 +39,6 @@ function Get-WinServiceData {
                         return
                     }
                     $DataInformation = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes
-
-
-                    ## Return Data
-                    return $DataInformation
                 }
                 'AWS' {
                     # Online mode
@@ -51,11 +47,6 @@ function Get-WinServiceData {
                         return
                     }
                     $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Credentials.AccessKey -AWSSecretKey $Credentials.SecretKey -AWSRegion $Credentials.Region
-                    if ($Service.ExportXML) {
-                        Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.FilePathXML -Data $DataInformation -Type [AWS] -IsOffline:(-not $Service.OnlineMode)
-                    }
-                    return $DataInformation
-
 
                 }
                 'Azure' {
@@ -73,13 +64,7 @@ function Get-WinServiceData {
 
                     ## Gather Data
                     $DataInformation = Get-WinO365Azure -TypesRequired $TypesRequired
-                    if ($Service.ExportXML) {
-                        Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.FilePathXML -Data $DataInformation -Type [O365] -IsOffline:(-not $Service.OnlineMode)
-                    }
                     ## Plan for disconnect here
-
-                    ## Return Data
-                    return $DataInformation
                 }
                 'AzureAD' {
 
@@ -108,9 +93,6 @@ function Get-WinServiceData {
                     }
                     ## Gather Data
                     $DataInformation = Get-WinExchangeInformation -TypesRequired $TypesRequired
-                    if ($Service.ExportXML) {
-                        Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.FilePathXML -Data $DataInformation -Type [Exchange] -IsOffline:(-not $Service.OnlineMode)
-                    }
                 }
                 'ExchangeOnline' {
                     # Check Credentials
@@ -143,15 +125,7 @@ function Get-WinServiceData {
                     }
                     ## Gather Data
                     $DataInformation = Get-WinO365Exchange -TypesRequired $TypesRequired
-                    if ($Service.ExportXML) {
-                        Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.FilePathXML -Data $DataInformation -Type [O365] -IsOffline:(-not $Service.OnlineMode)
-                    }
-
                     ## Plan for disconnect here
-
-                    ## Return Data
-                    return $DataInformation
-
                 }
                 'Teams' {
 
@@ -163,6 +137,10 @@ function Get-WinServiceData {
 
                 }
             }
+            if ($Service.ExportXML) {
+                Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.FilePathXML -Data $DataInformation -Type $Type -IsOffline:(-not $Service.OnlineMode)
+            }
+            return $DataInformation
         } else {
             $DataInformation = Get-WinDataFromXML -FilePath $Service.FilePathXML -Type $Type
             return $DataInformation
