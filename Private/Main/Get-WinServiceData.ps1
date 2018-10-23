@@ -138,12 +138,36 @@ function Get-WinServiceData {
                 }
             }
             if ($Service.ExportXML) {
-                Save-WinDataToXML -Export $Service.ExportXML -FilePath $Service.FilePathXML -Data $DataInformation -Type $Type -IsOffline:(-not $Service.OnlineMode)
+                $Time = Start-TimeLog
+                Save-WinDataToFile -Export $Service.ExportXML -FilePath $Service.FilePathXML -Data $DataInformation -Type $Type -IsOffline:(-not $Service.OnlineMode) -FileType 'XML'
+                $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
+                Write-Verbose "Saving data for $Type to file $($Service.FilePathXML) took: $TimeSummary"
+            }
+            if ($Service.ExportJSON) {
+                $Time = Start-TimeLog
+                Save-WinDataToFile -Export $Service.ExportJSON -FilePath $Service.FilePathJSON -Data $DataInformation -Type $Type -IsOffline:(-not $Service.OnlineMode) -FileType 'JSON'
+                $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
+                Write-Verbose "Saving data for $Type to file $($Service.FilePathJSON) took: $TimeSummary"
             }
             return $DataInformation
         } else {
-            Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.FilePathXML). Hang on..."
-            $DataInformation = Get-WinDataFromXML -FilePath $Service.FilePathXML -Type $Type
+            $Time = Start-TimeLog
+            if ($Service.ImportXML) {
+                Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.FilePathXML). Hang on..."
+                $DataInformation = Get-WinDataFromFile -FilePath $Service.FilePathXML -Type $Type -FileType 'XML'
+            } elseif ($Service.ImportJSON) {
+                # This doesn't really work...
+                # It seems ConvertTo/From JSON in 5.1 doesn't support -AsHashtable.
+                Write-Warning "Loading data for $Type in offline mode cancelled. JSON file is not supported for now.."
+                #Write-Verbose "Loading data for $Type in offline mode from JSON File $($Service.FilePathJSON). Hang on..."
+                #$DataInformation = Get-WinDataFromFile -FilePath $Service.FilePathJSON -Type $Type -FileType 'JSON'
+            } else {
+                #Write-Warning "Loading data for $Type in offline mode cancelled. Neither JSON or XML were set to true."
+                Write-Warning "Loading data for $Type in offline mode cancelled. ImportXML were set to false."
+                return
+            }
+            $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
+            Write-Verbose "Loading data for $Type in offline mode from file took $TimeSummary"
             return $DataInformation
         }
     }
