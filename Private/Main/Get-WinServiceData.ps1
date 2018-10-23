@@ -151,6 +151,8 @@ function Get-WinServiceData {
             }
             return $DataInformation
         } else {
+            # Setting this to true, as other options are currently disable
+            $Service.ImportXML = $True
             $Time = Start-TimeLog
             if ($Service.ImportXML) {
                 Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.FilePathXML). Hang on..."

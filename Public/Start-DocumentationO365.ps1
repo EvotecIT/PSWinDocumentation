@@ -8,16 +8,23 @@ function Start-DocumentationO365 {
 
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
-    $DataInformation = [ordered]@{}
-    $DataInformation += Get-WinServiceData -Credentials $Document.DocumentOffice365.Services.Office365.Credentials `
+
+    $DataAzure = Get-WinServiceData -Credentials $Document.DocumentOffice365.Services.Office365.Credentials `
         -Service $Document.DocumentOffice365.Services.Office365.Azure `
         -TypesRequired $TypesRequired `
         -Type 'Azure'
-    $DataInformation += Get-WinServiceData -Credentials $Document.DocumentOffice365.Services.Office365.Credentials `
+    $DataExchangeOnline = Get-WinServiceData -Credentials $Document.DocumentOffice365.Services.Office365.Credentials `
         -Service $Document.DocumentOffice365.Services.Office365.ExchangeOnline `
         -TypesRequired $TypesRequired `
         -Type 'ExchangeOnline'
 
+    $DataInformation = [ordered]@{}
+    if ($DataAzure -ne $null) {
+        $DataInformation += $DataAzure
+    }
+    if ($DataExchangeOnline -ne $null) {
+        $DataInformation += $DataExchangeOnline
+    }
     $TimeDataOnly.Stop()
 
 

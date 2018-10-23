@@ -8,11 +8,10 @@ function Start-DocumentationExchange {
 
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
-    $DataInformation = [ordered]@{}
-    $DataInformation += Get-WinServiceData -Credentials $Document.DocumentExchange.Services.OnPremises.Credentials `
+    $DataInformation = Get-WinServiceData -Credentials $Document.DocumentExchange.Services.OnPremises.Credentials `
         -Service $Document.DocumentExchange.Services.OnPremises.Exchange `
         -TypesRequired $TypesRequired `
-        -Type 'ExchangeOnline'
+        -Type 'Exchange'
 
     $TimeDataOnly.Stop()
     # End Exchange Data

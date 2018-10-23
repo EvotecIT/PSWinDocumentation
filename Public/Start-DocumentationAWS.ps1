@@ -8,8 +8,7 @@ function Start-DocumentationAWS {
     $DataSections = Get-ObjectKeys -Object $Document.DocumentAWS.Sections
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAWS.Sections
 
-    $DataInformation = [ordered] @{}
-    $DataInformation += Get-WinServiceData -Credentials $Document.DocumentAWS.Services.Amazon.Credentials `
+    $DataInformation = Get-WinServiceData -Credentials $Document.DocumentAWS.Services.Amazon.Credentials `
         -Service $Document.DocumentAWS.Services.Amazon.AWS `
         -TypesRequired $TypesRequired `
         -Type 'AWS'
