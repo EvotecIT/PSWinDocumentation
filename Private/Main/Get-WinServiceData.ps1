@@ -144,6 +144,7 @@ function Get-WinServiceData {
                 Write-Verbose "Saving data for $Type to file $($Service.FilePathXML) took: $TimeSummary"
             }
             if ($Service.ExportJSON) {
+                # not really an option to load json back in 5.1
                 $Time = Start-TimeLog
                 Save-WinDataToFile -Export $Service.ExportJSON -FilePath $Service.FilePathJSON -Data $DataInformation -Type $Type -IsOffline:(-not $Service.OnlineMode) -FileType 'JSON'
                 $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
