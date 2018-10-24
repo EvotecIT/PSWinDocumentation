@@ -29,8 +29,8 @@ $Document = [ordered]@{
     }
     DocumentAD    = [ordered] @{
         Enable        = $true
-        ExportWord    = $true
-        ExportExcel   = $true
+        ExportWord    = $false
+        ExportExcel   = $false
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xlsx"
@@ -43,16 +43,26 @@ $Document = [ordered]@{
                     PasswordFromFile = $true
                 }
                 ActiveDirectory = [ordered] @{
-                    Use           = $true
-                    OnlineMode    = $true
+                    Use             = $true
+                    OnlineMode      = $true
 
-                    ExportXML     = $true
-                    FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xml"
+                    Import = @{
+                        Use = $false
+                        From = 'Folder' # Folder
+                        Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
+                        # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
+                    Export = @{
+                        Use = $true
+                        To = 'Folder' # Folder/File/Both
+                        FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
+                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
 
-                    Prefix        = ''
-                    SessionName   = 'ActiveDirectory' # MSOL
+                    Prefix          = ''
+                    SessionName     = 'ActiveDirectory' # MSOL
 
-                    PasswordTests = @{
+                    PasswordTests   = @{
                         Use                       = $false
                         PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
                         # Fair warning it will take ages if you use HaveIBeenPwned DB :-)

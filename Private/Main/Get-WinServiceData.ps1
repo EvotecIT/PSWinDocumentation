@@ -137,40 +137,38 @@ function Get-WinServiceData {
 
                 }
             }
-            if ($Service.ExportXML) {
+            if ($Service.Export.Use) {
                 $Time = Start-TimeLog
-                Save-WinDataToFile -Export $Service.ExportXML -FilePath $Service.FilePathXML -Data $DataInformation -Type $Type -IsOffline:(-not $Service.OnlineMode) -FileType 'XML'
-                $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
-                Write-Verbose "Saving data for $Type to file $($Service.FilePathXML) took: $TimeSummary"
-            }
-            if ($Service.ExportJSON) {
-                # not really an option to load json back in 5.1
-                $Time = Start-TimeLog
-                Save-WinDataToFile -Export $Service.ExportJSON -FilePath $Service.FilePathJSON -Data $DataInformation -Type $Type -IsOffline:(-not $Service.OnlineMode) -FileType 'JSON'
-                $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
-                Write-Verbose "Saving data for $Type to file $($Service.FilePathJSON) took: $TimeSummary"
+                if ($Service.Export.To -eq 'File' -or $Service.Export.To -eq 'Both') {
+                    Save-WinDataToFile -Export $Service.Export.Use -FilePath $Service.Export.FilePath -Data $DataInformation -Type $Type -IsOffline:$false -FileType 'XML'
+                    $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
+                    Write-Verbose "Saving data for $Type to file $($Service.Export.FilePath) took: $TimeSummary"
+                }
+                if ($Service.Export.To -eq 'Folder' -or $Service.Export.To -eq 'Both') {
+                    $Time = Start-TimeLog
+                    Save-WinDataToFileInChunks -Export $Service.Export.Use -FolderPath $Service.Export.FolderPath -Data $DataInformation -Type $Type -IsOffline:$false -FileType 'XML'
+                    $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
+                    Write-Verbose "Saving data for $Type to folder $($Service.Export.FolderPath) took: $TimeSummary"
+                }
             }
             return $DataInformation
         } else {
-            $Service.ImportXML = $True # Setting this to true, as other options are currently disable
+            if ($Service.Import.Use) {
             $Time = Start-TimeLog
-            if ($Service.ImportXML) {
-                Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.FilePathXML). Hang on..."
-                $DataInformation = Get-WinDataFromFile -FilePath $Service.FilePathXML -Type $Type -FileType 'XML'
-            } elseif ($Service.ImportJSON) {
-                # This doesn't really work...
-                # It seems ConvertTo/From JSON in 5.1 doesn't support -AsHashtable.
-                Write-Warning "Loading data for $Type in offline mode cancelled. JSON file is not supported for now.."
-                #Write-Verbose "Loading data for $Type in offline mode from JSON File $($Service.FilePathJSON). Hang on..."
-                #$DataInformation = Get-WinDataFromFile -FilePath $Service.FilePathJSON -Type $Type -FileType 'JSON'
+            if ($Service.Import.From -eq 'File') {
+                Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.Import.FilePath). Hang on..."
+                $DataInformation = Get-WinDataFromFile -FilePath $Service.Import.FilePath -Type $Type -FileType 'XML'
+            } elseif ($Service.Import.From -eq 'Folder') {
+                Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.Import.FilePath). Hang on..."
+                $DataInformation = Get-WinDataFromFileInChunks -FolderPath $Service.Import.FolderPath -Type $Type -FileType 'XML'
             } else {
-                #Write-Warning "Loading data for $Type in offline mode cancelled. Neither JSON or XML were set to true."
-                Write-Warning "Loading data for $Type in offline mode cancelled. ImportXML were set to false."
-                return
+                Write-Warning "Wrong option for Import.Use. Only Folder/File is supported."
             }
             $TimeSummary = Stop-TimeLog -Time $Time -Option OneLiner
             Write-Verbose "Loading data for $Type in offline mode from file took $TimeSummary"
             return $DataInformation
+            }
+
         }
     }
 }

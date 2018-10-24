@@ -44,6 +44,19 @@ $Document = [ordered]@{
                     Use         = $true
                     OnlineMode  = $true
 
+                    Import = @{
+                        Use = $false
+                        From = 'Folder' # Folder
+                        Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365Azure"
+                        # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
+                    Export = @{
+                        Use = $true
+                        To = 'Folder' # Folder/File/Both
+                        FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365Azure"
+                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365Azure\PSWinDocumentation.xml"
+                    }
+
                     ExportXML   = $true
                     FilePathXML = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365Azure.xml"
 
@@ -54,6 +67,19 @@ $Document = [ordered]@{
                     Use         = $true
                     OnlineMode  = $true
 
+                    Import = @{
+                        Use = $false
+                        From = 'Folder' # Folder
+                        Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365AzureAD"
+                        # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
+                    Export = @{
+                        Use = $true
+                        To = 'Folder' # Folder/File/Both
+                        FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365AzureAD"
+                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365AzureAD\PSWinDocumentation.xml"
+                    }
+
                     ExportXML   = $true
                     FilePathXML = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365AzureAD.xml"
 
@@ -63,6 +89,19 @@ $Document = [ordered]@{
                 ExchangeOnline = [ordered] @{
                     Use            = $true
                     OnlineMode     = $true
+
+                    Import = @{
+                        Use = $false
+                        From = 'Folder' # Folder
+                        Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
+                        # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
+                    Export = @{
+                        Use = $true
+                        To = 'Folder' # Folder/File/Both
+                        FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365ExchangeOnline"
+                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365ExchangeOnline\PSWinDocumentation.xml"
+                    }
 
                     ExportXML      = $true
                     FilePathXML    = "$Env:USERPROFILE\Desktop\PSWinDocumentation-O365ExchangeOnline.xml"

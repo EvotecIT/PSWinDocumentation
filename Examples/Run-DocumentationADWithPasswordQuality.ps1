@@ -29,8 +29,8 @@ $Document = [ordered]@{
     }
     DocumentAD    = [ordered] @{
         Enable        = $true
-        ExportWord    = $true
-        ExportExcel   = $true
+        ExportWord    = $false
+        ExportExcel   = $false
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xlsx"
@@ -46,8 +46,18 @@ $Document = [ordered]@{
                     Use           = $true
                     OnlineMode    = $true
 
-                    ExportXML     = $true
-                    FilePathXML   = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xml"
+                   Import = @{
+                        Use = $false
+                        From = 'Folder' # Folder
+                        Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
+                        # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
+                    Export = @{
+                        Use = $true
+                        To = 'Folder' # Folder/File/Both
+                        FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
+                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
 
                     Prefix        = ''
                     SessionName   = 'ActiveDirectory' # MSOL

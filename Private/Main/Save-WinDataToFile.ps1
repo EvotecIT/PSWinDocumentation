@@ -18,7 +18,7 @@ function Save-WinDataToFile {
             Write-Verbose "Save-WinDataToFile - Exporting $Type data to $FileType to path $FilePath"
             if ($FileType -eq 'XML') {
                 try {
-                    $Data | Export-Clixml -Path $FilePath -ErrorAction Stop -Encoding UTF8 -Depth 1
+                    $Data | Export-Clixml -Path $FilePath -ErrorAction Stop -Encoding UTF8
                 } catch {
                     $ErrorMessage = $_.Exception.Message -replace "`n", " " -replace "`r", " "
                     Write-Warning "Couldn't save $FileType file to $FilePath for $Type data. Error occured: $ErrorMessage"

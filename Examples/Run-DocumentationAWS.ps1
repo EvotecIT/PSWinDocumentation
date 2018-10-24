@@ -44,8 +44,18 @@ $Document = [ordered]@{
                     Use         = $true
                     OnlineMode  = $true
 
-                    ExportXML   = $true
-                    FilePathXML = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ReportAWS.xml"
+                    Import = @{
+                        Use = $false
+                        From = 'Folder' # Folder
+                        Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
+                        # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
+                    Export = @{
+                        Use = $true
+                        To = 'Folder' # Folder/File/Both
+                        FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
+                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                    }
 
                     Prefix      = ''
                     SessionName = 'AWS'
