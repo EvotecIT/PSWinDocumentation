@@ -44,10 +44,10 @@ $Document = [ordered]@{
                 }
                 ActiveDirectory = [ordered] @{
                     Use           = $true
-                    OnlineMode    = $true
+                    OnlineMode    = $false
 
                    Import = @{
-                        Use = $false
+                        Use = $true
                         From = 'Folder' # Folder
                         Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
                         # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"

@@ -156,11 +156,11 @@ function Get-WinServiceData {
             if ($Service.Import.Use) {
             $Time = Start-TimeLog
             if ($Service.Import.From -eq 'File') {
-                Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.Import.FilePath). Hang on..."
-                $DataInformation = Get-WinDataFromFile -FilePath $Service.Import.FilePath -Type $Type -FileType 'XML'
+                Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.Import.Path). Hang on..."
+                $DataInformation = Get-WinDataFromFile -FilePath $Service.Import.Path -Type $Type -FileType 'XML'
             } elseif ($Service.Import.From -eq 'Folder') {
-                Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.Import.FilePath). Hang on..."
-                $DataInformation = Get-WinDataFromFileInChunks -FolderPath $Service.Import.FolderPath -Type $Type -FileType 'XML'
+                Write-Verbose "Loading data for $Type in offline mode from XML File $($Service.Import.Path). Hang on..."
+                $DataInformation = Get-WinDataFromFileInChunks -FolderPath $Service.Import.Path -Type $Type -FileType 'XML'
             } else {
                 Write-Warning "Wrong option for Import.Use. Only Folder/File is supported."
             }
