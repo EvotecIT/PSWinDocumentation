@@ -27,7 +27,7 @@ function Get-WinADForestInformation {
         $Data.ForestSites1 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
             foreach ($Sites in $Data.ForestSites) {
-                $ReturnData += [ordered] @{
+                $ReturnData += [PSCustomObject][ordered] @{
                     'Name'        = $Sites.Name
                     'Description' = $Sites.Description
                     #'sD Rights Effective'                = $Sites.sDRightsEffective
@@ -37,12 +37,12 @@ function Get-WinADForestInformation {
                     'Deleted'     = $Sites.Deleted
                 }
             }
-            return Format-TransposeTable $ReturnData
+            return $ReturnData # Format-TransposeTable $ReturnData
         }
         $Data.ForestSites2 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
             foreach ($Sites in $Data.ForestSites) {
-                $ReturnData += [ordered] @{
+                $ReturnData += [PSCustomObject][ordered] @{
                     'Name'                                = $Sites.Name
                     'Topology Cleanup Enabled'            = $Sites.TopologyCleanupEnabled
                     'Topology Detect Stale Enabled'       = $Sites.TopologyDetectStaleEnabled
@@ -51,7 +51,7 @@ function Get-WinADForestInformation {
                     'Universal Group Caching RefreshSite' = $Sites.UniversalGroupCachingRefreshSite
                 }
             }
-            return Format-TransposeTable $ReturnData
+            return $ReturnData # Format-TransposeTable $ReturnData
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSubnet , [ActiveDirectory]::ForestSubnets1, [ActiveDirectory]::ForestSubnets2)) {
@@ -61,7 +61,7 @@ function Get-WinADForestInformation {
         $Data.ForestSubnets1 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
             foreach ($Subnets in $Data.ForestSubnets) {
-                $ReturnData += [ordered] @{
+                $ReturnData += [PSCustomObject][ordered] @{
                     'Name'        = $Subnets.Name
                     'Description' = $Subnets.Description
                     'Protected'   = $Subnets.ProtectedFromAccidentalDeletion
@@ -70,17 +70,17 @@ function Get-WinADForestInformation {
                     'Deleted'     = $Subnets.Deleted
                 }
             }
-            return Format-TransposeTable $ReturnData
+            return $ReturnData # Format-TransposeTable $ReturnData
         }
         $Data.ForestSubnets2 = Invoke-Command -ScriptBlock {
             $ReturnData = @()
             foreach ($Subnets in $Data.ForestSubnets) {
-                $ReturnData += [ordered] @{
+                $ReturnData += [PSCustomObject][ordered] @{
                     'Name' = $Subnets.Name
                     'Site' = $Subnets.Site
                 }
             }
-            return Format-TransposeTable $ReturnData
+            return $ReturnData # Format-TransposeTable $ReturnData
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSiteLinks)) {

@@ -187,7 +187,7 @@ function Get-WinADDomainInformation {
                 $ReturnData = @()
                 foreach ($Trust in $Trusts) {
                     $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue -Verbose:$false | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
-                    $ReturnData += [ordered] @{
+                    $ReturnData += [PSCustomObject][ordered] @{
                         'Trust Source'               = $Domain
                         'Trust Target'               = $Trust.Target
                         'Trust Direction'            = $Trust.Direction
@@ -220,7 +220,7 @@ function Get-WinADDomainInformation {
                         'SID'                        = $Trust.securityIdentifier
                     }
                 }
-                return Format-TransposeTable $ReturnData
+                return $ReturnData # Format-TransposeTable $ReturnData
             } else {
                 return
             }
@@ -236,7 +236,7 @@ function Get-WinADDomainInformation {
         $Data.DomainGroupPolicies = Invoke-Command -ScriptBlock {
             $GroupPolicies = @()
             foreach ($gpo in $Data.DomainGroupPoliciesClean) {
-                $GroupPolicy = [ordered] @{
+                $GroupPolicy = [PSCustomObject][ordered] @{
                     'Display Name'      = $gpo.DisplayName
                     'Gpo Status'        = $gpo.GPOStatus
                     'Creation Time'     = $gpo.CreationTime
@@ -246,7 +246,7 @@ function Get-WinADDomainInformation {
                 }
                 $GroupPolicies += $GroupPolicy
             }
-            return Format-TransposeTable $GroupPolicies
+            return $GroupPolicies # Format-TransposeTable $GroupPolicies
         }
         $Data.DomainGroupPoliciesDetails = Invoke-Command -ScriptBlock {
             Write-Verbose -Message "Getting domain information - $Domain Group Policies Details"
@@ -260,7 +260,7 @@ function Get-WinADDomainInformation {
                 if ($XmlGPReport.GPO.User.ExtensionData -eq $null) {$UserSettingsConfigured = $false}else {$UserSettingsConfigured = $true}
                 if ($XmlGPReport.GPO.Computer.ExtensionData -eq $null) {$ComputerSettingsConfigured = $false}else {$ComputerSettingsConfigured = $true}
                 #Output
-                $Output += [ordered] @{
+                $Output += [PSCustomObject][ordered] @{
                     'Name'                   = $XmlGPReport.GPO.Name
                     'Links'                  = $XmlGPReport.GPO.LinksTo | Select-Object -ExpandProperty SOMPath
                     'Has Computer Settings'  = $ComputerSettingsConfigured
@@ -287,7 +287,7 @@ function Get-WinADDomainInformation {
                     #}
                 }
             }
-            return Format-TransposeTable $Output
+            return $Output # Format-TransposeTable $Output
         }
         $Data.DomainGroupPoliciesACL = Invoke-Command -ScriptBlock {
             Write-Verbose -Message "Getting domain information - $Domain Group Policies ACLs"
@@ -296,7 +296,7 @@ function Get-WinADDomainInformation {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
                 $ACLs = $XmlGPReport.GPO.SecurityDescriptor.Permissions.TrusteePermissions
                 foreach ($ACL in $ACLS) {
-                    $Output += [ordered] @{
+                    $Output += [PSCustomObject][ordered] @{
                         'GPO Name'        = $GPO.DisplayName
                         'User'            = $ACL.trustee.name.'#Text'
                         'Permission Type' = $ACL.type.PermissionType
@@ -305,7 +305,7 @@ function Get-WinADDomainInformation {
                     }
                 }
             }
-            return Format-TransposeTable $Output
+            return $Output # Format-TransposeTable $Output
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainDefaultPasswordPolicy)) {
@@ -469,7 +469,7 @@ function Get-WinADDomainInformation {
         $Data.DomainControllers = Invoke-Command -ScriptBlock {
             $DCs = @()
             foreach ($Policy in $Data.DomainControllersClean) {
-                $DCs += [ordered] @{
+                $DCs += [PSCustomObject][ordered] @{
                     'Name'             = $Policy.Name
                     'Host Name'        = $Policy.HostName
                     'Operating System' = $Policy.OperatingSystem
@@ -482,7 +482,7 @@ function Get-WinADDomainInformation {
                     'SSL Port'         = $Policy.SSLPort
                 }
             }
-            return Format-TransposeTable $DCs
+            return $DCs # Format-TransposeTable $DCs
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainFineGrainedPolicies)) {
@@ -491,7 +491,7 @@ function Get-WinADDomainInformation {
             $FineGrainedPoliciesData = Get-ADFineGrainedPasswordPolicy -Filter * -Server $Domain
             $FineGrainedPolicies = @()
             foreach ($Policy in $FineGrainedPoliciesData) {
-                $FineGrainedPolicies += [ordered] @{
+                $FineGrainedPolicies += [PSCustomObject][ordered] @{
                     'Name'                          = $Policy.Name
                     'Complexity Enabled'            = $Policy.ComplexityEnabled
                     'Lockout Duration'              = $Policy.LockoutDuration
@@ -507,7 +507,7 @@ function Get-WinADDomainInformation {
                     'Distinguished Name'            = $Policy.DistinguishedName
                 }
             }
-            return Format-TransposeTable $FineGrainedPolicies
+            return $FineGrainedPolicies #Format-TransposeTable $FineGrainedPolicies
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainFineGrainedPoliciesUsers)) {
@@ -557,7 +557,7 @@ function Get-WinADDomainInformation {
                     $Groups += Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainGroupsFullList -DistinguishedName $U
                 }
                 foreach ($User in $Users) {
-                    $PolicyUsers += [pscustomobject] @{
+                    $PolicyUsers += [pscustomobject][ordered] @{
                         'Policy Name'                       = $Policy.Name
                         Name                                = $User.Name
                         SamAccountName                      = $User.SamAccountName

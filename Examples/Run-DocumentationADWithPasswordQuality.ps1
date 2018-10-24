@@ -29,8 +29,8 @@ $Document = [ordered]@{
     }
     DocumentAD    = [ordered] @{
         Enable        = $true
-        ExportWord    = $false
-        ExportExcel   = $false
+        ExportWord    = $true
+        ExportExcel   = $true
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xlsx"
