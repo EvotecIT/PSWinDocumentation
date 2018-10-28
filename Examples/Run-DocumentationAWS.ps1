@@ -2,7 +2,7 @@ Import-Module PSWriteWord
 Import-Module PSWriteExcel
 Import-Module PSWinDocumentation -Force
 Import-Module PSWriteColor
-Import-Module PSSharedGoods
+Import-Module PSSharedGoods -Force
 Import-Module AWSPowerShell
 
 $Document = [ordered]@{
@@ -44,17 +44,17 @@ $Document = [ordered]@{
                     Use         = $true
                     OnlineMode  = $true
 
-                    Import = @{
-                        Use = $false
+                    Import      = @{
+                        Use  = $false
                         From = 'Folder' # Folder
                         Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
                         # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
                     }
-                    Export = @{
-                        Use = $true
-                        To = 'Folder' # Folder/File/Both
+                    Export      = @{
+                        Use        = $true
+                        To         = 'Folder' # Folder/File/Both
                         FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
-                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                        FilePath   = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
                     }
 
                     Prefix      = ''
