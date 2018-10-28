@@ -15,6 +15,11 @@ function Save-WinDataToFile {
     }
     if ($Export) {
         if ($FilePath) {
+            $Split = Split-Path -Path $FilePath
+            if (-not (Test-Path -Path $Split)) {
+                # Creates directory path if it doesn't exits
+                New-Item -ItemType Directory -Force -Path $Split > $null
+            }
             Write-Verbose "Save-WinDataToFile - Exporting $Type data to $FileType to path $FilePath"
             if ($FileType -eq 'XML') {
                 try {

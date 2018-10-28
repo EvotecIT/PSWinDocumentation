@@ -19,10 +19,10 @@ function Start-DocumentationO365 {
         -Type 'ExchangeOnline'
 
     $DataInformation = [ordered]@{}
-    if ($DataAzure -ne $null) {
+    if ($null -ne $DataAzure -and $DataExchangeOnline.Count -gt 0) {
         $DataInformation += $DataAzure
     }
-    if ($DataExchangeOnline -ne $null) {
+    if ($null -ne $DataExchangeOnline -and $DataExchangeOnline.Count -gt 0) {
         $DataInformation += $DataExchangeOnline
     }
     $TimeDataOnly.Stop()

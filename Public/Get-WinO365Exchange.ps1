@@ -1,10 +1,12 @@
 function Get-WinO365Exchange {
     [CmdletBinding()]
     param(
-        $TypesRequired
+        $TypesRequired,
+        [string] $Prefix = ''
     )
+    Write-Verbose "Get-WinO365Exchange - Prefix: $Prefix"
     $Data = [ordered] @{}
-    if ($TypesRequired -eq $null) {
+    if ($null -eq $TypesRequired) {
         Write-Verbose 'Get-WinO365Exchange - TypesRequired is null. Getting all O365UExchange types.'
         $TypesRequired = Get-Types -Types ([O365])  # Gets all types
     }
@@ -16,38 +18,38 @@ function Get-WinO365Exchange {
             [O365]::O365UExchangeInboxRules
         )) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeMailBoxes"
-        $Data.O365UExchangeMailBoxes = Get-O365Mailbox -ResultSize unlimited
+        $Data.O365UExchangeMailBoxes = & "Get-$($prefix)Mailbox" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeMailUsers)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeMailUsers"
-        $Data.O365UExchangeMailUsers = Get-O365MailUser -ResultSize unlimited
+        $Data.O365UExchangeMailUsers = & "Get-$($prefix)MailUser" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeUsers)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeUsers"
-        $Data.O365UExchangeUsers = Get-O365User -ResultSize unlimited
+        $Data.O365UExchangeUsers = & "Get-$($prefix)User" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeRecipients)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeRecipients"
-        $Data.O365UExchangeRecipients = Get-O365Recipient -ResultSize unlimited
+        $Data.O365UExchangeRecipients = & "Get-$($prefix)Recipient" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeRecipientsPermissions)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeRecipientsPermissions"
-        $Data.O365UExchangeRecipientsPermissions = Get-O365RecipientPermission -ResultSize unlimited
+        $Data.O365UExchangeRecipientsPermissions = & "Get-$($prefix)RecipientPermission" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeGroupsDistribution, [O365]::O365UExchangeGroupsDistributionMembers)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeGroupsDistribution"
-        $Data.O365UExchangeGroupsDistribution = Get-O365DistributionGroup -ResultSize unlimited
+        $Data.O365UExchangeGroupsDistribution = & "Get-$($prefix)DistributionGroup" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeGroupsDistributionDynamic)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeGroupsDistributionDynamic"
-        $Data.O365UExchangeGroupsDistributionDynamic = Get-O365DynamicDistributionGroup -ResultSize unlimited
+        $Data.O365UExchangeGroupsDistributionDynamic = & "Get-$($prefix)DynamicDistributionGroup" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeGroupsDistributionMembers)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeGroupsDistributionMembers"
         $Data.O365UExchangeGroupsDistributionMembers = Invoke-Command -ScriptBlock {
             $GroupMembers = @()
             foreach ($Group in $Data.O365UExchangeGroupsDistribution) {
-                $Object = Get-O365DistributionGroupMember -Identity $Group.PrimarySmtpAddress -ResultSize unlimited
+                $Object = & "Get-$($prefix)DistributionGroupMember" -Identity $Group.PrimarySmtpAddress -ResultSize unlimited
                 $Object | Add-Member -MemberType NoteProperty -Name "GroupGUID" -Value $Group.GUID
                 $Object | Add-Member -MemberType NoteProperty -Name "GroupPrimarySmtpAddress" -Value $Group.PrimarySmtpAddress
                 $Object | Add-Member -MemberType NoteProperty -Name "GroupIdentity" -Value $Group.Identity
@@ -61,9 +63,9 @@ function Get-WinO365Exchange {
         $Data.O365UExchangeMailboxesJunk = Invoke-Command -ScriptBlock {
             $Output = @()
             foreach ($Mailbox in $Data.O365UExchangeMailBoxes) {
-                if ($Mailbox.PrimarySmtpAddress -ne $null) {
+                if ($null -eq $Mailbox.PrimarySmtpAddress) {
                     #Write-Verbose "O365UExchangeMailboxesJunk - $($Mailbox.PrimarySmtpAddress)"
-                    $Object = Get-O365MailboxJunkEmailConfiguration -Identity $Mailbox.PrimarySmtpAddress -ResultSize unlimited
+                    $Object = & "Get-$($prefix)MailboxJunkEmailConfiguration" -Identity $Mailbox.PrimarySmtpAddress -ResultSize unlimited
                     if ($Object) {
                         $Object | Add-Member -MemberType NoteProperty -Name "MailboxPrimarySmtpAddress" -Value $Mailbox.PrimarySmtpAddress
                         $Object | Add-Member -MemberType NoteProperty -Name "MailboxAlias" -Value $Mailbox.Alias
@@ -77,14 +79,14 @@ function Get-WinO365Exchange {
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeContacts)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeContacts"
-        $Data.O365UExchangeContacts = Get-O365Contact -ResultSize unlimited
+        $Data.O365UExchangeContacts = & "Get-$($prefix)Contact" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeInboxRules)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeContacts"
         $Data.O365UExchangeInboxRules = Invoke-Command -ScriptBlock {
             $InboxRules = @()
             foreach ($Mailbox in $Data.O365UExchangeMailBoxes) {
-                $InboxRules += Get-O365InboxRule -Mailbox $Mailbox.UserPrincipalName
+                $InboxRules += & "Get-$($prefix)InboxRule" -Mailbox $Mailbox.UserPrincipalName
             }
             return $InboxRules
         }
@@ -104,22 +106,22 @@ function Get-WinO365Exchange {
 
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeContactsMail)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeContactsMail"
-        $Data.O365UExchangeContactsMail = Get-O365MailContact -ResultSize unlimited
+        $Data.O365UExchangeContactsMail = & "Get-$($prefix)MailContact" -ResultSize unlimited
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeMailboxesRooms, [O365]::O365UExchangeRoomsCalendarProcessing)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeMailboxesRooms"
-        $Data.O365UExchangeMailboxesRooms = $Data.O365UExchangeMailBoxes | Where { $_.RecipientTypeDetails -eq 'RoomMailbox' }
+        $Data.O365UExchangeMailboxesRooms = $Data.O365UExchangeMailBoxes | Where-Object { $_.RecipientTypeDetails -eq 'RoomMailbox' }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeMailboxesEquipment, [O365]::O365UExchangeEquipmentCalendarProcessing)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeMailboxesEquipment"
-        $Data.O365UExchangeMailboxesEquipment = $Data.O365UExchangeMailBoxes | Where { $_.RecipientTypeDetails -eq 'EquipmentMailbox' }
+        $Data.O365UExchangeMailboxesEquipment = $Data.O365UExchangeMailBoxes | Where-Object { $_.RecipientTypeDetails -eq 'EquipmentMailbox' }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UExchangeRoomsCalendarProcessing)) {
         Write-Verbose "Get-WinO365Exchange - Getting O365UExchangeRoomsCalendarProcessing"
         $Data.O365UExchangeRoomsCalendarProcessing = Invoke-Command -ScriptBlock {
             $Output = @()
             foreach ($Mailbox in $Data.O365UExchangeMailboxesRooms) {
-                $Object = Get-O365CalendarProcessing -Identity $Mailbox.PrimarySmtpAddress -ResultSize unlimited
+                $Object = & "Get-$($prefix)CalendarProcessing" -Identity $Mailbox.PrimarySmtpAddress -ResultSize unlimited
                 if ($Object) {
                     $Object | Add-Member -MemberType NoteProperty -Name "MailboxPrimarySmtpAddress" -Value $Mailbox.PrimarySmtpAddress
                     $Object | Add-Member -MemberType NoteProperty -Name "MailboxAlias" -Value $Mailbox.Alias
@@ -135,7 +137,7 @@ function Get-WinO365Exchange {
         $Data.O365UExchangeEquipmentCalendarProcessing = Invoke-Command -ScriptBlock {
             $Output = @()
             foreach ($Mailbox in $Data.O365UExchangeMailboxesEquipment) {
-                $Object = Get-O365CalendarProcessing -Identity $Mailbox.PrimarySmtpAddress -ResultSize unlimited
+                $Object = & "Get-$($prefix)CalendarProcessing" -Identity $Mailbox.PrimarySmtpAddress -ResultSize unlimited
                 if ($Object) {
                     $Object | Add-Member -MemberType NoteProperty -Name "MailboxPrimarySmtpAddress" -Value $Mailbox.PrimarySmtpAddress
                     $Object | Add-Member -MemberType NoteProperty -Name "MailboxAlias" -Value $Mailbox.Alias

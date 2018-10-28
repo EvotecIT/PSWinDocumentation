@@ -3,13 +3,14 @@ function Get-WinServiceData {
     param (
         [Object] $Credentials,
         [Object] $Service,
-        [Object] $Type,
+        [string] $Type,
         [Object] $TypesRequired
     )
 
-    Connect-WinService -Type $Type `
+    $CommandOutput = Connect-WinService -Type $Type `
         -Credentials $Credentials `
-        -Service $Service
+        -Service $Service `
+        -Verbose
 
     if ($Service.Use) {
         if ($Service.OnlineMode) {
@@ -21,15 +22,16 @@ function Get-WinServiceData {
                     $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Credentials.AccessKey -AWSSecretKey $Credentials.SecretKey -AWSRegion $Credentials.Region
                 }
                 'Azure' {
-                    $DataInformation = Get-WinO365Azure -TypesRequired $TypesRequired
+                    $DataInformation = Get-WinO365Azure -TypesRequired $TypesRequired # -Prefix would require session
                 }
                 'AzureAD' {
 
                 }
                 'Exchange' {
-                    $DataInformation = Get-WinExchangeInformation -TypesRequired $TypesRequired
+                    $DataInformation = Get-WinExchangeInformation -TypesRequired $TypesRequired -Prefix $Service.Prefix
                 }
                 'ExchangeOnline' {
+                    $DataInformation = Get-WinO365Exchange -TypesRequired $TypesRequired -Prefix $Service.Prefix
                 }
                 'Teams' {
 
