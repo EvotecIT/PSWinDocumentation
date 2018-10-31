@@ -65,7 +65,7 @@
             ProjectUri = 'https://github.com/EvotecIT/PSWinDocumentation'
 
             # A URL to an icon representing this module.
-            # IconUri = ''
+            IconUri    = 'https://evotec.xyz/wp-content/uploads/2018/10/PSWinDocumentation.png'
 
             # ReleaseNotes of this module
             # ReleaseNotes = ''
