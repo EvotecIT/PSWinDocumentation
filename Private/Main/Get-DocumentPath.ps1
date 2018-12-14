@@ -10,7 +10,7 @@ function Get-DocumentPath {
         $WordDocument = Get-WordDocument -FilePath "$($MyInvocation.MyCommand.Module.ModuleBase)\Templates\WordTemplate.docx"
     } else {
         if ($Document.Configuration.Prettify.CustomTemplatePath) {
-            if (Test-File -File $Document.Configuration.Prettify.CustomTemplatePath -FileName 'CustomTemplatePath' -eq 0) {
+            if ($(Test-File -File $Document.Configuration.Prettify.CustomTemplatePath -FileName 'CustomTemplatePath') -eq 0) {
                 # Write-Verbose 'Get-DocumentPath - Option 2'
                 $WordDocument = Get-WordDocument -FilePath $Document.Configuration.Prettify.CustomTemplatePath
             } else {
