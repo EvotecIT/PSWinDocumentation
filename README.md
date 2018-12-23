@@ -233,6 +233,6 @@ More suggestions are welcome.
 
 ### Statistics
 
-For a domain of 2379 accounts - report took
+## Known Issues
 
-For a domain
+- [ ] If you want to build documentation on your own template you're free to do so, however you should use **Data\EmptyDocument.docx** as your starting template. This is because of issue with **PSWriteWord** (more specifically with DLL it uses) where Heading styles are not available when using template created directly in Microsoft Word. Issue was reported [PSWriteWord #16](https://github.com/EvotecIT/PSWriteWord/issues/16) but it's a long time till it will be fixed. Until then simply use **Data\EmptyDocument.docx** and then add your logos, text, whatever you feel like you need in template.
