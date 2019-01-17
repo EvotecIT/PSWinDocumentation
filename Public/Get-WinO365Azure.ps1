@@ -15,15 +15,14 @@ function Get-WinO365Azure {
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureLicensing)) {
         Write-Verbose "Get-WinO365Azure - Getting O365AzureLicensing (prepared data)"
         $Data.O365AzureLicensing = Invoke-Command -ScriptBlock {
-            $Licenses = @()
-            foreach ($License in $Data.O365UAzureLicensing) {
+            $Licenses = foreach ($License in $Data.O365UAzureLicensing) {
                 $LicensesTotal = $License.ActiveUnits + $License.WarningUnits
                 $LicensesUsed = $License.ConsumedUnits
                 $LicensesLeft = $LicensesTotal - $LicensesUsed
                 $LicenseName = $($Global:O365SKU).Item("$($License.SkuPartNumber)")
                 if ($LicenseName -eq $null) { $LicenseName = $License.SkuPartNumber}
 
-                $Licenses += [PSCustomObject] @{
+                [PSCustomObject] @{
                     Name                 = $LicenseName
                     'Licenses Total'     = $LicensesTotal
                     'Licenses Used'      = $LicensesUsed
@@ -53,15 +52,14 @@ function Get-WinO365Azure {
 
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureSubscription)) {
         $Data.O365AzureSubscription = Invoke-Command -ScriptBlock {
-            $Licenses = @()
-            foreach ($Subscription in $Data.O365UAzureSubscription) {
+            $Licenses = foreach ($Subscription in $Data.O365UAzureSubscription) {
                 $LicenseName = $($Global:O365SKU).Item("$($Subscription.SkuPartNumber)")
                 if ($LicenseName -eq $null) { $LicenseName = $Subscription.SkuPartNumber}
                 foreach ($Plan in $Subscription.ServiceStatus) {
                     $ServicePlanName = $($Global:O365SKU).Item("$($Plan.ServicePlan.ServiceName)")
                     if ($ServicePlanName -eq $null) { $ServicePlanName = $Plan.ServicePlan.ServiceName}
 
-                    $Licenses += [PSCustomObject] @{
+                    [PSCustomObject] @{
                         'Licenses Name'       = $LicenseName
                         'Licenses SKU'        = $Subscription.SkuPartNumber
                         'Service Plan Name'   = $ServicePlanName
@@ -105,11 +103,10 @@ function Get-WinO365Azure {
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureADGroupMembers, [O365]::O365AzureADGroupMembersUser)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADGroupMembers"
         $Data.O365UAzureADGroupMembers = Invoke-Command -ScriptBlock {
-            $GroupMembers = @()
-            foreach ($Group in $Data.Groups) {
+            $GroupMembers = foreach ($Group in $Data.Groups) {
                 $Object = Get-MsolGroupMember -GroupObjectId $Group.ObjectId -All
                 $Object | Add-Member -MemberType NoteProperty -Name "GroupObjectID" -Value $Group.ObjectID
-                $GroupMembers += $Object
+                $Object
             }
             return $GroupMembers
         }
@@ -122,9 +119,8 @@ function Get-WinO365Azure {
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureTenantDomains)) {
         Write-Verbose "Get-WinO365Azure - Getting O365AzureTenantDomains (prepared data)"
         $Data.O365AzureTenantDomains = Invoke-Command -ScriptBlock {
-            $Domains = @()
-            foreach ($Domain in $Data.O365UAzureTenantDomains) {
-                $Domains += [PsCustomObject] @{
+            $Domains = foreach ($Domain in $Data.O365UAzureTenantDomains) {
+                [PsCustomObject] @{
                     'Domain Name'         = $Domain.Name
                     'Default'             = $Domain.IsDefault
                     'Initial'             = $Domain.IsInitial
@@ -140,11 +136,10 @@ function Get-WinO365Azure {
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureADGroupMembersUser)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADGroupMembersUser"
         $Data.O365AzureADGroupMembersUser = Invoke-Command -ScriptBlock {
-            $Members = @()
-            foreach ($Group in $Data.O365UAzureADGroups) {
+            $Members = foreach ($Group in $Data.O365UAzureADGroups) {
                 $GroupMembers = $Data.O365UAzureADGroupMembers | Where { $_.GroupObjectId -eq $Group.ObjectId }
                 foreach ($GroupMember in $GroupMembers) {
-                    $Members += [PsCustomObject] @{
+                    [PsCustomObject] @{
                         "GroupDisplayName"    = $Group.DisplayName
                         "GroupEmail"          = $Group.EmailAddress
                         "GroupEmailSecondary" = $Group.ProxyAddresses -replace 'smtp:', '' -join ','
@@ -165,8 +160,7 @@ function Get-WinO365Azure {
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureADUsersMFA)) {
 
         $Data.O365AzureADUsersMFA = Invoke-Command -ScriptBlock {
-            $AzureUsers = @()
-            foreach ($User in $Data.O365UAzureADUsers) {
+            $AzureUsers = foreach ($User in $Data.O365UAzureADUsers) {
                 $MFAOptions = @{}
                 $MFAOptions.AuthAvailable = @()
                 foreach ($Auth in $User.StrongAuthenticationMethods) {
@@ -177,7 +171,7 @@ function Get-WinO365Azure {
                     }
                 }
 
-                $AzureUsers += [pscustomobject] @{
+                [pscustomobject] @{
                     'UserPrincipalName'             = $User.UserPrincipalName
                     'Display Name'                  = $User.DisplayName
 
