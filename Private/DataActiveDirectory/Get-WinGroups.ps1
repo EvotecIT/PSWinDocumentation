@@ -4,10 +4,9 @@ function Get-WinGroups {
         [System.Object[]] $Users,
         [string] $Domain
     )
-    $ReturnGroups = @()
-    foreach ($Group in $Groups) {
-        $User = $Users | Where { $_.DistinguishedName -eq $Group.ManagedBy }
-        $ReturnGroups += [ordered] @{
+    $ReturnGroups = foreach ($Group in $Groups) {
+        $User = $Users | Where-Object { $_.DistinguishedName -eq $Group.ManagedBy }
+        [PsCustomObject][ordered] @{
             'Group Name'            = $Group.Name
             #'Group Display Name' = $Group.DisplayName
             'Group Category'        = $Group.GroupCategory
@@ -23,5 +22,5 @@ function Get-WinGroups {
             "Domain"                = $Domain
         }
     }
-    return Format-TransposeTable -Object $ReturnGroups
+    return $ReturnGroups
 }

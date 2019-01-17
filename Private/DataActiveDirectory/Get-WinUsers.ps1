@@ -5,9 +5,9 @@ function Get-WinUsers {
         [System.Object[]] $ADCatalogUsers,
         [string] $Domain
     )
-    $UserList = @()
-    foreach ($U in $Users) {
-        $UserList += [ordered] @{
+    [DateTime] $CurrentDate = Get-Date # [DateTime]::Today
+    $UserList = foreach ($U in $Users) {
+        [PstCustomObject][Ordered] @{
             'Name'                              = $U.Name
             'UserPrincipalName'                 = $U.UserPrincipalName
             'SamAccountName'                    = $U.SamAccountName
@@ -17,14 +17,14 @@ function Get-WinUsers {
             'EmailAddress'                      = $U.EmailAddress
             'PasswordExpired'                   = $U.PasswordExpired
             'PasswordLastSet'                   = $U.PasswordLastSet
-            'Password Last Changed'             = if ($U.PasswordLastSet -ne $Null) { "$(-$($U.PasswordLastSet - [DateTime]::Today).Days) days" } else { 'N/A'}
+            'Password Last Changed'             = if ($U.PasswordLastSet -ne $Null) { "$(-$($U.PasswordLastSet - $CurrentDate).Days) days" } else { 'N/A'}
             'PasswordNotRequired'               = $U.PasswordNotRequired
             'PasswordNeverExpires'              = $U.PasswordNeverExpires
             'Enabled'                           = $U.Enabled
             'Manager'                           = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).Name
             'Manager Email'                     = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalogUsers -DistinguishedName $U.Manager).EmailAddress
             'DateExpiry'                        = Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed") -Verbose
-            "DaysToExpire"                      = (Convert-TimeToDays -StartTime GET-DATE -EndTime (Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed")))
+            "DaysToExpire"                      = (Convert-TimeToDays -StartTime $CurrentDate -EndTime (Convert-ToDateTime -Timestring $($U."msDS-UserPasswordExpiryTimeComputed")))
             "AccountExpirationDate"             = $U.AccountExpirationDate
             "AccountLockoutTime"                = $U.AccountLockoutTime
             "AllowReversiblePasswordEncryption" = $U.AllowReversiblePasswordEncryption
@@ -49,7 +49,7 @@ function Get-WinUsers {
         }
 
     }
-    return Format-TransposeTable -Object $UserList
+    return $UserList
 }
 
 <# List of fields

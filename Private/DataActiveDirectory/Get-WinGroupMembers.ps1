@@ -7,8 +7,7 @@ function Get-WinGroupMembers {
         [ValidateSet("Recursive", "Standard")][String] $Option
     )
     if ($Option -eq 'Recursive') {
-        $GroupMembersRecursive = @()
-        foreach ($Group in $Groups) {
+        $GroupMembersRecursive = foreach ($Group in $Groups) {
             try {
                 $GroupMembership = Get-ADGroupMember -Server $Domain -Identity $Group.'Group SID' -Recursive -ErrorAction Stop
             } catch {
@@ -18,7 +17,7 @@ function Get-WinGroupMembers {
             }
             foreach ($Member in $GroupMembership) {
                 $Object = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $Member.DistinguishedName)
-                $GroupMembersRecursive += [ordered] @{
+                [PSCustomObject][ordered] @{
                     'Group Name'                        = $Group.'Group Name'
                     'Group SID'                         = $Group.'Group SID'
                     'Group Category'                    = $Group.'Group Category'
@@ -64,14 +63,13 @@ function Get-WinGroupMembers {
                 # $Member
             }
         }
-        return Format-TransposeTable -Object $GroupMembersRecursive
+        return @($GroupMembersRecursive)
     }
     if ($Option -eq 'Standard') {
-        $GroupMembersDirect = @()
-        foreach ($Group in $Groups) {
+        $GroupMembersDirect = foreach ($Group in $Groups) {
             foreach ($Member in $Group.'Group Members DN') {
                 $Object = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $Member)
-                $GroupMembersDirect += [ordered] @{
+                [PSCustomObject][ordered] @{
                     'Group Name'                        = $Group.'Group Name'
                     'Group SID'                         = $Group.'Group SID'
                     'Group Category'                    = $Group.'Group Category'
@@ -116,6 +114,6 @@ function Get-WinGroupMembers {
                 }
             }
         }
-        return Format-TransposeTable -Object $GroupMembersDirect
+        return @($GroupMembersDirect)
     }
 }
