@@ -137,7 +137,7 @@ function Get-WinO365Azure {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADGroupMembersUser"
         $Data.O365AzureADGroupMembersUser = Invoke-Command -ScriptBlock {
             $Members = foreach ($Group in $Data.O365UAzureADGroups) {
-                $GroupMembers = $Data.O365UAzureADGroupMembers | Where { $_.GroupObjectId -eq $Group.ObjectId }
+                $GroupMembers = $Data.O365UAzureADGroupMembers | Where-Object { $_.GroupObjectId -eq $Group.ObjectId }
                 foreach ($GroupMember in $GroupMembers) {
                     [PsCustomObject] @{
                         "GroupDisplayName"    = $Group.DisplayName

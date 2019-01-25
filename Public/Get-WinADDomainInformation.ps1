@@ -184,10 +184,9 @@ function Get-WinADDomainInformation {
             $DomainPDC = $Data.DomainFSMO.'PDC Emulator'
             $Trusts = $Data.DomainTrustsClean
             if ($Trusts) {
-                $ReturnData = @()
-                foreach ($Trust in $Trusts) {
+                $ReturnData = foreach ($Trust in $Trusts) {
                     $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue -Verbose:$false | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
-                    $ReturnData += [PSCustomObject][ordered] @{
+                    [PSCustomObject][ordered] @{
                         'Trust Source'               = $Domain
                         'Trust Target'               = $Trust.Target
                         'Trust Direction'            = $Trust.Direction
@@ -234,9 +233,8 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain information - $Domain DomainGroupPolicies"
         $Data.DomainGroupPoliciesClean = $(Get-GPO -Domain $Domain -Server $Domain -All)
         $Data.DomainGroupPolicies = Invoke-Command -ScriptBlock {
-            $GroupPolicies = @()
-            foreach ($gpo in $Data.DomainGroupPoliciesClean) {
-                $GroupPolicy = [PSCustomObject][ordered] @{
+            $GroupPolicies = foreach ($gpo in $Data.DomainGroupPoliciesClean) {
+                [PSCustomObject][ordered] @{
                     'Display Name'      = $gpo.DisplayName
                     'Gpo Status'        = $gpo.GPOStatus
                     'Creation Time'     = $gpo.CreationTime
@@ -244,14 +242,12 @@ function Get-WinADDomainInformation {
                     'Description'       = $gpo.Description
                     'Wmi Filter'        = $gpo.WmiFilter
                 }
-                $GroupPolicies += $GroupPolicy
             }
             return $GroupPolicies # Format-TransposeTable $GroupPolicies
         }
         $Data.DomainGroupPoliciesDetails = Invoke-Command -ScriptBlock {
             Write-Verbose -Message "Getting domain information - $Domain Group Policies Details"
-            $Output = @()
-            ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
+            $Output = ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
                 #GPO version
                 if ($XmlGPReport.GPO.Computer.VersionDirectory -eq 0 -and $XmlGPReport.GPO.Computer.VersionSysvol -eq 0) {$ComputerSettings = "NeverModified"}else {$ComputerSettings = "Modified"}
@@ -260,7 +256,7 @@ function Get-WinADDomainInformation {
                 if ($XmlGPReport.GPO.User.ExtensionData -eq $null) {$UserSettingsConfigured = $false}else {$UserSettingsConfigured = $true}
                 if ($XmlGPReport.GPO.Computer.ExtensionData -eq $null) {$ComputerSettingsConfigured = $false}else {$ComputerSettingsConfigured = $true}
                 #Output
-                $Output += [PSCustomObject][ordered] @{
+                [PSCustomObject][ordered] @{
                     'Name'                   = $XmlGPReport.GPO.Name
                     'Links'                  = $XmlGPReport.GPO.LinksTo | Select-Object -ExpandProperty SOMPath
                     'Has Computer Settings'  = $ComputerSettingsConfigured
@@ -287,16 +283,15 @@ function Get-WinADDomainInformation {
                     #}
                 }
             }
-            return $Output # Format-TransposeTable $Output
+            return $Output
         }
         $Data.DomainGroupPoliciesACL = Invoke-Command -ScriptBlock {
             Write-Verbose -Message "Getting domain information - $Domain Group Policies ACLs"
-            $Output = @()
-            ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
+            $Output = ForEach ($GPO in $Data.DomainGroupPoliciesClean) {
                 [xml]$XmlGPReport = $GPO.generatereport('xml')
                 $ACLs = $XmlGPReport.GPO.SecurityDescriptor.Permissions.TrusteePermissions
                 foreach ($ACL in $ACLS) {
-                    $Output += [PSCustomObject][ordered] @{
+                    [PSCustomObject][ordered] @{
                         'GPO Name'        = $GPO.DisplayName
                         'User'            = $ACL.trustee.name.'#Text'
                         'Permission Type' = $ACL.type.PermissionType
@@ -305,7 +300,7 @@ function Get-WinADDomainInformation {
                     }
                 }
             }
-            return $Output # Format-TransposeTable $Output
+            return $Output
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainDefaultPasswordPolicy)) {
@@ -441,17 +436,17 @@ function Get-WinADDomainInformation {
             return Get-WinUsers -Users $Data.DomainUsersFullList -Domain $Domain -ADCatalog $Data.DomainUsersFullList, $Data.DomainComputersFullList, $Data.DomainGroupsFullList -ADCatalogUsers $Data.DomainUsersFullList
         }
         Write-Verbose "Getting domain information - $Domain DomainUsersAll"
-        $Data.DomainUsersAll = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $False } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersAll = $Data.DomainUsers | Where-Object { $_.PasswordNotRequired -eq $False } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersSystemAccounts"
-        $Data.DomainUsersSystemAccounts = $Data.DomainUsers | Where { $_.PasswordNotRequired -eq $true } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersSystemAccounts = $Data.DomainUsers | Where-Object { $_.PasswordNotRequired -eq $true } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersNeverExpiring"
-        $Data.DomainUsersNeverExpiring = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersNeverExpiring = $Data.DomainUsers | Where-Object { $_.PasswordNeverExpires -eq $true -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersNeverExpiringInclDisabled"
-        $Data.DomainUsersNeverExpiringInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersNeverExpiringInclDisabled = $Data.DomainUsers | Where-Object { $_.PasswordNeverExpires -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersExpiredInclDisabled"
-        $Data.DomainUsersExpiredInclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersExpiredInclDisabled = $Data.DomainUsers | Where-Object { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.PasswordNotRequired -eq $false } #| Select-Object * #Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain DomainUsersExpiredExclDisabled"
-        $Data.DomainUsersExpiredExclDisabled = $Data.DomainUsers | Where { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * # Name, SamAccountName, UserPrincipalName, Enabled
+        $Data.DomainUsersExpiredExclDisabled = $Data.DomainUsers | Where-Object { $_.PasswordNeverExpires -eq $false -and $_.DaysToExpire -le 0 -and $_.Enabled -eq $true -and $_.PasswordNotRequired -eq $false } #| Select-Object * # Name, SamAccountName, UserPrincipalName, Enabled
         Write-Verbose "Getting domain information - $Domain All Users Count"
         $Data.DomainUsersCount = [ordered] @{
             'Users Count Incl. System'            = Get-ObjectCount -Object $Data.DomainUsers
@@ -467,9 +462,8 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain information - $Domain DomainControllers"
         $Data.DomainControllersClean = $(Get-ADDomainController -Server $Domain -Filter * )
         $Data.DomainControllers = Invoke-Command -ScriptBlock {
-            $DCs = @()
-            foreach ($Policy in $Data.DomainControllersClean) {
-                $DCs += [PSCustomObject][ordered] @{
+            $DCs = foreach ($Policy in $Data.DomainControllersClean) {
+                [PSCustomObject][ordered] @{
                     'Name'             = $Policy.Name
                     'Host Name'        = $Policy.HostName
                     'Operating System' = $Policy.OperatingSystem
@@ -482,16 +476,15 @@ function Get-WinADDomainInformation {
                     'SSL Port'         = $Policy.SSLPort
                 }
             }
-            return $DCs # Format-TransposeTable $DCs
+            return $DCs
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainFineGrainedPolicies)) {
         Write-Verbose "Getting domain information - $Domain DomainFineGrainedPolicies"
         $Data.DomainFineGrainedPolicies = Invoke-Command -ScriptBlock {
             $FineGrainedPoliciesData = Get-ADFineGrainedPasswordPolicy -Filter * -Server $Domain
-            $FineGrainedPolicies = @()
-            foreach ($Policy in $FineGrainedPoliciesData) {
-                $FineGrainedPolicies += [PSCustomObject][ordered] @{
+            $FineGrainedPolicies = foreach ($Policy in $FineGrainedPoliciesData) {
+                [PSCustomObject][ordered] @{
                     'Name'                          = $Policy.Name
                     'Complexity Enabled'            = $Policy.ComplexityEnabled
                     'Lockout Duration'              = $Policy.LockoutDuration
@@ -668,40 +661,40 @@ function Get-WinADDomainInformation {
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainGroupsPriviliged, [ActiveDirectory]::DomainGroupMembersRecursivePriviliged)) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsPriviliged"
         $PrivilegedGroupsSID = "S-1-5-32-544", "S-1-5-32-548", "S-1-5-32-549", "S-1-5-32-550", "S-1-5-32-551", "S-1-5-32-552", "S-1-5-32-556", "S-1-5-32-557", "S-1-5-32-573", "S-1-5-32-578", "S-1-5-32-580", "$($Data.DomainInformation.DomainSID)-512", "$($Data.DomainInformation.DomainSID)-518", "$($Data.DomainInformation.DomainSID)D-519", "$($Data.DomainInformation.DomainSID)-520"
-        $Data.DomainGroupsPriviliged = $Data.DomainGroups | Where { $PrivilegedGroupsSID -contains $_.'Group SID' }
+        $Data.DomainGroupsPriviliged = $Data.DomainGroups | Where-Object { $PrivilegedGroupsSID -contains $_.'Group SID' }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainGroupsSpecial, [ActiveDirectory]::DomainGroupMembersRecursiveSpecial)) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsSpecial"
-        $Data.DomainGroupsSpecial = $Data.DomainGroups | Where { ($_.'Group SID').Length -eq 12 }
+        $Data.DomainGroupsSpecial = $Data.DomainGroups | Where-Object { ($_.'Group SID').Length -eq 12 }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainGroupsSpecialMembers, [ActiveDirectory]::DomainGroupsSpecialMembersRecursive)) {
         Write-Verbose "Getting domain information - $Domain DomainGroupMembersSpecialRecursive"
-        $Data.DomainGroupsSpecialMembers = $Data.DomainGroupsMembers  | Where { ($_.'Group SID').Length -eq 12 } | Select-Object * #-Exclude Group*, 'High Privileged Group'
+        $Data.DomainGroupsSpecialMembers = $Data.DomainGroupsMembers  | Where-Object { ($_.'Group SID').Length -eq 12 } | Select-Object * #-Exclude Group*, 'High Privileged Group'
         Write-Verbose "Getting domain information - $Domain DomainGroupsSpecialMembersRecursive"
-        $Data.DomainGroupsSpecialMembersRecursive = $Data.DomainGroupsMembersRecursive  | Where { ($_.'Group SID').Length -eq 12 } | Select-Object * #-Exclude Group*, 'High Privileged Group'
+        $Data.DomainGroupsSpecialMembersRecursive = $Data.DomainGroupsMembersRecursive  | Where-Object { ($_.'Group SID').Length -eq 12 } | Select-Object * #-Exclude Group*, 'High Privileged Group'
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainGroupsPriviligedMembers, [ActiveDirectory]::DomainGroupsPriviligedMembersRecursive)) {
         Write-Verbose "Getting domain information - $Domain DomainGroupsPriviligedMembers"
-        $Data.DomainGroupsPriviligedMembers = $Data.DomainGroupsMembers  | Where { $Data.DomainGroupsPriviliged.'Group SID' -contains ($_.'Group SID') } | Select-Object * #-Exclude Group*, 'High Privileged Group'
+        $Data.DomainGroupsPriviligedMembers = $Data.DomainGroupsMembers  | Where-Object { $Data.DomainGroupsPriviliged.'Group SID' -contains ($_.'Group SID') } | Select-Object * #-Exclude Group*, 'High Privileged Group'
         Write-Verbose "Getting domain information - $Domain DomainGroupsPriviligedMembersRecursive"
-        $Data.DomainGroupsPriviligedMembersRecursive = $Data.DomainGroupsMembersRecursive  | Where { $Data.DomainGroupsPriviliged.'Group SID' -contains ($_.'Group SID') } | Select-Object * #-Exclude Group*, 'High Privileged Group'
+        $Data.DomainGroupsPriviligedMembersRecursive = $Data.DomainGroupsMembersRecursive  | Where-Object { $Data.DomainGroupsPriviliged.'Group SID' -contains ($_.'Group SID') } | Select-Object * #-Exclude Group*, 'High Privileged Group'
     }
     ## Users per one group only.
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainAdministrators, [ActiveDirectory]::DomainGroupsMembers)) {
         Write-Verbose "Getting domain information - $Domain DomainAdministrators"
-        $Data.DomainAdministrators = $Data.DomainGroupsMembers  | Where { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
+        $Data.DomainAdministrators = $Data.DomainGroupsMembers  | Where-Object { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainAdministratorsRecursive, [ActiveDirectory]::DomainGroupsMembersRecursive)) {
         Write-Verbose "Getting domain information - $Domain DomainAdministratorsRecursive"
-        $Data.DomainAdministratorsRecursive = $Data.DomainGroupsMembersRecursive  | Where { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
+        $Data.DomainAdministratorsRecursive = $Data.DomainGroupsMembersRecursive  | Where-Object { $_.'Group SID' -eq $('{0}-512' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainEnterpriseAdministrators, [ActiveDirectory]::DomainGroupsMembers)) {
         Write-Verbose "Getting domain information - $Domain DomainEnterpriseAdministrators"
-        $Data.DomainEnterpriseAdministrators = $Data.DomainGroupsMembers | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
+        $Data.DomainEnterpriseAdministrators = $Data.DomainGroupsMembers | Where-Object { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainEnterpriseAdministratorsRecursive, [ActiveDirectory]::DomainGroupsMembersRecursive)) {
         Write-Verbose "Getting domain information - $Domain DomainEnterpriseAdministratorsRecursive"
-        $Data.DomainEnterpriseAdministratorsRecursive = $Data.DomainGroupsMembersRecursive | Where { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
+        $Data.DomainEnterpriseAdministratorsRecursive = $Data.DomainGroupsMembersRecursive | Where-Object { $_.'Group SID' -eq $('{0}-519' -f $Data.DomainInformation.DomainSID.Value) } | Select-Object * -Exclude Group*, 'High Privileged Group'
     }
 
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
@@ -729,7 +722,16 @@ function Get-WinADDomainInformation {
         )) {
         Write-Verbose "Getting domain password information - $Domain DomainPasswordDataUsers - This will take a while if set!"
         $TimeToProcess = Start-TimeLog
-        $Data.DomainPasswordDataUsers = Get-ADReplAccount -All -Server $Data.DomainInformation.DnsRoot -NamingContext $Data.DomainInformation.DistinguishedName
+        try {
+            $Data.DomainPasswordDataUsers = Get-ADReplAccount -All -Server $Data.DomainInformation.DnsRoot -NamingContext $Data.DomainInformation.DistinguishedName
+        } catch {
+            $ErrorMessage = $_.Exception.Message -replace "`n", " " -replace "`r", " "
+            if ($ErrorMessage -like '*is not recognized as the name of a cmdlet*') {
+                Write-Warning "Get-ADReplAccount - Please install module DSInternals (Install-Module DSInternals) - Error: $ErrorMessage"
+            } else {
+                Write-Warning "Get-ADReplAccount - Error occured: $ErrorMessage"
+            }
+        }
         Write-Verbose "Getting domain password information - $Domain DomainPasswordDataUsers - Time: $($TimeToProcess | Stop-TimeLog)"
     }
 

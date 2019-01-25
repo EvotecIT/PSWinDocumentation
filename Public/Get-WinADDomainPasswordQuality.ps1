@@ -165,8 +165,8 @@ function Get-WinADDomainPasswordQuality {
                     'Duplicate Group' = $Name
                     #'Found User'      = $User
                 }
-                $FullUserInformation = $DomainInformation.DomainUsersAll | Where { $_.SamAccountName -eq $User }
-                $FullComputerInformation = $DomainInformation.DomainComputersAll | Where { $_.SamAccountName -eq $User }
+                $FullUserInformation = $DomainInformation.DomainUsersAll | Where-Object { $_.SamAccountName -eq $User }
+                $FullComputerInformation = $DomainInformation.DomainComputersAll | Where-Object { $_.SamAccountName -eq $User }
                 if ($FullUserInformation) {
                     $MergedObject = Merge-Objects -Object1 $FoundUser -Object2 $FullUserInformation
                 }

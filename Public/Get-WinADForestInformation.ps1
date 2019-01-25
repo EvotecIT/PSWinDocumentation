@@ -140,8 +140,8 @@ function Get-WinADForestInformation {
         $Data.ForestOptionalFeatures = Invoke-Command -ScriptBlock {
             $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
             $Optional = [ordered]@{
-                'Recycle Bin Enabled'                          = ''
-                'Privileged Access Management Feature Enabled' = ''
+                'Recycle Bin Enabled'                          = 'N/A'
+                'Privileged Access Management Feature Enabled' = 'N/A'
             }
             ### Fix Optional Features
             foreach ($Feature in $OptionalFeatures) {
@@ -166,7 +166,7 @@ function Get-WinADForestInformation {
     }
     ### Generate Data from Domains
     $Data.FoundDomains = [ordered]@{}
-    $DomainData = @()
+    #$DomainData = @()
     foreach ($Domain in $Data.Domains) {
         $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain -TypesRequired $TypesRequired -PathToPasswords $PathToPasswords -PathToPasswordsHashes $PathToPasswordsHashes
     }
