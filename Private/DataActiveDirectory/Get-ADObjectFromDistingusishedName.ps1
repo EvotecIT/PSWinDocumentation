@@ -6,18 +6,16 @@ function Get-ADObjectFromDistingusishedName {
         [string] $Type = '',
         [string] $Splitter # ', ' # Alternative for example [System.Environment]::NewLine
     )
-    $FoundObjects = @()
-
-    foreach ($Catalog in $ADCatalog) {
+    $FoundObjects = foreach ($Catalog in $ADCatalog) {
         foreach ($Object in $DistinguishedName) {
-            $ADObject = $Catalog | Where { $_.DistinguishedName -eq $Object }
+            $ADObject = $Catalog | Where-Objet { $_.DistinguishedName -eq $Object }
             if ($ADObject) {
                 if ($Type -eq '') {
                     #Write-Verbose 'Get-ADObjectFromDistingusishedName - Whole object'
-                    $FoundObjects += $ADObject
+                    $ADObject
                 } else {
                     #Write-Verbose 'Get-ADObjectFromDistingusishedName - Part of object'
-                    $FoundObjects += $ADObject.$Type
+                    $ADObject.$Type
                 }
             }
         }
