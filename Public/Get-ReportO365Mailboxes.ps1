@@ -4,8 +4,9 @@ function Get-ReportO365Mailboxes {
         [string] $FilePath,
         [string] $Prefix,
         [validateset("Bytes", "KB", "MB", "GB", "TB")][string]$SizeIn = 'MB',
-        [int]$Precision = 2,
-        [switch] $All
+        [alias('Precision')][int]$SizePrecision = 2,
+        [switch] $ReturnAll,
+        [switch] $SkipAvailability
     )
     $Time = Start-TimeLog
     $PropertiesMailbox = 'DisplayName', 'UserPrincipalName', 'PrimarySmtpAddress', 'EmailAddresses', 'HiddenFromAddressListsEnabled', 'Identity', 'ExchangeGuid', 'ArchiveGuid', 'ArchiveQuota', 'ArchiveStatus', 'WhenCreated', 'WhenChanged', 'Guid', 'MailboxGUID'
@@ -13,10 +14,12 @@ function Get-ReportO365Mailboxes {
     $PropertiesMailboxStats = 'DisplayName', 'LastLogonTime', 'LastLogoffTime', 'TotalItemSize', 'ItemCount', 'TotalDeletedItemSize', 'DeletedItemCount', 'OwnerADGuid', 'MailboxGuid'
     $PropertiesMailboxStatsArchive = 'DisplayName', 'TotalItemSize', 'ItemCount', 'TotalDeletedItemSize', 'DeletedItemCount', 'OwnerADGuid', 'MailboxGuid'
 
-    $Commands = Test-AvailabilityCommands -Commands "Get-$($Prefix)Mailbox", "Get-$($Prefix)MsolUser", "Get-$($Prefix)MailboxStatistics"
-    if ($Commands -contains $false) {
-        Write-Warning "Get-ReportO365Mailboxes - One of commands Get-$($Prefix)Mailbox, Get-$($Prefix)MsolUser, Get-$($Prefix)MailboxStatistics is not available. Make sure connectivity to Office 365 exists."
-        return 
+    if ($SkipAvailability) {
+        $Commands = Test-AvailabilityCommands -Commands "Get-$($Prefix)Mailbox", "Get-$($Prefix)MsolUser", "Get-$($Prefix)MailboxStatistics"
+        if ($Commands -contains $false) {
+            Write-Warning "Get-ReportO365Mailboxes - One of commands Get-$($Prefix)Mailbox, Get-$($Prefix)MsolUser, Get-$($Prefix)MailboxStatistics is not available. Make sure connectivity to Office 365 exists."
+            return 
+        }
     }
 
     $Object = [ordered] @{}
@@ -59,11 +62,11 @@ function Get-ReportO365Mailboxes {
             MailboxLogOn             = $MailboxStats.LastLogonTime66
             MailboxLogOff            = $MailboxStats.LastLogoffTime
 
-            MailboxSize              = Convert-ExchangeSize -Size $MailboxStats.TotalItemSize -To $SizeIn -Default '' -Precision $Precision
+            MailboxSize              = Convert-ExchangeSize -Size $MailboxStats.TotalItemSize -To $SizeIn -Default '' -Precision $SizePrecision
 
             MailboxItemCount         = $MailboxStats.ItemCount
 
-            MailboxDeletedSize       = Convert-ExchangeSize -Size $MailboxStats.TotalDeletedItemSize -To $SizeIn -Default '' -Precision $Precision
+            MailboxDeletedSize       = Convert-ExchangeSize -Size $MailboxStats.TotalDeletedItemSize -To $SizeIn -Default '' -Precision $SizePrecision
             MailboxDeletedItemsCount = $MailboxStats.DeletedItemCount
 
             MailboxHidden            = $Mailbox.HiddenFromAddressListsEnabled
@@ -72,10 +75,10 @@ function Get-ReportO365Mailboxes {
 
             ArchiveStatus            = $Mailbox.ArchiveStatus
             ArchiveQuota             = Convert-ExchangeSize -Size $Mailbox.ArchiveQuota -To $SizeIn -Default '' -Display
-            ArchiveSize              = Convert-ExchangeSize -Size $MailboxStatsArchive.TotalItemSize -To $SizeIn -Default '' -Precision $Precision
+            ArchiveSize              = Convert-ExchangeSize -Size $MailboxStatsArchive.TotalItemSize -To $SizeIn -Default '' -Precision $SizePrecision
             ArchiveItemCount         = Convert-ExchangeItems -Count $MailboxStatsArchive.ItemCount -Default ''
 
-            ArchiveDeletedSize       = Convert-ExchangeSize -Size $MailboxStatsArchive.TotalDeletedItemSize -To $SizeIn -Default '' -Precision $Precision
+            ArchiveDeletedSize       = Convert-ExchangeSize -Size $MailboxStatsArchive.TotalDeletedItemSize -To $SizeIn -Default '' -Precision $SizePrecision
             ArchiveDeletedItemsCount = Convert-ExchangeItems -Count $MailboxStatsArchive.DeletedItemCount -Default ''
             # Adding GUID so it's possible to match other data
             Guid                     = $Mailbox.Guid.Guid
@@ -84,7 +87,7 @@ function Get-ReportO365Mailboxes {
     }
     $TimeToExecute = Stop-TimeLog -Time $Time
     Write-Verbose "Get-ReportO365Mailboxes - Time to run: $TimeToExecute"
-    if ($All) {
+    if ($ReturnAll) {
         return $Object
     } else {
         return $Object.Output
