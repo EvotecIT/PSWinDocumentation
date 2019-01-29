@@ -1,14 +1,12 @@
 function Get-ReportO365Mailboxes {
     [CmdletBinding()]
     param(
-        [string] $FilePath,
         [string] $Prefix,
         [validateset("Bytes", "KB", "MB", "GB", "TB")][string]$SizeIn = 'MB',
         [alias('Precision')][int]$SizePrecision = 2,
         [switch] $ReturnAll,
         [switch] $SkipAvailability
     )
-    $Time = Start-TimeLog
     $PropertiesMailbox = 'DisplayName', 'UserPrincipalName', 'PrimarySmtpAddress', 'EmailAddresses', 'HiddenFromAddressListsEnabled', 'Identity', 'ExchangeGuid', 'ArchiveGuid', 'ArchiveQuota', 'ArchiveStatus', 'WhenCreated', 'WhenChanged', 'Guid', 'MailboxGUID'
     $PropertiesAzure = 'FirstName', 'LastName', 'Country', 'City', 'Department', 'Office', 'UsageLocation', 'Licenses', 'WhenCreated', 'UserPrincipalName', 'ObjectID'
     $PropertiesMailboxStats = 'DisplayName', 'LastLogonTime', 'LastLogoffTime', 'TotalItemSize', 'ItemCount', 'TotalDeletedItemSize', 'DeletedItemCount', 'OwnerADGuid', 'MailboxGuid'
@@ -27,25 +25,25 @@ function Get-ReportO365Mailboxes {
     $Object.Mailboxes = & "Get-$($Prefix)Mailbox" -ResultSize Unlimited | Select-Object $PropertiesMailbox
     Write-Verbose "Get-ReportO365Mailboxes - Getting all Azure AD users"
     $Object.Azure = Get-MsolUser -All | Select-Object $PropertiesAzure
-    $Object.MailboxStatistics = @()
-    $Object.MailboxStatisticsArchive = @()
+    $Object.MailboxStatistics = [System.Collections.Generic.List[object]]::new()
+    $Object.MailboxStatisticsArchive = [System.Collections.Generic.List[object]]::new()
     foreach ($Mailbox in $Object.Mailboxes) {
         Write-Verbose "Get-ReportO365Mailboxes - Processing Mailbox Statistics for Mailbox $($Mailbox.UserPrincipalName)"
-        $Object.MailboxStatistics += & "Get-$($Prefix)MailboxStatistics" -Identity $Mailbox.Guid.Guid | Select-Object $PropertiesMailboxStats
+        ($Object.MailboxStatistics).Add( (& "Get-$($Prefix)MailboxStatistics" -Identity $Mailbox.Guid.Guid | Select-Object $PropertiesMailboxStats))
         if ($Mailbox.ArchiveStatus -eq "Active") {
-            $Object.MailboxStatisticsArchive += & "Get-$($Prefix)MailboxStatistics" -Identity $Mailbox.Guid.Guid -Archive | Select-Object $PropertiesMailboxStatsArchive
+            ($Object.MailboxStatisticsArchive).Add((& "Get-$($Prefix)MailboxStatistics" -Identity $Mailbox.Guid.Guid -Archive | Select-Object $PropertiesMailboxStatsArchive))
         }
     }
 
     Write-Verbose "Get-ReportO365Mailboxes - Preparing output data"
     $Object.Output = foreach ($Mailbox in $Object.Mailboxes) {
         $Azure = $Object.Azure | Where-Object { $_.UserPrincipalName -eq $Mailbox.UserPrincipalName }
-        $MailboxStats = $Object.MailboxStatistics | Where-Object { $_.Identity.MailboxGuid.Guid -eq $Mailbox.ExchangeGuid.Guid }
-        $MailboxStatsArchive = $Object.MailboxStatisticsArchive | Where-Object { $_.Identity.MailboxGuid.Guid -eq $Mailbox.ArchiveGuid.Guid }
+        $MailboxStats = $Object.MailboxStatistics | Where-Object { $_.MailboxGuid.Guid -eq $Mailbox.ExchangeGuid.Guid }
+        $MailboxStatsArchive = $Object.MailboxStatisticsArchive | Where-Object { $_.MailboxGuid.Guid -eq $Mailbox.ArchiveGuid.Guid }
 
         [PSCustomObject][ordered] @{
             DiplayName               = $Mailbox.DisplayName
-            PrincipalName            = $Mailbox.UserPrincipalName
+            UserPrincipalName        = $Mailbox.UserPrincipalName
             FirstName                = $Azure.FirstName
             LastName                 = $Azure.LastName
             Country                  = $Azure.Country
@@ -59,7 +57,7 @@ function Get-ReportO365Mailboxes {
             PrimaryEmailAddress      = $Mailbox.PrimarySmtpAddress
             AllEmailAddresses        = Convert-ExchangeEmail -Emails $Mailbox.EmailAddresses -Separator ', ' -RemoveDuplicates -RemovePrefix -AddSeparator
 
-            MailboxLogOn             = $MailboxStats.LastLogonTime66
+            MailboxLogOn             = $MailboxStats.LastLogonTime
             MailboxLogOff            = $MailboxStats.LastLogoffTime
 
             MailboxSize              = Convert-ExchangeSize -Size $MailboxStats.TotalItemSize -To $SizeIn -Default '' -Precision $SizePrecision
@@ -85,16 +83,9 @@ function Get-ReportO365Mailboxes {
             ObjectID                 = $Mailbox.ExternalDirectoryObjectId
         }
     }
-    $TimeToExecute = Stop-TimeLog -Time $Time
-    Write-Verbose "Get-ReportO365Mailboxes - Time to run: $TimeToExecute"
     if ($ReturnAll) {
         return $Object
     } else {
         return $Object.Output
     }
 }
-
-$Objects = Get-ReportO365Mailboxes -Verbose
-$Objects
-#$Objects.FinalList | Format-Table *
-#$Objects.MailboxStatistics | Format-Table *
