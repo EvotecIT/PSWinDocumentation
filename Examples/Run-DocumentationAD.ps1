@@ -10,8 +10,8 @@ $Document = [ordered]@{
     Configuration = [ordered] @{
         Prettify       = @{
             CompanyName        = 'Evotec'
-            UseBuiltinTemplate = $true
-            CustomTemplatePath = ''
+            UseBuiltinTemplate = $false
+            CustomTemplatePath = "$Env:USERPROFILE\Desktop\EmptyDocument.docx"
             Language           = 'en-US'
         }
         Options        = @{
@@ -29,7 +29,7 @@ $Document = [ordered]@{
     }
     DocumentAD    = [ordered] @{
         Enable        = $true
-        ExportWord    = $false
+        ExportWord    = $true
         ExportExcel   = $false
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.docx"

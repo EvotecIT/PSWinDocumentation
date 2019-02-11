@@ -4,10 +4,10 @@ function Get-ReportO365Mailboxes {
         [string] $Prefix,
         [validateset("Bytes", "KB", "MB", "GB", "TB")][string]$SizeIn = 'MB',
         [alias('Precision')][int]$SizePrecision = 2,
-        [switch] $ReturnAll,
+        [alias('ReturnAll')][switch] $All,
         [switch] $SkipAvailability
     )
-    $PropertiesMailbox = 'DisplayName', 'UserPrincipalName', 'PrimarySmtpAddress', 'EmailAddresses', 'HiddenFromAddressListsEnabled', 'Identity', 'ExchangeGuid', 'ArchiveGuid', 'ArchiveQuota', 'ArchiveStatus', 'WhenCreated', 'WhenChanged', 'Guid', 'MailboxGUID'
+    $PropertiesMailbox = 'DisplayName', 'UserPrincipalName', 'PrimarySmtpAddress', 'EmailAddresses', 'HiddenFromAddressListsEnabled', 'Identity', 'ExchangeGuid', 'ArchiveGuid', 'ArchiveQuota', 'ArchiveStatus', 'WhenCreated', 'WhenChanged', 'Guid', 'MailboxGUID', 'RecipientTypeDetails'
     $PropertiesAzure = 'FirstName', 'LastName', 'Country', 'City', 'Department', 'Office', 'UsageLocation', 'Licenses', 'WhenCreated', 'UserPrincipalName', 'ObjectID'
     $PropertiesMailboxStats = 'DisplayName', 'LastLogonTime', 'LastLogoffTime', 'TotalItemSize', 'ItemCount', 'TotalDeletedItemSize', 'DeletedItemCount', 'OwnerADGuid', 'MailboxGuid'
     $PropertiesMailboxStatsArchive = 'DisplayName', 'TotalItemSize', 'ItemCount', 'TotalDeletedItemSize', 'DeletedItemCount', 'OwnerADGuid', 'MailboxGuid'
@@ -22,21 +22,24 @@ function Get-ReportO365Mailboxes {
 
     $Object = [ordered] @{}
     Write-Verbose "Get-ReportO365Mailboxes - Getting all mailboxes"
-    $Object.Mailboxes = & "Get-$($Prefix)Mailbox" -ResultSize Unlimited | Select-Object $PropertiesMailbox
+    $Object.Mailbox = & "Get-$($Prefix)Mailbox" -ResultSize Unlimited | Select-Object $PropertiesMailbox
     Write-Verbose "Get-ReportO365Mailboxes - Getting all Azure AD users"
     $Object.Azure = Get-MsolUser -All | Select-Object $PropertiesAzure
     $Object.MailboxStatistics = [System.Collections.Generic.List[object]]::new()
     $Object.MailboxStatisticsArchive = [System.Collections.Generic.List[object]]::new()
-    foreach ($Mailbox in $Object.Mailboxes) {
+    $Object.MailboxPermissions = [System.Collections.Generic.List[PSCustomObject]]::new()
+    $Object.MailboxPermissionsAll = [System.Collections.Generic.List[PSCustomObject]]::new()
+
+    foreach ($Mailbox in $Object.Mailbox) {
         Write-Verbose "Get-ReportO365Mailboxes - Processing Mailbox Statistics for Mailbox $($Mailbox.UserPrincipalName)"
         ($Object.MailboxStatistics).Add( (& "Get-$($Prefix)MailboxStatistics" -Identity $Mailbox.Guid.Guid | Select-Object $PropertiesMailboxStats))
         if ($Mailbox.ArchiveStatus -eq "Active") {
             ($Object.MailboxStatisticsArchive).Add((& "Get-$($Prefix)MailboxStatistics" -Identity $Mailbox.Guid.Guid -Archive | Select-Object $PropertiesMailboxStatsArchive))
         }
     }
-
+    
     Write-Verbose "Get-ReportO365Mailboxes - Preparing output data"
-    $Object.Output = foreach ($Mailbox in $Object.Mailboxes) {
+    $Object.Output = foreach ($Mailbox in $Object.Mailbox) {
         $Azure = $Object.Azure | Where-Object { $_.UserPrincipalName -eq $Mailbox.UserPrincipalName }
         $MailboxStats = $Object.MailboxStatistics | Where-Object { $_.MailboxGuid.Guid -eq $Mailbox.ExchangeGuid.Guid }
         $MailboxStatsArchive = $Object.MailboxStatisticsArchive | Where-Object { $_.MailboxGuid.Guid -eq $Mailbox.ArchiveGuid.Guid }
@@ -53,6 +56,8 @@ function Get-ReportO365Mailboxes {
             UsageLocation            = $Azure.UsageLocation
             License                  = Convert-Office365License -License $Azure.Licenses.AccountSkuID
             UserCreated              = $Azure.WhenCreated
+
+            RecipientType            = $Mailbox.RecipientTypeDetails
 
             PrimaryEmailAddress      = $Mailbox.PrimarySmtpAddress
             AllEmailAddresses        = Convert-ExchangeEmail -Emails $Mailbox.EmailAddresses -Separator ', ' -RemoveDuplicates -RemovePrefix -AddSeparator
@@ -81,6 +86,46 @@ function Get-ReportO365Mailboxes {
             # Adding GUID so it's possible to match other data
             Guid                     = $Mailbox.Guid.Guid
             ObjectID                 = $Mailbox.ExternalDirectoryObjectId
+        }
+
+        $MailboxPermissions = Get-MailboxPermission -Identity $Mailbox.PrimarySmtpAddress.ToString()
+        #No non-default permissions found, continue to next mailbox
+        if (-not $MailboxPermissions) { continue }
+        
+        $Permissions = foreach ($Permission in ($MailboxPermissions | Where-Object {($_.User -ne "NT AUTHORITY\SELF") -and ($_.IsInherited -ne $true)}) ) {
+            [PSCustomObject] @{
+                DiplayName           = $Mailbox.DisplayName
+                UserPrincipalName    = $Mailbox.UserPrincipalName
+                FirstName            = $Azure.FirstName
+                LastName             = $Azure.LastName
+                RecipientType        = $Mailbox.RecipientTypeDetails
+                PrimaryEmailAddress  = $Mailbox.PrimarySmtpAddress
+
+                "User With Access"   = $Permission.User
+                "User Access Rights" = ($Permission.AccessRights -join ",")
+            }
+        }
+        if ($null -ne $Permissions) {
+            $Object.MailboxPermissions.Add($Permissions)
+        }
+        $PermissionsAll = foreach ($Permission in $MailboxPermissions) {
+            [PSCustomObject] @{
+                DiplayName           = $Mailbox.DisplayName
+                UserPrincipalName    = $Mailbox.UserPrincipalName
+                FirstName            = $Azure.FirstName
+                LastName             = $Azure.LastName
+                RecipientType        = $Mailbox.RecipientTypeDetails
+                PrimaryEmailAddress  = $Mailbox.PrimarySmtpAddress
+
+                "User With Access"   = $Permission.User
+                "User Access Rights" = ($Permission.AccessRights -join ",")
+                "Inherited"          = $Permission.IsInherited
+                "Deny"               = $Permission.Deny
+                "InheritanceType"    = $Permission.InheritanceType
+            }
+        }
+        if ($null -ne $PermissionsAll) {
+            $Object.MailboxPermissionsAll.Add($PermissionsAll)
         }
     }
     if ($ReturnAll) {

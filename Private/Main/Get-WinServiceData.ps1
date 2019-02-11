@@ -16,6 +16,16 @@ function Get-WinServiceData {
         if ($Service.OnlineMode) {
             switch ($Type) {
                 'ActiveDirectory' {
+                    if ($Service.PasswordTests.Use) {
+                        $PasswordClearText = $Service.PasswordTests.PasswordFilePathClearText
+                    } else {
+                        $PasswordClearText = ''
+                    } 
+                    if ($Service.PasswordTests.UseHashDB) {                    
+                        $PasswordHashes = $Service.PasswordTests.PasswordFilePathHash
+                    } else {
+                        $PasswordHashes = ''
+                    }
                     $DataInformation = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes
                 }
                 'AWS' {

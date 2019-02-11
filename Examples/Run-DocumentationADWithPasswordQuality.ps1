@@ -44,7 +44,7 @@ $Document = [ordered]@{
                 }
                 ActiveDirectory = [ordered] @{
                     Use           = $true
-                    OnlineMode    = $false
+                    OnlineMode    = $true
 
                    Import = @{
                         Use = $true

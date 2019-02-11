@@ -7,7 +7,7 @@ function Get-WinUsers {
     )
     [DateTime] $CurrentDate = Get-Date # [DateTime]::Today
     $UserList = foreach ($U in $Users) {
-        [PstCustomObject][Ordered] @{
+        [PsCustomObject][Ordered] @{
             'Name'                              = $U.Name
             'UserPrincipalName'                 = $U.UserPrincipalName
             'SamAccountName'                    = $U.SamAccountName
