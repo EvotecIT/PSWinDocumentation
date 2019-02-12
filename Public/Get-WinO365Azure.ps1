@@ -8,38 +8,9 @@ function Get-WinO365Azure {
         Write-Verbose 'Get-WinO365Azure - TypesRequired is null. Getting all Office 365 types.'
         $TypesRequired = Get-Types -Types ([O365])  # Gets all types
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureLicensing, [O365]::O365AzureLicensing)) {
-        Write-Verbose "Get-WinO365Azure - Getting O365UAzureLicensing"
-        $Data.O365UAzureLicensing = Get-MsolAccountSku
-    }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureLicensing)) {
         Write-Verbose "Get-WinO365Azure - Getting O365AzureLicensing (prepared data)"
-        $Data.O365AzureLicensing = Invoke-Command -ScriptBlock {
-            $Licenses = foreach ($License in $Data.O365UAzureLicensing) {
-                $LicensesTotal = $License.ActiveUnits + $License.WarningUnits
-                $LicensesUsed = $License.ConsumedUnits
-                $LicensesLeft = $LicensesTotal - $LicensesUsed
-                $LicenseName = $($Global:O365SKU).Item("$($License.SkuPartNumber)")
-                if ($LicenseName -eq $null) { $LicenseName = $License.SkuPartNumber}
-
-                [PSCustomObject] @{
-                    Name                 = $LicenseName
-                    'Licenses Total'     = $LicensesTotal
-                    'Licenses Used'      = $LicensesUsed
-                    'Licenses Left'      = $LicensesLeft
-                    'Licenses Active'    = $License.ActiveUnits
-                    'Licenses Trial'     = $License.WarningUnits
-                    'Licenses LockedOut' = $License.LockedOutUnits
-                    'Licenses Suspended' = $License.SuspendedUnits
-                    'Percent Used'       = if ($LicensesTotal -eq 0) { '100%' } else { ($LicensesUsed / $LicensesTotal).ToString("P") }
-                    'Percent Left'       = if ($LicensesTotal -eq 0) { '0%' } else { ($LicensesLeft / $LicensesTotal).ToString("P") }
-                    SKU                  = $License.SkuPartNumber
-                    SKUAccount           = $License.AccountSkuId
-                    SKUID                = $License.SkuId
-                }
-            }
-            return $Licenses | Sort-Object Name
-        }
+        $Data.O365AzureLicensing = Get-ReportO365Licenses
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureTenantDomains, [O365]::O365AzureTenantDomains)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureTenantDomains"

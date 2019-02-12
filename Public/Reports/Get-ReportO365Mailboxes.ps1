@@ -5,7 +5,8 @@ function Get-ReportO365Mailboxes {
         [validateset("Bytes", "KB", "MB", "GB", "TB")][string]$SizeIn = 'MB',
         [alias('Precision')][int]$SizePrecision = 2,
         [alias('ReturnAll')][switch] $All,
-        [switch] $SkipAvailability
+        [switch] $SkipAvailability,
+        [switch] $GatherPermissions
     )
     $PropertiesMailbox = 'DisplayName', 'UserPrincipalName', 'PrimarySmtpAddress', 'EmailAddresses', 'HiddenFromAddressListsEnabled', 'Identity', 'ExchangeGuid', 'ArchiveGuid', 'ArchiveQuota', 'ArchiveStatus', 'WhenCreated', 'WhenChanged', 'Guid', 'MailboxGUID', 'RecipientTypeDetails'
     $PropertiesAzure = 'FirstName', 'LastName', 'Country', 'City', 'Department', 'Office', 'UsageLocation', 'Licenses', 'WhenCreated', 'UserPrincipalName', 'ObjectID'
@@ -88,44 +89,46 @@ function Get-ReportO365Mailboxes {
             ObjectID                 = $Mailbox.ExternalDirectoryObjectId
         }
 
-        $MailboxPermissions = Get-MailboxPermission -Identity $Mailbox.PrimarySmtpAddress.ToString()
-        #No non-default permissions found, continue to next mailbox
-        if (-not $MailboxPermissions) { continue }
+        if ($GatherPermissions) {
+            $MailboxPermissions = Get-MailboxPermission -Identity $Mailbox.PrimarySmtpAddress.ToString()
+            #No non-default permissions found, continue to next mailbox
+            if (-not $MailboxPermissions) { continue }
         
-        $Permissions = foreach ($Permission in ($MailboxPermissions | Where-Object {($_.User -ne "NT AUTHORITY\SELF") -and ($_.IsInherited -ne $true)}) ) {
-            [PSCustomObject] @{
-                DiplayName           = $Mailbox.DisplayName
-                UserPrincipalName    = $Mailbox.UserPrincipalName
-                FirstName            = $Azure.FirstName
-                LastName             = $Azure.LastName
-                RecipientType        = $Mailbox.RecipientTypeDetails
-                PrimaryEmailAddress  = $Mailbox.PrimarySmtpAddress
+            $Permissions = foreach ($Permission in ($MailboxPermissions | Where-Object {($_.User -ne "NT AUTHORITY\SELF") -and ($_.IsInherited -ne $true)}) ) {
+                [PSCustomObject] @{
+                    DiplayName           = $Mailbox.DisplayName
+                    UserPrincipalName    = $Mailbox.UserPrincipalName
+                    FirstName            = $Azure.FirstName
+                    LastName             = $Azure.LastName
+                    RecipientType        = $Mailbox.RecipientTypeDetails
+                    PrimaryEmailAddress  = $Mailbox.PrimarySmtpAddress
 
-                "User With Access"   = $Permission.User
-                "User Access Rights" = ($Permission.AccessRights -join ",")
+                    "User With Access"   = $Permission.User
+                    "User Access Rights" = ($Permission.AccessRights -join ",")
+                }
             }
-        }
-        if ($null -ne $Permissions) {
-            $Object.MailboxPermissions.Add($Permissions)
-        }
-        $PermissionsAll = foreach ($Permission in $MailboxPermissions) {
-            [PSCustomObject] @{
-                DiplayName           = $Mailbox.DisplayName
-                UserPrincipalName    = $Mailbox.UserPrincipalName
-                FirstName            = $Azure.FirstName
-                LastName             = $Azure.LastName
-                RecipientType        = $Mailbox.RecipientTypeDetails
-                PrimaryEmailAddress  = $Mailbox.PrimarySmtpAddress
+            if ($null -ne $Permissions) {
+                $Object.MailboxPermissions.Add($Permissions)
+            }
+            $PermissionsAll = foreach ($Permission in $MailboxPermissions) {
+                [PSCustomObject] @{
+                    DiplayName           = $Mailbox.DisplayName
+                    UserPrincipalName    = $Mailbox.UserPrincipalName
+                    FirstName            = $Azure.FirstName
+                    LastName             = $Azure.LastName
+                    RecipientType        = $Mailbox.RecipientTypeDetails
+                    PrimaryEmailAddress  = $Mailbox.PrimarySmtpAddress
 
-                "User With Access"   = $Permission.User
-                "User Access Rights" = ($Permission.AccessRights -join ",")
-                "Inherited"          = $Permission.IsInherited
-                "Deny"               = $Permission.Deny
-                "InheritanceType"    = $Permission.InheritanceType
+                    "User With Access"   = $Permission.User
+                    "User Access Rights" = ($Permission.AccessRights -join ",")
+                    "Inherited"          = $Permission.IsInherited
+                    "Deny"               = $Permission.Deny
+                    "InheritanceType"    = $Permission.InheritanceType
+                }
             }
-        }
-        if ($null -ne $PermissionsAll) {
-            $Object.MailboxPermissionsAll.Add($PermissionsAll)
+            if ($null -ne $PermissionsAll) {
+                $Object.MailboxPermissionsAll.Add($PermissionsAll)
+            }
         }
     }
     if ($ReturnAll) {
