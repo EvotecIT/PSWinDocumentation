@@ -19,8 +19,6 @@ Add-Type -TypeDefinition @"
         O365UExchangeInboxRules,
 
         // Clean O365 Azure Data
-        O365UAzureTenantDomains,
-        O365UAzureSubscription,
         O365UAzureADUsers,
         O365UAzureADUsersDeleted,
         O365UAzureADGroups,

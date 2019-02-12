@@ -12,46 +12,9 @@ function Get-WinO365Azure {
         Write-Verbose "Get-WinO365Azure - Getting O365AzureLicensing (prepared data)"
         $Data.O365AzureLicensing = Get-ReportO365Licenses
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureTenantDomains, [O365]::O365AzureTenantDomains)) {
-        Write-Verbose "Get-WinO365Azure - Getting O365UAzureTenantDomains"
-        $Data.O365UAzureTenantDomains = Get-MsolDomain
-    }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365UAzureSubscription, [O365]::O365AzureSubscription)) {
-        Write-Verbose "Get-WinO365Azure - Getting O365UAzureSubscription"
-        $Data.O365UAzureSubscription = Get-MsolSubscription
-    }
-
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureSubscription)) {
-        $Data.O365AzureSubscription = Invoke-Command -ScriptBlock {
-            $Licenses = foreach ($Subscription in $Data.O365UAzureSubscription) {
-                $LicenseName = $($Global:O365SKU).Item("$($Subscription.SkuPartNumber)")
-                if ($LicenseName -eq $null) { $LicenseName = $Subscription.SkuPartNumber}
-                foreach ($Plan in $Subscription.ServiceStatus) {
-                    $ServicePlanName = $($Global:O365SKU).Item("$($Plan.ServicePlan.ServiceName)")
-                    if ($ServicePlanName -eq $null) { $ServicePlanName = $Plan.ServicePlan.ServiceName}
-
-                    [PSCustomObject] @{
-                        'Licenses Name'       = $LicenseName
-                        'Licenses SKU'        = $Subscription.SkuPartNumber
-                        'Service Plan Name'   = $ServicePlanName
-                        'Service Plan SKU'    = $Plan.ServicePlan.ServiceName
-                        'Service Plan ID'     = $Plan.ServicePlan.ServicePlanId
-                        'Service Plan Type'   = $Plan.ServicePlan.ServiceType
-                        'Service Plan Class'  = $Plan.ServicePlan.TargetClass
-                        'Service Plan Status' = $Plan.ProvisioningStatus
-                        'Licenses Total'      = $Subscription.TotalLicenses
-                        'Licenses Status'     = $Subscription.Status
-                        'Licenses SKUID'      = $Subscription.SkuId
-                        'Licenses Are Trial'  = $Subscription.IsTrial
-                        'Licenses Created'    = $Subscription.DateCreated
-                        'Next Lifecycle Date' = $Subscription.NextLifecycleDate
-                        'ObjectID'            = $Subscription.ObjectId
-                        'Ocp SubscriptionID'  = $Subscription.OcpSubscriptionId
-                    }
-                }
-            }
-            return $Licenses | Sort-Object 'Licenses Name'
-        }
+        Write-Verbose "Get-WinO365Azure - Getting O365AzureSubscription (prepared data)"
+        $Data.O365AzureSubscription = Get-ReportO365Subscriptions
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
             [O365]::O365UAzureADUsers,
@@ -89,20 +52,7 @@ function Get-WinO365Azure {
     # Below is data that is prepared entirely using data from above (suitable for Word for the most part)
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureTenantDomains)) {
         Write-Verbose "Get-WinO365Azure - Getting O365AzureTenantDomains (prepared data)"
-        $Data.O365AzureTenantDomains = Invoke-Command -ScriptBlock {
-            $Domains = foreach ($Domain in $Data.O365UAzureTenantDomains) {
-                [PsCustomObject] @{
-                    'Domain Name'         = $Domain.Name
-                    'Default'             = $Domain.IsDefault
-                    'Initial'             = $Domain.IsInitial
-                    'Status'              = $Domain.Status
-                    'Verification Method' = $Domain.VerificationMethod
-                    'Capabilities'        = $Domain.Capabilities
-                    'Authentication'      = $Domain.Authentication
-                }
-            }
-            return $Domains
-        }
+        $Data.O365AzureTenantDomains = Get-ReportO365TenantDomains
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([O365]::O365AzureADGroupMembersUser)) {
         Write-Verbose "Get-WinO365Azure - Getting O365UAzureADGroupMembersUser"
