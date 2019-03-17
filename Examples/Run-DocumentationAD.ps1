@@ -1,7 +1,6 @@
-Import-Module PSWriteWord
+Import-Module PSWriteWord #-Force #-Verbose
 Import-Module PSWriteExcel
-Import-Module PSWinDocumentation -Force
-Import-Module PSWriteColor
+Import-Module ..\PSWinDocumentation.psd1 -Force
 Import-Module PSSharedGoods
 #Import-Module DbaTools
 Import-Module ActiveDirectory
@@ -10,7 +9,7 @@ $Document = [ordered]@{
     Configuration = [ordered] @{
         Prettify       = @{
             CompanyName        = 'Evotec'
-            UseBuiltinTemplate = $false
+            UseBuiltinTemplate = $true
             CustomTemplatePath = "$Env:USERPROFILE\Desktop\EmptyDocument.docx"
             Language           = 'en-US'
         }
@@ -30,7 +29,7 @@ $Document = [ordered]@{
     DocumentAD    = [ordered] @{
         Enable        = $true
         ExportWord    = $true
-        ExportExcel   = $false
+        ExportExcel   = $true
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReport.xlsx"
@@ -43,26 +42,26 @@ $Document = [ordered]@{
                     PasswordFromFile = $true
                 }
                 ActiveDirectory = [ordered] @{
-                    Use             = $true
-                    OnlineMode      = $true
+                    Use           = $true
+                    OnlineMode    = $true
 
-                    Import = @{
-                        Use = $false
+                    Import        = @{
+                        Use  = $false
                         From = 'Folder' # Folder
                         Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
                         # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
                     }
-                    Export = @{
-                        Use = $true
-                        To = 'Folder' # Folder/File/Both
+                    Export        = @{
+                        Use        = $true
+                        To         = 'Folder' # Folder/File/Both
                         FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
-                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                        FilePath   = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
                     }
 
-                    Prefix          = ''
-                    SessionName     = 'ActiveDirectory' # MSOL
+                    Prefix        = ''
+                    SessionName   = 'ActiveDirectory' # MSOL
 
-                    PasswordTests   = @{
+                    PasswordTests = @{
                         Use                       = $false
                         PasswordFilePathClearText = 'C:\Support\GitHub\PSWinDocumentation\Ignore\Passwords.txt'
                         # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
@@ -547,7 +546,7 @@ $Document = [ordered]@{
                     TocListItemType  = [ListItemType]::Numbered
                     TocHeadingType   = [HeadingType]::Heading1
                     PageBreaksBefore = 1
-                    Text             = 'Following section covers computers information for domain <Domain>. '
+                    Text             = 'Following section is divided into 2 groups. Computers and Servers availlable in domain <Domain>.'                                        
                 }
                 DomainComputers                                   = [ordered] @{
                     Use             = $true
@@ -571,7 +570,8 @@ $Document = [ordered]@{
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
                     TableTitleText        = 'Computers Count'
-                    Text                  = "Following table and chart shows number of computers and their versions"
+                    Text                  = "In respect of Computer Objects, following table and chart shows number of computers and their versions"
+                    TextNoData            = "Unfortunately in this case here are no computer objects available so no data is provided."
                     ChartEnable           = $True
                     ChartTitle            = 'Computers Count'
                     ChartData             = [ActiveDirectory]::DomainComputersCount
@@ -604,7 +604,8 @@ $Document = [ordered]@{
                     TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
                     TableTitleText        = 'Servers Count'
-                    Text                  = "Following table and chart shows number of servers and their versions"
+                    Text                  = "In respect of Server Objects, following table and chart shows number of servers and their versions"
+                    TextNoData            = "There are no servers available in the domain."
                     ChartEnable           = $True
                     ChartTitle            = 'Servers Count'
                     ChartData             = [ActiveDirectory]::DomainServersCount

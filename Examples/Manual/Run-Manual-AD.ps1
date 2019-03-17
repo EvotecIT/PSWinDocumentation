@@ -11,7 +11,7 @@ $Forest = Get-WinADForestInformation -Verbose
 $Forest.FoundDomains.'ad.evotec.xyz'.DomainUsers
 return
 $User = $Forest.FoundDomains.'ad.evotec.xyz'.DomainUsers[20] | Select *
-$User | Select DisplayName, PasswordLastSet
+$User | Select-Object DisplayName, PasswordLastSet
 
 
 $PasswordDaysSinceChange = $User.PasswordLastSet - [DateTime]::Today

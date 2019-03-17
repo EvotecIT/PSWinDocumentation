@@ -9,7 +9,7 @@ function Get-ReportO365Mailboxes {
         [switch] $GatherPermissions
     )
     $PropertiesMailbox = 'DisplayName', 'UserPrincipalName', 'PrimarySmtpAddress', 'EmailAddresses', 'HiddenFromAddressListsEnabled', 'Identity', 'ExchangeGuid', 'ArchiveGuid', 'ArchiveQuota', 'ArchiveStatus', 'WhenCreated', 'WhenChanged', 'Guid', 'MailboxGUID', 'RecipientTypeDetails'
-    $PropertiesAzure = 'FirstName', 'LastName', 'Country', 'City', 'Department', 'Office', 'UsageLocation', 'Licenses', 'WhenCreated', 'UserPrincipalName', 'ObjectID'
+    #$PropertiesAzure = 'FirstName', 'LastName', 'Country', 'City', 'Department', 'Office', 'UsageLocation', 'Licenses', 'WhenCreated', 'UserPrincipalName', 'ObjectID'
     $PropertiesMailboxStats = 'DisplayName', 'LastLogonTime', 'LastLogoffTime', 'TotalItemSize', 'ItemCount', 'TotalDeletedItemSize', 'DeletedItemCount', 'OwnerADGuid', 'MailboxGuid'
     $PropertiesMailboxStatsArchive = 'DisplayName', 'TotalItemSize', 'ItemCount', 'TotalDeletedItemSize', 'DeletedItemCount', 'OwnerADGuid', 'MailboxGuid'
 
@@ -25,7 +25,7 @@ function Get-ReportO365Mailboxes {
     Write-Verbose "Get-ReportO365Mailboxes - Getting all mailboxes"
     $Object.Mailbox = & "Get-$($Prefix)Mailbox" -ResultSize Unlimited | Select-Object $PropertiesMailbox
     Write-Verbose "Get-ReportO365Mailboxes - Getting all Azure AD users"
-    $Object.Azure = Get-MsolUser -All | Select-Object $PropertiesAzure
+    $Object.Azure = Get-MsolUser -All #| Select-Object $PropertiesAzure
     $Object.MailboxStatistics = [System.Collections.Generic.List[object]]::new()
     $Object.MailboxStatisticsArchive = [System.Collections.Generic.List[object]]::new()
     $Object.MailboxPermissions = [System.Collections.Generic.List[PSCustomObject]]::new()
@@ -46,47 +46,54 @@ function Get-ReportO365Mailboxes {
         $MailboxStatsArchive = $Object.MailboxStatisticsArchive | Where-Object { $_.MailboxGuid.Guid -eq $Mailbox.ArchiveGuid.Guid }
 
         [PSCustomObject][ordered] @{
-            DiplayName               = $Mailbox.DisplayName
-            UserPrincipalName        = $Mailbox.UserPrincipalName
-            FirstName                = $Azure.FirstName
-            LastName                 = $Azure.LastName
-            Country                  = $Azure.Country
-            City                     = $Azure.City
-            Department               = $Azure.Department
-            Office                   = $Azure.Office
-            UsageLocation            = $Azure.UsageLocation
-            License                  = Convert-Office365License -License $Azure.Licenses.AccountSkuID
-            UserCreated              = $Azure.WhenCreated
+            DisplayName               = $Mailbox.DisplayName
+            UserPrincipalName         = $Mailbox.UserPrincipalName
+            FirstName                 = $Azure.FirstName
+            LastName                  = $Azure.LastName
+            Country                   = $Azure.Country
+            City                      = $Azure.City
+            Department                = $Azure.Department
+            Office                    = $Azure.Office
+            UsageLocation             = $Azure.UsageLocation
+            License                   = Convert-Office365License -License $Azure.Licenses.AccountSkuID
+            UserCreated               = $Azure.WhenCreated
 
-            RecipientType            = $Mailbox.RecipientTypeDetails
+            Blocked                   = $Azure.BlockCredential
+            LastSynchronized          = $azure.LastDirSyncTime
+            LastPasswordChange        = $Azure.LastPasswordChangeTimestamp
+            PasswordNeverExpires      = $Azure.PasswordNeverExpires
 
-            PrimaryEmailAddress      = $Mailbox.PrimarySmtpAddress
-            AllEmailAddresses        = Convert-ExchangeEmail -Emails $Mailbox.EmailAddresses -Separator ', ' -RemoveDuplicates -RemovePrefix -AddSeparator
+            RecipientType             = $Mailbox.RecipientTypeDetails
 
-            MailboxLogOn             = $MailboxStats.LastLogonTime
-            MailboxLogOff            = $MailboxStats.LastLogoffTime
+            PrimaryEmailAddress       = $Mailbox.PrimarySmtpAddress
+            AllEmailAddresses         = Convert-ExchangeEmail -Emails $Mailbox.EmailAddresses -Separator ', ' -RemoveDuplicates -RemovePrefix -AddSeparator
 
-            MailboxSize              = Convert-ExchangeSize -Size $MailboxStats.TotalItemSize -To $SizeIn -Default '' -Precision $SizePrecision
+            MailboxLogOn              = $MailboxStats.LastLogonTime
+            MailboxLogOff             = $MailboxStats.LastLogoffTime
 
-            MailboxItemCount         = $MailboxStats.ItemCount
+            MailboxSize               = Convert-ExchangeSize -Size $MailboxStats.TotalItemSize -To $SizeIn -Default '' -Precision $SizePrecision
 
-            MailboxDeletedSize       = Convert-ExchangeSize -Size $MailboxStats.TotalDeletedItemSize -To $SizeIn -Default '' -Precision $SizePrecision
-            MailboxDeletedItemsCount = $MailboxStats.DeletedItemCount
+            MailboxItemCount          = $MailboxStats.ItemCount
 
-            MailboxHidden            = $Mailbox.HiddenFromAddressListsEnabled
-            MailboxCreated           = $Mailbox.WhenCreated # WhenCreatedUTC
-            MailboxChanged           = $Mailbox.WhenChanged # WhenChangedUTC
+            MailboxDeletedSize        = Convert-ExchangeSize -Size $MailboxStats.TotalDeletedItemSize -To $SizeIn -Default '' -Precision $SizePrecision
+            MailboxDeletedItemsCount  = $MailboxStats.DeletedItemCount
 
-            ArchiveStatus            = $Mailbox.ArchiveStatus
-            ArchiveQuota             = Convert-ExchangeSize -Size $Mailbox.ArchiveQuota -To $SizeIn -Default '' -Display
-            ArchiveSize              = Convert-ExchangeSize -Size $MailboxStatsArchive.TotalItemSize -To $SizeIn -Default '' -Precision $SizePrecision
-            ArchiveItemCount         = Convert-ExchangeItems -Count $MailboxStatsArchive.ItemCount -Default ''
+            MailboxHidden             = $Mailbox.HiddenFromAddressListsEnabled
+            MailboxCreated            = $Mailbox.WhenCreated # WhenCreatedUTC
+            MailboxChanged            = $Mailbox.WhenChanged # WhenChangedUTC
 
-            ArchiveDeletedSize       = Convert-ExchangeSize -Size $MailboxStatsArchive.TotalDeletedItemSize -To $SizeIn -Default '' -Precision $SizePrecision
-            ArchiveDeletedItemsCount = Convert-ExchangeItems -Count $MailboxStatsArchive.DeletedItemCount -Default ''
+            ArchiveStatus             = $Mailbox.ArchiveStatus
+            ArchiveQuota              = Convert-ExchangeSize -Size $Mailbox.ArchiveQuota -To $SizeIn -Default '' -Display
+            ArchiveSize               = Convert-ExchangeSize -Size $MailboxStatsArchive.TotalItemSize -To $SizeIn -Default '' -Precision $SizePrecision
+            ArchiveItemCount          = Convert-ExchangeItems -Count $MailboxStatsArchive.ItemCount -Default ''
+
+            ArchiveDeletedSize        = Convert-ExchangeSize -Size $MailboxStatsArchive.TotalDeletedItemSize -To $SizeIn -Default '' -Precision $SizePrecision
+            ArchiveDeletedItemsCount  = Convert-ExchangeItems -Count $MailboxStatsArchive.DeletedItemCount -Default ''
             # Adding GUID so it's possible to match other data
-            Guid                     = $Mailbox.Guid.Guid
-            ObjectID                 = $Mailbox.ExternalDirectoryObjectId
+            OverallProvisioningStatus = $Azure.OverallProvisioningStatus
+            ImmutableID               = $Azure.ImmutableID
+            Guid                      = $Mailbox.Guid.Guid
+            ObjectID                  = $Mailbox.ExternalDirectoryObjectId
         }
 
         if ($GatherPermissions) {
@@ -131,7 +138,7 @@ function Get-ReportO365Mailboxes {
             }
         }
     }
-    if ($ReturnAll) {
+    if ($All) {
         return $Object
     } else {
         return $Object.Output

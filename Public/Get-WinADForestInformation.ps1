@@ -13,9 +13,9 @@ function Get-WinADForestInformation {
 
     $Data = [ordered] @{}
     Write-Verbose 'Getting forest information - Forest'
-    $Data.Forest = $(Get-ADForest)
+    $Data.Forest = Get-WinForest
     Write-Verbose 'Getting forest information - RootDSE'
-    $Data.RootDSE = $(Get-ADRootDSE -Properties *)
+    $Data.RootDSE = Get-WinADRootDSE
     Write-Verbose 'Getting forest information - ForestName/ForestNameDN'
     $Data.ForestName = $Data.Forest.Name
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
@@ -23,35 +23,35 @@ function Get-WinADForestInformation {
 
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSites, [ActiveDirectory]::ForestSites1, [ActiveDirectory]::ForestSites2)) {
         Write-Verbose 'Getting forest information - Forest Sites'
-        $Data.ForestSites = $(Get-ADReplicationSite -Filter * -Properties * )
+        $Data.ForestSites = Get-WinADForestSites
         $Data.ForestSites1 = Invoke-Command -ScriptBlock {
-            $ReturnData = @()
-            foreach ($Sites in $Data.ForestSites) {
-                $ReturnData += [PSCustomObject][ordered] @{
-                    'Name'        = $Sites.Name
-                    'Description' = $Sites.Description
-                    #'sD Rights Effective'                = $Sites.sDRightsEffective
-                    'Protected'   = $Sites.ProtectedFromAccidentalDeletion
-                    'Modified'    = $Sites.Modified
-                    'Created'     = $Sites.Created
-                    'Deleted'     = $Sites.Deleted
+            @(
+                foreach ($Sites in $Data.ForestSites) {
+                    [PSCustomObject][ordered] @{
+                        'Name'        = $Sites.Name
+                        'Description' = $Sites.Description
+                        #'sD Rights Effective'                = $Sites.sDRightsEffective
+                        'Protected'   = $Sites.ProtectedFromAccidentalDeletion
+                        'Modified'    = $Sites.Modified
+                        'Created'     = $Sites.Created
+                        'Deleted'     = $Sites.Deleted
+                    }
                 }
-            }
-            return $ReturnData # Format-TransposeTable $ReturnData
+            )            
         }
         $Data.ForestSites2 = Invoke-Command -ScriptBlock {
-            $ReturnData = @()
-            foreach ($Sites in $Data.ForestSites) {
-                $ReturnData += [PSCustomObject][ordered] @{
-                    'Name'                                = $Sites.Name
-                    'Topology Cleanup Enabled'            = $Sites.TopologyCleanupEnabled
-                    'Topology Detect Stale Enabled'       = $Sites.TopologyDetectStaleEnabled
-                    'Topology Minimum Hops Enabled'       = $Sites.TopologyMinimumHopsEnabled
-                    'Universal Group Caching Enabled'     = $Sites.UniversalGroupCachingEnabled
-                    'Universal Group Caching RefreshSite' = $Sites.UniversalGroupCachingRefreshSite
+            @(
+                foreach ($Sites in $Data.ForestSites) {
+                    [PSCustomObject][ordered] @{
+                        'Name'                                = $Sites.Name
+                        'Topology Cleanup Enabled'            = $Sites.TopologyCleanupEnabled
+                        'Topology Detect Stale Enabled'       = $Sites.TopologyDetectStaleEnabled
+                        'Topology Minimum Hops Enabled'       = $Sites.TopologyMinimumHopsEnabled
+                        'Universal Group Caching Enabled'     = $Sites.UniversalGroupCachingEnabled
+                        'Universal Group Caching RefreshSite' = $Sites.UniversalGroupCachingRefreshSite
+                    }
                 }
-            }
-            return $ReturnData # Format-TransposeTable $ReturnData
+            )
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSubnet , [ActiveDirectory]::ForestSubnets1, [ActiveDirectory]::ForestSubnets2)) {
@@ -59,28 +59,28 @@ function Get-WinADForestInformation {
         $Data.ForestSubnets = $(Get-ADReplicationSubnet -Filter * -Properties * | `
                 Select-Object  Name, DisplayName, Description, Site, ProtectedFromAccidentalDeletion, Created, Modified, Deleted )
         $Data.ForestSubnets1 = Invoke-Command -ScriptBlock {
-            $ReturnData = @()
-            foreach ($Subnets in $Data.ForestSubnets) {
-                $ReturnData += [PSCustomObject][ordered] @{
-                    'Name'        = $Subnets.Name
-                    'Description' = $Subnets.Description
-                    'Protected'   = $Subnets.ProtectedFromAccidentalDeletion
-                    'Modified'    = $Subnets.Modified
-                    'Created'     = $Subnets.Created
-                    'Deleted'     = $Subnets.Deleted
+            @(
+                foreach ($Subnets in $Data.ForestSubnets) {
+                    [PSCustomObject][ordered] @{
+                        'Name'        = $Subnets.Name
+                        'Description' = $Subnets.Description
+                        'Protected'   = $Subnets.ProtectedFromAccidentalDeletion
+                        'Modified'    = $Subnets.Modified
+                        'Created'     = $Subnets.Created
+                        'Deleted'     = $Subnets.Deleted
+                    }
                 }
-            }
-            return $ReturnData # Format-TransposeTable $ReturnData
+            )
         }
         $Data.ForestSubnets2 = Invoke-Command -ScriptBlock {
-            $ReturnData = @()
-            foreach ($Subnets in $Data.ForestSubnets) {
-                $ReturnData += [PSCustomObject][ordered] @{
-                    'Name' = $Subnets.Name
-                    'Site' = $Subnets.Site
+            @(
+                foreach ($Subnets in $Data.ForestSubnets) {
+                    [PSCustomObject][ordered] @{
+                        'Name' = $Subnets.Name
+                        'Site' = $Subnets.Site
+                    }
                 }
-            }
-            return $ReturnData # Format-TransposeTable $ReturnData
+            )
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSiteLinks)) {
@@ -106,12 +106,12 @@ function Get-WinADForestInformation {
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestUPNSuffixes)) {
         Write-Verbose 'Getting forest information - Forest UPNSuffixes'
         $Data.ForestUPNSuffixes = Invoke-Command -ScriptBlock {
-            $UPNSuffixList = @()
-            $UPNSuffixList += $Data.Forest.RootDomain + ' (Primary / Default UPN)'
-            if ($Data.Forest.UPNSuffixes) {
-                $UPNSuffixList += $Data.Forest.UPNSuffixes
-            }
-            return $UPNSuffixList
+            @(
+                $Data.Forest.RootDomain + ' (Primary / Default UPN)'
+                if ($Data.Forest.UPNSuffixes) {
+                    $Data.Forest.UPNSuffixes
+                }
+            )           
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestGlobalCatalogs)) {
@@ -127,42 +127,15 @@ function Get-WinADForestInformation {
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestFSMO)) {
         Write-Verbose 'Getting forest information - Forest FSMO'
         $Data.ForestFSMO = Invoke-Command -ScriptBlock {
-            $FSMO = [ordered] @{
+            [ordered] @{
                 'Domain Naming Master' = $Data.Forest.DomainNamingMaster
                 'Schema Master'        = $Data.Forest.SchemaMaster
-            }
-            return $FSMO
+            }            
         }
     }
-
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestOptionalFeatures)) {
         Write-Verbose 'Getting forest information - Forest Optional Features'
-        $Data.ForestOptionalFeatures = Invoke-Command -ScriptBlock {
-            $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
-            $Optional = [ordered]@{
-                'Recycle Bin Enabled'                          = 'N/A'
-                'Privileged Access Management Feature Enabled' = 'N/A'
-            }
-            ### Fix Optional Features
-            foreach ($Feature in $OptionalFeatures) {
-                if ($Feature.Name -eq 'Recycle Bin Feature') {
-                    if ("$($Feature.EnabledScopes)" -eq '') {
-                        $Optional.'Recycle Bin Enabled' = $False
-                    } else {
-                        $Optional.'Recycle Bin Enabled' = $True
-                    }
-                }
-                if ($Feature.Name -eq 'Privileged Access Management Feature') {
-                    if ("$($Feature.EnabledScopes)" -eq '') {
-                        $Optional.'Privileged Access Management Feature Enabled' = $False
-                    } else {
-                        $Optional.'Privileged Access Management Feature Enabled' = $True
-                    }
-                }
-            }
-            return $Optional
-            ### Fix optional features
-        }
+        $Data.ForestOptionalFeatures = Get-WinADForestOptionalFeatures
     }
     ### Generate Data from Domains
     $Data.FoundDomains = [ordered]@{}
