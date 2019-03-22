@@ -6,10 +6,11 @@ function Get-WinADForestInformation {
         [string] $PathToPasswords,
         [string] $PathToPasswordsHashes
     )
-    if ($TypesRequired -eq $null) {
+    if ($null -eq $TypesRequired) {
+        # Gets all types
         Write-Verbose 'Get-WinADForestInformation - TypesRequired is null. Getting all.'
         $TypesRequired = Get-Types -Types ([ActiveDirectory])
-    } # Gets all types
+    } 
 
     $Data = [ordered] @{}
     Write-Verbose 'Getting forest information - Forest'
@@ -24,7 +25,7 @@ function Get-WinADForestInformation {
     ## Forest Information
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestInformation)) {
         Write-Verbose 'Getting forest information - Forest Information'
-        $Data.ForestInformation = Get-WinADForestInformation -Forest $Data.Forest
+        $Data.ForestInformation = Get-WinADForestInfo -Forest $Data.Forest
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestUPNSuffixes)) {
         Write-Verbose 'Getting forest information - Forest UPNSuffixes'

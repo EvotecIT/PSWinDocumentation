@@ -1,5 +1,5 @@
 
-function Get-WinADForestInformation {
+function Get-WinADForestInfo {
     param(
         [Array] $Foest
     )
