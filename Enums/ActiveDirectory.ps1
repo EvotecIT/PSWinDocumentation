@@ -14,6 +14,7 @@ public enum ActiveDirectory {
     ForestSubnets1,
     ForestSubnets2,
     ForestSiteLinks,
+    ForestDomainControllers,
 
     // Domain Information - Section Main
 
