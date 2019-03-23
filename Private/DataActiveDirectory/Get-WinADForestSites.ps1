@@ -1,15 +1,16 @@
 function Get-WinADForestSites {
+    [CmdletBinding()]
     param(
-        
+
     )
     $ExludedProperties = @(
         'PropertyNames', 'AddedProperties', 'RemovedProperties', 'ModifiedProperties', 'PropertyCount'
     )
 
-    $Properties = @('Name', 
+    $Properties = @('Name',
         'DisplayName', 'Description', 'CanonicalName', 'DistinguishedName', 'Location', 'ManagedBy', 'Created', 'Modified', 'Deleted',
         'ProtectedFromAccidentalDeletion', 'RedundantServerTopologyEnabled',
-        'AutomaticInterSiteTopologyGenerationEnabled', 
+        'AutomaticInterSiteTopologyGenerationEnabled',
         'AutomaticTopologyGenerationEnabled',
         'Subnets',
         #'nTSecurityDescriptor'

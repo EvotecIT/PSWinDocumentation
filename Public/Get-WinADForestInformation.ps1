@@ -6,13 +6,14 @@ function Get-WinADForestInformation {
         [string] $PathToPasswords,
         [string] $PathToPasswordsHashes
     )
+    $TimeToGenerate = Start-TimeLog
     if ($null -eq $TypesRequired) {
         # Gets all types
         Write-Verbose 'Get-WinADForestInformation - TypesRequired is null. Getting all.'
         $TypesRequired = Get-Types -Types ([ActiveDirectory])
-    } 
+    }
 
-    $Data = [ordered] @{}
+    $Data = [ordered] @{ }
     Write-Verbose 'Getting forest information - Forest'
     $Data.Forest = Get-WinForest
     Write-Verbose 'Getting forest information - RootDSE'
@@ -44,7 +45,12 @@ function Get-WinADForestInformation {
         $Data.ForestFSMO = [ordered] @{
             'Domain Naming Master' = $Data.Forest.DomainNamingMaster
             'Schema Master'        = $Data.Forest.SchemaMaster
-        }            
+        }
+    }
+
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestDomainControllers)) {
+        # External command from PSSharedGoods
+        $Data.ForestDomainControllers = Get-WinADForestControllers
     }
     # Forest Sites
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestSites, [ActiveDirectory]::ForestSites1, [ActiveDirectory]::ForestSites2)) {
@@ -84,9 +90,11 @@ function Get-WinADForestInformation {
         $Data.ForestOptionalFeatures = Get-WinADForestOptionalFeatures
     }
     ### Generate Data from Domains
-    $Data.FoundDomains = [ordered]@{}
+    $Data.FoundDomains = [ordered]@{ }
     foreach ($Domain in $Data.Domains) {
         $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain -TypesRequired $TypesRequired -PathToPasswords $PathToPasswords -PathToPasswordsHashes $PathToPasswordsHashes
     }
+    $EndTime = Stop-TimeLog -Time $TimeToGenerate -Option OneLiner
+    Write-Verbose "Getting forest information - Time to generate: $EndTime"
     return $Data
 }

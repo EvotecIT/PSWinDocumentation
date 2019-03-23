@@ -46,17 +46,17 @@ $Document = [ordered]@{
                     Use           = $true
                     OnlineMode    = $true
 
-                   Import = @{
-                        Use = $true
+                    Import        = @{
+                        Use  = $true
                         From = 'Folder' # Folder
                         Path = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
                         # or "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
                     }
-                    Export = @{
-                        Use = $true
-                        To = 'Folder' # Folder/File/Both
+                    Export        = @{
+                        Use        = $true
+                        To         = 'Folder' # Folder/File/Both
                         FolderPath = "$Env:USERPROFILE\Desktop\PSWinDocumentation"
-                        FilePath = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
+                        FilePath   = "$Env:USERPROFILE\Desktop\PSWinDocumentation\PSWinDocumentation.xml"
                     }
 
                     Prefix        = ''
@@ -157,8 +157,8 @@ $Document = [ordered]@{
                     WordExport            = $true
                     Text                  = "Following UPN suffixes were created in this forest:"
                     TextNoData            = "No UPN suffixes were created in this forest."
-                    ListType              = 'Bulleted'
-                    ListData              = [ActiveDirectory]::ForestUPNSuffixes
+                    TableDesign           = 'ColorfulGridAccent5'
+                    TableData             = [ActiveDirectory]::ForestUPNSuffixes
                     EmptyParagraphsBefore = 1
                     ExcelExport           = $true
                     ExcelWorkSheet        = 'Forest UPN Suffixes'

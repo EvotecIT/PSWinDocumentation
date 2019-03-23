@@ -1,11 +1,17 @@
 function Get-WinADForestUPNSuffixes {
     param(
-        $Forest
+        [PSCustomObject] $Forest
     )
     @(
-        $Forest.RootDomain + ' (Primary / Default UPN)'
-        if ($Forest.UPNSuffixes) {
-            $Forest.UPNSuffixes
+        [PSCustomObject] @{
+            Name = $Forest.RootDomain
+            Type = 'Primary / Default UPN'
         }
-    )       
+        foreach ($UPN in $Forest.UPNSuffixes) {
+            [PSCustomObject] @{
+                Name = $UPN
+                Type = 'Secondary'
+            }
+        }
+    )
 }

@@ -1,7 +1,8 @@
 function Get-WinADForestOptionalFeatures {
+    [CmdletBinding()]
     param(
 
-    )    
+    )
     $OptionalFeatures = $(Get-ADOptionalFeature -Filter * )
     $Optional = [ordered]@{
         'Recycle Bin Enabled'                          = 'N/A'
@@ -26,5 +27,5 @@ function Get-WinADForestOptionalFeatures {
     }
     return $Optional
     ### Fix optional features
-    
+
 }

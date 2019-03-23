@@ -1,4 +1,5 @@
 function Get-WinUsers {
+    [CmdletBinding()]
     param(
         [System.Object[]] $Users,
         [System.Object[]] $ADCatalog,

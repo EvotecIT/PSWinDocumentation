@@ -1,4 +1,5 @@
 function Get-WinADForestSites2 {
+    [CmdletBinding()]
     param(
         [Array] $ForestSites
     )

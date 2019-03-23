@@ -1,4 +1,5 @@
 function Get-WinGroupMembers {
+    [CmdletBinding()]
     param(
         [System.Object[]] $Groups,
         [string] $Domain,
@@ -7,7 +8,7 @@ function Get-WinGroupMembers {
         [ValidateSet("Recursive", "Standard")][String] $Option
     )
     if ($Option -eq 'Recursive') {
-        $GroupMembersRecursive = foreach ($Group in $Groups) {
+        [Array] $GroupMembersRecursive = foreach ($Group in $Groups) {
             try {
                 $GroupMembership = Get-ADGroupMember -Server $Domain -Identity $Group.'Group SID' -Recursive -ErrorAction Stop
             } catch {
@@ -63,10 +64,13 @@ function Get-WinGroupMembers {
                 # $Member
             }
         }
-        return @($GroupMembersRecursive)
+        if ($GroupMembersRecursive.Count -eq 1) {
+            return , $GroupMembersRecursive
+        }
+        return $GroupMembersRecursive
     }
     if ($Option -eq 'Standard') {
-        $GroupMembersDirect = foreach ($Group in $Groups) {
+        [Array] $GroupMembersDirect = foreach ($Group in $Groups) {
             foreach ($Member in $Group.'Group Members DN') {
                 $Object = (Get-ADObjectFromDistingusishedName -ADCatalog $ADCatalog -DistinguishedName $Member)
                 [PSCustomObject][ordered] @{
@@ -114,6 +118,9 @@ function Get-WinGroupMembers {
                 }
             }
         }
-        return @($GroupMembersDirect)
+        if ($GroupMembersDirect.Count -eq 1) {
+            return , $GroupMembersDirect
+        }
+        return $GroupMembersDirect
     }
 }

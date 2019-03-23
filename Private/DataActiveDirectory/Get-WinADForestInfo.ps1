@@ -1,7 +1,7 @@
-
 function Get-WinADForestInfo {
+    [CmdletBinding()]
     param(
-        [Array] $Foest
+        [PSCustomObject] $Forest
     )
     [ordered] @{
         'Name'                    = $Forest.Name
@@ -11,5 +11,5 @@ function Get-WinADForestInfo {
         'Sites Count'             = ($Forest.Sites).Count
         'Domains'                 = ($Forest.Domains) -join ", "
         'Sites'                   = ($Forest.Sites) -join ", "
-    }    
+    }
 }

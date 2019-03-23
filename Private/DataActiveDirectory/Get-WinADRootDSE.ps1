@@ -1,4 +1,5 @@
 function Get-WinADRootDSE {
+    [CmdletBinding()]
     param(
 
     )

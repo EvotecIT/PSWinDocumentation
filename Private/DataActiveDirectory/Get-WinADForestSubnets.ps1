@@ -1,6 +1,7 @@
 function Get-WinADForestSubnets {
+    [CmdletBinding()]
     param(
-        
+
     )
     $ExludedProperties = @(
         'PropertyNames', 'AddedProperties', 'RemovedProperties', 'ModifiedProperties', 'PropertyCount'

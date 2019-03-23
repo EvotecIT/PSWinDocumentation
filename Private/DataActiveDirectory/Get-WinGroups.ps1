@@ -1,11 +1,13 @@
 function Get-WinGroups {
+    [CmdletBinding()]
     param (
         [System.Object[]] $Groups,
         [System.Object[]] $Users,
         [string] $Domain
     )
     $ReturnGroups = foreach ($Group in $Groups) {
-        $User = $Users | Where-Object { $_.DistinguishedName -eq $Group.ManagedBy }
+        $User = $Users | & { process { if ($_.DistinguishedName -eq $Group.ManagedBy ) { $_ } } } # | Where-Object { $_.DistinguishedName -eq $Group.ManagedBy }
+
         [PsCustomObject][ordered] @{
             'Group Name'            = $Group.Name
             #'Group Display Name' = $Group.DisplayName

@@ -1,4 +1,5 @@
 function Get-WinADForestSites1 {
+    [CmdletBinding()]
     param(
         [Array] $ForestSites
     )
@@ -14,5 +15,5 @@ function Get-WinADForestSites1 {
                 'Deleted'     = $Sites.Deleted
             }
         }
-    )   
+    )
 }
