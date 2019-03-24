@@ -14,7 +14,7 @@ function Get-WinADDomainInformation {
         Write-Verbose 'Get-WinADDomainInformation - TypesRequired is null. Getting all.'
         $TypesRequired = Get-Types -Types ([ActiveDirectory])
     } # Gets all types
-
+    $TimeToGenerate = Start-TimeLog
     $CurrentDate = Get-Date
 
     $Data = [ordered] @{ }
@@ -22,10 +22,8 @@ function Get-WinADDomainInformation {
     $Data.DomainRootDSE = $(Get-ADRootDSE -Server $Domain)
     Write-Verbose "Getting domain information - $Domain DomainInformation"
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
-    Write-Verbose "Getting domain information - $Domain DomainGroupsFullList"
     $Data.DomainGroupsFullList = Get-WinADDomainGroupsFullList -Domain $Domain
     $Data.DomainUsersFullList = Get-WinADDomainUsersFullList -Domain $Domain
-    Write-Verbose "Getting domain information - $Domain DomainComputersFullList"
     $Data.DomainComputersFullList = Get-WinADDomainComputersFullList -Domain $Domain
 
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
@@ -72,46 +70,10 @@ function Get-WinADDomainInformation {
     }
 
     if ($TypesRequired -contains [ActiveDirectory]::DomainRIDs) {
-        # Critical for RID Pool Depletion: https://blogs.technet.microsoft.com/askds/2011/09/12/managing-rid-pool-depletion/
-        $Data.DomainRIDs = Invoke-Command -ScriptBlock {
-            Write-Verbose "Getting domain information - $Domain DomainRIDs"
-            #Write-Verbose "Get-WinADDomainInformation - RID Master: $($Data.DomainInformation.RIDMaster) - DN: $($Data.DomainInformation.DistinguishedName)"
-            $rID = [ordered] @{ }
-            $rID.'rIDs Master' = $Data.DomainInformation.RIDMaster
-
-            $property = get-adobject "cn=rid manager$,cn=system,$($Data.DomainInformation.DistinguishedName)" -property RidAvailablePool -Server $rID.'rIDs Master'
-            [int32]$totalSIDS = $($property.RidAvailablePool) / ([math]::Pow(2, 32))
-            [int64]$temp64val = $totalSIDS * ([math]::Pow(2, 32))
-            [int32]$currentRIDPoolCount = $($property.RidAvailablePool) - $temp64val
-            [int64]$RidsRemaining = $totalSIDS - $currentRIDPoolCount
-
-            $Rid.'rIDs Available Pool' = $property.RidAvailablePool
-            $rID.'rIDs Total SIDs' = $totalSIDS
-            $rID.'rIDs Issued' = $CurrentRIDPoolCount
-            $rID.'rIDs Remaining' = $RidsRemaining
-            $rID.'rIDs Percentage' = if ($RidsRemaining -eq 0) { $RidsRemaining.ToString("P") } else { ($currentRIDPoolCount / $RidsRemaining * 100).ToString("P") }
-            return $rID
-        }
+        $Data.DomainRIDs = Get-WinADDomainRIDs -DomainInformation $Data.DomainInformation
     }
-    if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired @([ActiveDirectory]::DomainGUIDS, [ActiveDirectory]::DomainOrganizationalUnitsBasicACL, [ActiveDirectory]::DomainOrganizationalUnitsExtended)) {
         $Data.DomainGUIDS = Get-WinADDomainGUIDs -RootDSE $Data.DomainRootDSE -Domain $Domain
-        <#
-        Write-Verbose "Getting domain information - $Domain DomainGUIDS"
-        $Data.DomainGUIDS = Invoke-Command -ScriptBlock {
-            $GUID = @{ }
-            Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID | ForEach-Object {
-                if ($GUID.Keys -notcontains $_.schemaIDGUID ) {
-                    $GUID.add([System.GUID]$_.schemaIDGUID, $_.name)
-                }
-            }
-            Get-ADObject -SearchBase "CN=Extended-Rights,$((Get-ADRootDSE).configurationNamingContext)" -LDAPFilter '(objectClass=controlAccessRight)' -Properties name, rightsGUID | ForEach-Object {
-                if ($GUID.Keys -notcontains $_.rightsGUID ) {
-                    $GUID.add([System.GUID]$_.rightsGUID, $_.name)
-                }
-            }
-            return $GUID
-        }
-        #>
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainAuthenticationPolicies)) {
         Write-Verbose "Getting domain information - $Domain DomainAuthenticationPolicies"
@@ -309,7 +271,7 @@ function Get-WinADDomainInformation {
         Write-Verbose -Message "Getting domain information - $Domain DomainDefaultPasswordPolicy"
         $Data.DomainDefaultPasswordPolicy = Invoke-Command -ScriptBlock {
             $Policy = $(Get-ADDefaultDomainPasswordPolicy -Server $Domain)
-            $Data = [ordered] @{
+            [ordered] @{
                 'Complexity Enabled'            = $Policy.ComplexityEnabled
                 'Lockout Duration'              = $Policy.LockoutDuration
                 'Lockout Observation Window'    = $Policy.LockoutObservationWindow
@@ -321,7 +283,6 @@ function Get-WinADDomainInformation {
                 'Reversible Encryption Enabled' = $Policy.ReversibleEncryptionEnabled
                 'Distinguished Name'            = $Policy.DistinguishedName
             }
-            return $Data
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
@@ -335,31 +296,6 @@ function Get-WinADDomainInformation {
         Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnits Clean"
         $Data.DomainOrganizationalUnitsClean = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
         $Data.DomainOrganizationalUnits = Get-WinADDomainOrganizationalUnits -Domain $Domain -OrgnaizationalUnits $Data.DomainOrganizationalUnitsClean
-        <#
-        $Data.DomainOrganizationalUnits = Invoke-Command -ScriptBlock {
-            return $Data.DomainOrganizationalUnitsClean | Select-Object `
-            @{ n = 'Canonical Name'; e = { $_.CanonicalName } },
-            @{ n = 'Managed By'; e = {
-                    (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $_.ManagedBy -Verbose).Name
-                }
-            },
-            @{ n = 'Manager Email'; e = {
-                    (Get-ADObjectFromDistingusishedName -ADCatalog $Data.DomainUsersFullList -DistinguishedName $_.ManagedBy -Verbose).EmailAddress
-                }
-            },
-            @{ n = 'Protected'; e = { $_.ProtectedFromAccidentalDeletion } },
-            Created,
-            Modified,
-            Deleted,
-            @{ n = 'Postal Code'; e = { $_.PostalCode } },
-            City,
-            Country,
-            State,
-            @{ n = 'Street Address'; e = { $_.StreetAddress } },
-            DistinguishedName,
-            ObjectGUID | Sort-Object 'Canonical Name'
-        }
-             #>
         Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnitsDN"
         $Data.DomainOrganizationalUnitsDN = Invoke-Command -ScriptBlock {
             $OUs = @(
@@ -917,5 +853,7 @@ function Get-WinADDomainInformation {
             return $Stats
         }
     }
+    $EndTime = Stop-TimeLog -Time $TimeToGenerate
+    Write-Verbose "Getting domain information - $Domain - Time to generate: $EndTime"
     return $Data
 }

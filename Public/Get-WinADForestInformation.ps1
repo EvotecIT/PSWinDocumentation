@@ -89,12 +89,11 @@ function Get-WinADForestInformation {
         Write-Verbose 'Getting forest information - Forest Optional Features'
         $Data.ForestOptionalFeatures = Get-WinADForestOptionalFeatures
     }
+    $EndTime = Stop-TimeLog -Time $TimeToGenerate
+    Write-Verbose "Getting forest information - Time to generate: $EndTime"
     ### Generate Data from Domains
     $Data.FoundDomains = [ordered]@{ }
     foreach ($Domain in $Data.Domains) {
         $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain -TypesRequired $TypesRequired -PathToPasswords $PathToPasswords -PathToPasswordsHashes $PathToPasswordsHashes
     }
-    $EndTime = Stop-TimeLog -Time $TimeToGenerate -Option OneLiner
-    Write-Verbose "Getting forest information - Time to generate: $EndTime"
-    return $Data
 }
