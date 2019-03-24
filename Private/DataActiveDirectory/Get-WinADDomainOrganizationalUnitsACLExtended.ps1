@@ -4,7 +4,8 @@ function Get-WinADDomainOrganizationalUnitsACLExtended {
         $DomainOrganizationalUnitsClean,
         [string] $Domain,
         [string] $NetBiosName,
-        [string] $RootDomainNamingContext
+        [string] $RootDomainNamingContext,
+        $GUID
     )
     Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnitsExtended"
     $Time = Start-TimeLog
@@ -19,6 +20,28 @@ function Get-WinADDomainOrganizationalUnitsACLExtended {
 
     @(
         foreach ($OU in $OUs) {
+
+            $ACLs = Get-Acl -Path "$NetBiosName`:\$($OU.Value)" | Select-Object -ExpandProperty Access
+            foreach ($ACL in $ACLs) {
+                [PSCustomObject] @{
+                    'Distinguished Name'        = $OU.Value
+                    'Type'                      = $OU.Name
+                    'AccessControlType'         = $ACL.AccessControlType
+                    'ObjectType Name'           = if ($ACL.objectType.ToString() -eq '00000000-0000-0000-0000-000000000000') { 'All' } Else { $GUID.Item($ACL.objectType) }
+                    'Inherited ObjectType Name' = $GUID.Item($ACL.inheritedObjectType)
+                    'ActiveDirectoryRights'     = $ACL.ActiveDirectoryRights
+                    'InheritanceType'           = $ACL.InheritanceType
+                    'ObjectType'                = $ACL.ObjectType
+                    'InheritedObjectType'       = $ACL.InheritedObjectType
+                    'ObjectFlags'               = $ACL.ObjectFlags
+                    'IdentityReference'         = $ACL.IdentityReference
+                    'IsInherited'               = $ACL.IsInherited
+                    'InheritanceFlags'          = $ACL.InheritanceFlags
+                    'PropagationFlags'          = $ACL.PropagationFlags
+                }
+            }
+
+            <#
             Get-Acl -Path "$NetBiosName`:\$($OU.Value)" | `
                 Select-Object -ExpandProperty Access | `
                 Select-Object `
@@ -36,8 +59,42 @@ function Get-WinADDomainOrganizationalUnitsACLExtended {
             @{name = 'IsInherited'; expression = { $_.IsInherited } },
             @{name = 'InheritanceFlags'; expression = { $_.InheritanceFlags } },
             @{name = 'PropagationFlags'; expression = { $_.PropagationFlags } }
+
+            #>
+
         }
     )
     $EndTime = Stop-TimeLog -Time $Time -Option OneLiner
     Write-Verbose -Message "Getting domain information - $Domain DomainOrganizationalUnitsExtended Time: $EndTime"
 }
+
+<#
+$Data = @{}
+$Domain = 'ad.evotec.xyz'
+$Data.DomainRootDSE = $(Get-ADRootDSE -Server $Domain)
+$Data.DomainInformation = $(Get-ADDomain -Server $Domain)
+$Data.DomainGUIDS = Invoke-Command -ScriptBlock {
+    $GUID = @{ }
+    Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID | ForEach-Object {
+        if ($GUID.Keys -notcontains $_.schemaIDGUID ) {
+            $GUID.add([System.GUID]$_.schemaIDGUID, $_.name)
+        }
+    }
+    Get-ADObject -SearchBase "CN=Extended-Rights,$((Get-ADRootDSE).configurationNamingContext)" -LDAPFilter '(objectClass=controlAccessRight)' -Properties name, rightsGUID | ForEach-Object {
+        if ($GUID.Keys -notcontains $_.rightsGUID ) {
+            $GUID.add([System.GUID]$_.rightsGUID, $_.name)
+        }
+    }
+    return $GUID
+}
+$OU = $(Get-ADOrganizationalUnit -Server $Domain -Properties * -Filter * )
+
+
+Get-WinADDomainOrganizationalUnitsACLExtended  `
+    -DomainOrganizationalUnitsClean $OU `
+    -Domain $Domain `
+    -NetBiosName $Data.DomainInformation.NetBIOSName `
+    -RootDomainNamingContext $Data.DomainRootDSE.rootDomainNamingContext `
+    -GUID $Data.DomainGUIDS
+
+    #>

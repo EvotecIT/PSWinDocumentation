@@ -94,6 +94,8 @@ function Get-WinADDomainInformation {
         }
     }
     if ($TypesRequired -contains [ActiveDirectory]::DomainGUIDS) {
+        $Data.DomainGUIDS = Get-WinADDomainGUIDs -RootDSE $Data.DomainRootDSE -Domain $Domain
+        <#
         Write-Verbose "Getting domain information - $Domain DomainGUIDS"
         $Data.DomainGUIDS = Invoke-Command -ScriptBlock {
             $GUID = @{ }
@@ -109,6 +111,7 @@ function Get-WinADDomainInformation {
             }
             return $GUID
         }
+        #>
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainAuthenticationPolicies)) {
         Write-Verbose "Getting domain information - $Domain DomainAuthenticationPolicies"
@@ -384,7 +387,8 @@ function Get-WinADDomainInformation {
             -DomainOrganizationalUnitsClean $Data.DomainOrganizationalUnitsClean `
             -Domain $Domain `
             -NetBiosName $Data.DomainInformation.NetBIOSName `
-            -RootDomainNamingContext $Data.DomainRootDSE.rootDomainNamingContext
+            -RootDomainNamingContext $Data.DomainRootDSE.rootDomainNamingContext `
+            -GUID $Data.DomainGUIDS
         #$null = $OrganizationalUnitACL # remove unneeded stuff
 
         #-DomainOrganizationalUnitsBasicACL $Data.DomainOrganizationalUnitsBasicACL `
