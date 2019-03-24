@@ -491,7 +491,7 @@ function Get-WinADDomainInformation {
         Write-Verbose "Getting domain information - $Domain DomainControllers"
         $Data.DomainControllersClean = $(Get-ADDomainController -Server $Domain -Filter * )
         $Data.DomainControllers = Invoke-Command -ScriptBlock {
-            $DCs = foreach ($Policy in $Data.DomainControllersClean) {
+            foreach ($Policy in $Data.DomainControllersClean) {
                 [PSCustomObject][ordered] @{
                     'Name'             = $Policy.Name
                     'Host Name'        = $Policy.HostName
@@ -505,7 +505,6 @@ function Get-WinADDomainInformation {
                     'SSL Port'         = $Policy.SSLPort
                 }
             }
-            return $DCs
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainFineGrainedPolicies)) {
