@@ -3,6 +3,9 @@ function Get-WinADForestInfo {
     param(
         [PSCustomObject] $Forest
     )
+    $Time = Start-TimeLog
+    Write-Verbose 'Getting forest information - Forest Information'
+
     [ordered] @{
         'Name'                    = $Forest.Name
         'Root Domain'             = $Forest.RootDomain
@@ -12,4 +15,7 @@ function Get-WinADForestInfo {
         'Domains'                 = ($Forest.Domains) -join ", "
         'Sites'                   = ($Forest.Sites) -join ", "
     }
+    
+    $EndTime = Stop-TimeLog -Time $Time -Option OneLiner
+    Write-Verbose "Getting forest information - Forest Information Time: $EndTime"
 }

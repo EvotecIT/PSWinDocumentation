@@ -4,7 +4,8 @@ function Get-WinADDomainInformation {
         [string] $Domain,
         [Object] $TypesRequired,
         [string] $PathToPasswords,
-        [string] $PathToPasswordsHashes
+        [string] $PathToPasswordsHashes,
+        [switch] $Extended
     )
     if ([string]::IsNullOrEmpty($Domain)) {
         Write-Warning 'Get-WinADDomainInformation - $Domain parameter is empty. Try your domain name like ad.evotec.xyz. Skipping for now...'
@@ -23,7 +24,7 @@ function Get-WinADDomainInformation {
     Write-Verbose "Getting domain information - $Domain DomainInformation"
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
     $Data.DomainGroupsFullList = Get-WinADDomainGroupsFullList -Domain $Domain
-    $Data.DomainUsersFullList = Get-WinADDomainUsersFullList -Domain $Domain
+    $Data.DomainUsersFullList = Get-WinADDomainUsersFullList -Domain $Domain -Extended:$Extended
     $Data.DomainComputersFullList = Get-WinADDomainComputersFullList -Domain $Domain
 
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
@@ -198,7 +199,7 @@ function Get-WinADDomainInformation {
             [ActiveDirectory]::DomainGroupPoliciesACL
         )) {
         Write-Verbose "Getting domain information - $Domain DomainGroupPolicies"
-        $Data.DomainGroupPoliciesClean = $(Get-GPO -Domain $Domain -Server $Domain -All)
+        $Data.DomainGroupPoliciesClean = $(Get-GPO -Domain $Domain -All)
         $Data.DomainGroupPolicies = foreach ($gpo in $Data.DomainGroupPoliciesClean) {
             [PSCustomObject][ordered] @{
                 'Display Name'      = $gpo.DisplayName
@@ -507,6 +508,13 @@ function Get-WinADDomainInformation {
         }
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainFineGrainedPoliciesUsersExtended)) {
+        $Data.DomainFineGrainedPoliciesUsersExtended = Get-DomainFineGrainedPoliciesUsersExtended `
+            -DomainFineGrainedPolicies $Data.DomainFineGrainedPoliciesUsers `
+            -DomainUsersFullList $Data.DomainUsersFullList `
+            -DomainGroupsFullList $Data.DomainGroupsFullList `
+            -Domain $Domain
+
+        <#
         Write-Verbose "Getting domain information - $Domain DomainFineGrainedPoliciesUsersExtended"
         $Data.DomainFineGrainedPoliciesUsersExtended = Invoke-Command -ScriptBlock {
             $PolicyUsers = @()
@@ -613,7 +621,9 @@ function Get-WinADDomainInformation {
             }
             return $PolicyUsers
         }
+         #>
     }
+
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainGroups, [ActiveDirectory]::DomainGroupsSpecial)) {
         Write-Verbose "Getting domain information - $Domain DomainGroups"
         $Data.DomainGroups = Get-WinGroups -Groups $Data.DomainGroupsFullList -Users $Data.DomainUsersFullList -Domain $Domain

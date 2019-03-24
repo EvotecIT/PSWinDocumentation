@@ -14,18 +14,15 @@ function Get-WinADForestInformation {
     }
 
     $Data = [ordered] @{ }
-    Write-Verbose 'Getting forest information - Forest'
-    $Data.Forest = Get-WinForest
-    Write-Verbose 'Getting forest information - RootDSE'
+    $Data.Forest = Get-WinADForest
     $Data.RootDSE = Get-WinADRootDSE
-    Write-Verbose 'Getting forest information - ForestName/ForestNameDN'
+    Write-Verbose 'Getting forest information - ForestName & ForestNameDN & Domains list'
     $Data.ForestName = $Data.Forest.Name
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
     $Data.Domains = $Data.Forest.Domains
 
     ## Forest Information
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestInformation)) {
-        Write-Verbose 'Getting forest information - Forest Information'
         $Data.ForestInformation = Get-WinADForestInfo -Forest $Data.Forest
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestUPNSuffixes)) {
@@ -47,7 +44,6 @@ function Get-WinADForestInformation {
             'Schema Master'        = $Data.Forest.SchemaMaster
         }
     }
-
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestDomainControllers)) {
         # External command from PSSharedGoods
         $Data.ForestDomainControllers = Get-WinADForestControllers
@@ -83,7 +79,6 @@ function Get-WinADForestInformation {
         Write-Verbose 'Getting forest information - Forest SiteLinks'
         $Data.ForestSiteLinks = Get-WinADForestSiteLinks
     }
-
     ## Forest Optional Features
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestOptionalFeatures)) {
         Write-Verbose 'Getting forest information - Forest Optional Features'
