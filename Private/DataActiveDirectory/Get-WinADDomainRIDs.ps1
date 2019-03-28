@@ -1,11 +1,17 @@
 function Get-WinADDomainRIDs {
+    [CmdletBinding()]
     param(
-        [Microsoft.ActiveDirectory.Management.ADDomain] $DomainInformation
+        [Microsoft.ActiveDirectory.Management.ADDomain] $DomainInformation,
+        [string] $Domain
     )
     # Critical for RID Pool Depletion: https://blogs.technet.microsoft.com/askds/2011/09/12/managing-rid-pool-depletion/
     #$DomainInformation.GetType() | fv -List -Property *
     $Time = Start-TimeLog
     Write-Verbose "Getting domain information - $Domain DomainRIDs"
+
+    if ($null -eq $DomainInformation) {
+        $DomainInformation = Get-ADDomain -Server $Domain
+    }
     $rID = [ordered] @{ }
     $rID.'rIDs Master' = $DomainInformation.RIDMaster
 

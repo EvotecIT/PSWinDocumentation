@@ -21,6 +21,10 @@ function Get-WinADForestInformation {
     $Data.ForestNameDN = $Data.RootDSE.defaultNamingContext
     $Data.Domains = $Data.Forest.Domains
 
+    $Data.ForestSchemaPropertiesComputers = Get-WinADForestSchemaPropertiesComputers
+    $Data.ForestSchemaPropertiesUsers = Get-WinADForestSchemaPropertiesUsers
+
+
     ## Forest Information
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::ForestInformation)) {
         $Data.ForestInformation = Get-WinADForestInfo -Forest $Data.Forest
@@ -89,6 +93,11 @@ function Get-WinADForestInformation {
     ### Generate Data from Domains
     $Data.FoundDomains = [ordered]@{ }
     foreach ($Domain in $Data.Domains) {
-        $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain -TypesRequired $TypesRequired -PathToPasswords $PathToPasswords -PathToPasswordsHashes $PathToPasswordsHashes
+        $Data.FoundDomains.$Domain = Get-WinADDomainInformation -Domain $Domain `
+            -TypesRequired $TypesRequired `
+            -PathToPasswords $PathToPasswords `
+            -PathToPasswordsHashes $PathToPasswordsHashes `
+            -ForestSchemaComputers $Data.ForestSchemaPropertiesComputers  `
+            -ForestSchemaUsers $Data.ForestSchemaPropertiesUsers
     }
 }

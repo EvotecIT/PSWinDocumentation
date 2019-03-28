@@ -43,7 +43,11 @@ public enum ActiveDirectory {
     DomainOrganizationalUnitsBasicACL,
     DomainOrganizationalUnitsExtended,
     DomainContainers,
+    DomainTrustsClean,
     DomainTrusts,
+
+    DomainBitlocker,
+    DomainLAPS,
 
     // Domain Information - Group Data
     DomainGroupsFullList, // Contains all data

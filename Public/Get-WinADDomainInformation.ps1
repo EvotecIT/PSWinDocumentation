@@ -5,7 +5,9 @@ function Get-WinADDomainInformation {
         [Object] $TypesRequired,
         [string] $PathToPasswords,
         [string] $PathToPasswordsHashes,
-        [switch] $Extended
+        [switch] $Extended,
+        [Array] $ForestSchemaComputers,
+        [Array] $ForestSchemaUsers
     )
     if ([string]::IsNullOrEmpty($Domain)) {
         Write-Warning 'Get-WinADDomainInformation - $Domain parameter is empty. Try your domain name like ad.evotec.xyz. Skipping for now...'
@@ -16,6 +18,16 @@ function Get-WinADDomainInformation {
         $TypesRequired = Get-Types -Types ([ActiveDirectory])
     } # Gets all types
     $TimeToGenerate = Start-TimeLog
+
+    # this is required to make sure certain properties are used in domain, such as LAPS, EXCHANGE and so on.
+    # this prevents errors of asking for wrong property
+    if ($null -eq $ForestSchemaComputers) {
+        $ForestSchemaComputers = Get-WinADForestSchemaPropertiesComputers
+    }
+    if ($null -eq $ForestSchemaUsers) {
+        $ForestSchemaUsers = Get-WinADForestSchemaPropertiesUsers
+    }
+
     $CurrentDate = Get-Date
 
     $Data = [ordered] @{ }
@@ -24,8 +36,8 @@ function Get-WinADDomainInformation {
     Write-Verbose "Getting domain information - $Domain DomainInformation"
     $Data.DomainInformation = $(Get-ADDomain -Server $Domain)
     $Data.DomainGroupsFullList = Get-WinADDomainGroupsFullList -Domain $Domain
-    $Data.DomainUsersFullList = Get-WinADDomainUsersFullList -Domain $Domain -Extended:$Extended
-    $Data.DomainComputersFullList = Get-WinADDomainComputersFullList -Domain $Domain
+    $Data.DomainUsersFullList = Get-WinADDomainUsersFullList -Domain $Domain -Extended:$Extended -ForestSchemaUsers $ForestSchemaUsers
+    $Data.DomainComputersFullList = Get-WinADDomainComputersFullList -Domain $Domain -ForestSchemaComputers $ForestSchemaComputers
 
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
             [ActiveDirectory]::DomainComputersAll,
@@ -135,7 +147,7 @@ function Get-WinADDomainInformation {
         $Data.DomainDNSSrv = $Data.DomainDNSData.SRV
         $Data.DomainDNSA = $Data.DomainDNSData.A
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainFSMO, [ActiveDirectory]::DomainTrusts )) {
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainFSMO, [ActiveDirectory]::DomainTrusts, [ActiveDirectory]::DomainTrustsClean )) {
         Write-Verbose "Getting domain information - $Domain DomainFSMO"
         # required for multiple use cases FSMO/DomainTrusts
         $Data.DomainFSMO = [ordered] @{
@@ -144,55 +156,8 @@ function Get-WinADDomainInformation {
             'Infrastructure Master' = $Data.DomainInformation.InfrastructureMaster
         }
     }
-    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainTrusts)) {
-        Write-Verbose "Getting domain information - $Domain DomainTrusts"
-        ## requires both DomainTrusts and FSMO.
-        $Data.DomainTrustsClean = (Get-ADTrust -Server $Domain -Filter * -Properties *)
-        $Data.DomainTrusts = Invoke-Command -ScriptBlock {
-            $DomainPDC = $Data.DomainFSMO.'PDC Emulator'
-            $Trusts = $Data.DomainTrustsClean
-            if ($Trusts) {
-                $ReturnData = foreach ($Trust in $Trusts) {
-                    $TrustWMI = Get-CimInstance -ClassName Microsoft_DomainTrustStatus -Namespace root\MicrosoftActiveDirectory -ComputerName $DomainPDC -ErrorAction SilentlyContinue -Verbose:$false | Select-Object TrustIsOK, TrustStatus, TrustStatusString, PSComputerName, TrustedDCName
-                    [PSCustomObject][ordered] @{
-                        'Trust Source'               = $Domain
-                        'Trust Target'               = $Trust.Target
-                        'Trust Direction'            = $Trust.Direction
-                        'Trust Attributes'           = if ($Trust.TrustAttributes -is [int]) { Set-TrustAttributes -Value $Trust.TrustAttributes } else { 'Error - needs fixing' }
-                        #'Trust OK'                   = $TrustWMI.TrustIsOK
-                        #'Trust Status'               = $TrustWMI.TrustStatus
-                        'Trust Status'               = if ($null -ne $TrustWMI) { $TrustWMI.TrustStatusString } else { 'N/A' }
-                        'Forest Transitive'          = $Trust.ForestTransitive
-                        'Selective Authentication'   = $Trust.SelectiveAuthentication
-                        'SID Filtering Forest Aware' = $Trust.SIDFilteringForestAware
-                        'SID Filtering Quarantined'  = $Trust.SIDFilteringQuarantined
-                        'Disallow Transivity'        = $Trust.DisallowTransivity
-                        'Intra Forest'               = $Trust.IntraForest
-                        'Tree Parent?'               = $Trust.IsTreeParent
-                        'Tree Root?'                 = $Trust.IsTreeRoot
-                        'TGTDelegation'              = $Trust.TGTDelegation
-                        'TrustedPolicy'              = $Trust.TrustedPolicy
-                        'TrustingPolicy'             = $Trust.TrustingPolicy
-                        'TrustType'                  = $Trust.TrustType
-                        'UplevelOnly'                = $Trust.UplevelOnly
-                        'UsesAESKeys'                = $Trust.UsesAESKeys
-                        'UsesRC4Encryption'          = $Trust.UsesRC4Encryption
-                        'Trust Source DC'            = if ($null -ne $TrustWMI) { $TrustWMI.PSComputerName } else { 'N/A' }
-                        'Trust Target DC'            = if ($null -ne $TrustWMI) { $TrustWMI.TrustedDCName.Replace('\\', '') } else { 'N/A' }
-                        'Trust Source DN'            = $Trust.Source
-                        'ObjectGUID'                 = $Trust.ObjectGUID
-                        'Created'                    = $Trust.Created
-                        'Modified'                   = $Trust.Modified
-                        'Deleted'                    = $Trust.Deleted
-                        'SID'                        = $Trust.securityIdentifier
-                    }
-                }
-                return $ReturnData # Format-TransposeTable $ReturnData
-            } else {
-                return
-            }
-        }
-    }
+    $Data.DomainTrustsClean = Get-WinADDomainTrustsClean -Domain $Domain -TypesRequired $TypesRequired
+    $Data.DomainTrusts = Get-WinADDomainTrusts -DomainPDC $Data.DomainFSMO.'PDC Emulator' -Trusts $Data.DomainTrustsClean -Domain $Domain -TypesRequired $TypesRequired
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @(
             [ActiveDirectory]::DomainGroupPolicies,
             [ActiveDirectory]::DomainGroupPoliciesDetails,
@@ -267,6 +232,12 @@ function Get-WinADDomainInformation {
             }
             return $Output
         }
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainBitlocker)) {
+        $Data.DomainBitlocker = Get-WinADDomainBitlocker -Domain $Domain -Computers $Data.DomainComputersFullList
+    }
+    if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainLAPS)) {
+        $Data.DomainLAPS = Get-WinADDomainLAPS -Domain $Domain -Computers $Data.DomainComputersFullList
     }
     if (Find-TypesNeeded -TypesRequired $TypesRequired -TypesNeeded @([ActiveDirectory]::DomainDefaultPasswordPolicy)) {
         Write-Verbose -Message "Getting domain information - $Domain DomainDefaultPasswordPolicy"
