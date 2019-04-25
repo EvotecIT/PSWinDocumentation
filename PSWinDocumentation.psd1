@@ -61,8 +61,7 @@ RequiredModules = @('PSWriteWord',
 # RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-ScriptsToProcess = 'Enums\ActiveDirectory.ps1', 'Enums\AWS.ps1', 'Enums\Exchange.ps1', 
-               'Enums\O365.ps1'
+ScriptsToProcess = 'Enums\AWS.ps1', 'Enums\Exchange.ps1', 'Enums\O365.ps1'
 
 # Type files (.ps1xml) to be loaded when importing this module
 # TypesToProcess = @()
@@ -74,13 +73,12 @@ ScriptsToProcess = 'Enums\ActiveDirectory.ps1', 'Enums\AWS.ps1', 'Enums\Exchange
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Get-WinADDomainInformation', 'Get-WinADDomainPasswordQuality', 
-               'Get-WinADForestInformation', 'Get-WinAWSInformation', 
-               'Get-WinExchangeInformation', 'Get-WinHyperV', 'Get-WinO365Azure', 
-               'Get-WinO365Exchange', 'Start-ActiveDirectoryDocumentation', 
-               'Start-Documentation', 'Start-DocumentationAD', 
-               'Start-DocumentationAWS', 'Start-DocumentationExchange', 
-               'Start-DocumentationO365', 'Start-WinDocumentationWorkstation', 
+FunctionsToExport = 'Get-WinAWSInformation', 'Get-WinExchangeInformation', 
+               'Get-WinHyperV', 'Get-WinO365Azure', 'Get-WinO365Exchange', 
+               'Start-ActiveDirectoryDocumentation', 'Start-Documentation', 
+               'Start-DocumentationAD', 'Start-DocumentationAWS', 
+               'Start-DocumentationExchange', 'Start-DocumentationO365', 
+               'Start-WinDocumentationWorkstation', 
                'Get-ReportO365DistributionGroups', 'Get-ReportO365Licenses', 
                'Get-ReportO365Licenses', 'Get-ReportO365Mailboxes', 
                'Get-ReportO365Subscriptions', 'Get-ReportO365TenantDomains', 
