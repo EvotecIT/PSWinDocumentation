@@ -6,6 +6,7 @@ function Start-DocumentationAD {
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
 
+
     $DataInformationAD = Get-WinServiceData -Credentials $Document.DocumentAD.Services.OnPremises.Credentials `
         -Service $Document.DocumentAD.Services.OnPremises.ActiveDirectory `
         -TypesRequired $TypesRequired `
@@ -15,7 +16,7 @@ function Start-DocumentationAD {
     $TimeDocuments = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
     # Saves data to XML is required - skipped when Offline mode is on
-    if ($DataInformationAD) {
+    #if ($DataInformationAD) {
         if ($Document.DocumentAD.ExportExcel -or $Document.DocumentAD.ExportWord -or $Document.DocumentAD.ExportSQL) {
 
             ### Starting WORD
@@ -68,7 +69,7 @@ function Start-DocumentationAD {
             }
         }
 
-    }
+    #}
     $TimeDocuments.Stop()
     $TimeTotal.Stop()
     Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"

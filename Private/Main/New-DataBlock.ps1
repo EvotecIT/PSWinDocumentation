@@ -54,9 +54,9 @@ function New-DataBlock {
 
         #Write-Verbose "Table Data $($TableData.Count)"
 
-        if ($WordDocument -and $Section.WordExport) {
+        if ($WordDocument -and (($null -eq $Section.WordExport -and $Section.Use -eq $true) -or ($Section.WordExport -eq $true)))  {
             Write-Verbose "Generating WORD Section for [$SectionDetails]"
-            $WordDocument | New-WordBlock `
+            New-WordBlock -WordDocument $WordDocument `
                 -TocGlobalDefinition $Section.TocGlobalDefinition`
                 -TocGlobalTitle $Section.TocGlobalTitle `
                 -TocGlobalSwitches $Section.TocGlobalSwitches `

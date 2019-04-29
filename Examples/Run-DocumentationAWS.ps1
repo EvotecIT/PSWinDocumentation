@@ -97,18 +97,18 @@ $Document = [ordered]@{
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSEC2Details
+                TableData       = [PSWinDocumentation.AWS]::AWSEC2Details
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
                 Text            = "Basic information about EC2 servers such as ID, name, environment, instance type and IP."
 
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSEC2Details'
-                ExcelData       = [AWS]::AWSEC2Details
+                ExcelData       = [PSWinDocumentation.AWS]::AWSEC2Details
 
                 SqlExport       = $true
                 SqlServer       = 'EVO1'
                 SqlDatabase     = 'SSAE18'
-                SqlData         = [AWS]::AWSEC2Details
+                SqlData         = [PSWinDocumentation.AWS]::AWSEC2Details
                 SqlTable        = 'dbo.[AWSEC2Details]'
                 SqlTableCreate  = $true
             }
@@ -120,12 +120,12 @@ $Document = [ordered]@{
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSRDSDetails
+                TableData       = [PSWinDocumentation.AWS]::AWSRDSDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
                 Text            = "Basic information about RDS databases such as name, class, mutliAZ, engine version."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSRDSDetails'
-                ExcelData       = [AWS]::AWSRDSDetails
+                ExcelData       = [PSWinDocumentation.AWS]::AWSRDSDetails
             }
             SectionELB             = [ordered] @{
                 Use             = $true
@@ -135,12 +135,12 @@ $Document = [ordered]@{
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSLBDetails
+                TableData       = [PSWinDocumentation.AWS]::AWSLBDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
                 Text            = "Basic information about ELB and ALB such as name, DNS name, targets, scheme."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSLBDetailsList'
-                ExcelData       = [AWS]::AWSLBDetails
+                ExcelData       = [PSWinDocumentation.AWS]::AWSLBDetails
             }
             SectionVPC             = [ordered] @{
                 Use             = $true
@@ -150,12 +150,12 @@ $Document = [ordered]@{
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSSubnetDetails
+                TableData       = [PSWinDocumentation.AWS]::AWSSubnetDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
                 Text            = "Basic information about subnets such as: id, name, CIDR, free IP and VPC."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSSubnetDetails'
-                ExcelData       = [AWS]::AWSSubnetDetails
+                ExcelData       = [PSWinDocumentation.AWS]::AWSSubnetDetails
             }
             SectionEIP             = [ordered] @{
                 Use             = $true
@@ -165,12 +165,12 @@ $Document = [ordered]@{
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSElasticIpDetails
+                TableData       = [PSWinDocumentation.AWS]::AWSElasticIpDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
                 Text            = "Basic information about reserved elastic IPs such as name, IP, network interface."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSElasticIpDetails'
-                ExcelData       = [AWS]::AWSElasticIpDetails
+                ExcelData       = [PSWinDocumentation.AWS]::AWSElasticIpDetails
             }
             SectionIAM             = [ordered] @{
                 Use             = $true
@@ -180,12 +180,12 @@ $Document = [ordered]@{
                 TocListLevel    = 0
                 TocListItemType = [ListItemType]::Numbered
                 TocHeadingType  = [HeadingType]::Heading1
-                TableData       = [AWS]::AWSIAMDetails
+                TableData       = [PSWinDocumentation.AWS]::AWSIAMDetails
                 TableDesign     = [TableDesign]::ColorfulGridAccent5
                 Text            = "Basic information about IAM users such as groups and MFA details."
                 ExcelExport     = $true
                 ExcelWorkSheet  = 'AWSIAMDetails'
-                ExcelData       = [AWS]::AWSIAMDetails
+                ExcelData       = [PSWinDocumentation.AWS]::AWSIAMDetails
             }
         }
     }
