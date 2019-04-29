@@ -50,8 +50,6 @@ function Start-DocumentationExchange {
     }
 
     $TimeDocuments.Stop()
-    $TimeTotal.Stop()
     Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"
     Write-Verbose "Time to create documents: $($TimeDocuments.Elapsed)"
-    Write-Verbose "Time total: $($TimeTotal.Elapsed)"
 }

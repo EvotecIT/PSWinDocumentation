@@ -3,7 +3,7 @@ function Start-Documentation {
     param (
         [System.Object] $Document
     )
-    #$TimeTotal = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
+    $TimeTotal = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     Test-Configuration -Document $Document
 
     if ($Document.DocumentAD.Enable) {
@@ -31,4 +31,6 @@ function Start-Documentation {
     if ($Document.DocumentOffice365.Enable) {
         Start-DocumentationO365 -Document $Document
     }
+    $TimeTotal.Stop()
+    Write-Verbose "Time total: $($TimeTotal.Elapsed)"
 }

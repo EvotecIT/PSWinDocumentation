@@ -5,8 +5,6 @@ function Start-DocumentationAD {
     )
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
-
-
     $DataInformationAD = Get-WinServiceData -Credentials $Document.DocumentAD.Services.OnPremises.Credentials `
         -Service $Document.DocumentAD.Services.OnPremises.ActiveDirectory `
         -TypesRequired $TypesRequired `
@@ -71,8 +69,6 @@ function Start-DocumentationAD {
 
     #}
     $TimeDocuments.Stop()
-    $TimeTotal.Stop()
     Write-Verbose "Time to gather data: $($TimeDataOnly.Elapsed)"
     Write-Verbose "Time to create documents: $($TimeDocuments.Elapsed)"
-    Write-Verbose "Time total: $($TimeTotal.Elapsed)"
 }
