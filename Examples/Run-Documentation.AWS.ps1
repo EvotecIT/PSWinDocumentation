@@ -1,5 +1,4 @@
 ﻿Import-Module PSWinDocumentation
-Import-Module PSWinDocumentation.AD
 Import-Module AWSPowerShell
 # Import-Module DbaTools # (if you require SQL export)
 
