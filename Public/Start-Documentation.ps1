@@ -30,9 +30,9 @@ function Start-Documentation {
         }
         Start-DocumentationAWS -Document $Document
     }
-    if ($Document.DocumentExchange.Enable) {
-        Start-DocumentationExchange -Document $Document
-    }
+    #if ($Document.DocumentExchange.Enable) {
+    #    Start-DocumentationExchange -Document $Document
+    #}
     if ($Document.DocumentOffice365.Enable) {
         if ($null -eq $Document.DocumentOffice365.Services) {
             $Document.DocumentOffice365.Services = ($Script:ServicesO365).Clone()
