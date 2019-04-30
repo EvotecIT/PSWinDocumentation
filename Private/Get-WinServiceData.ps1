@@ -20,13 +20,13 @@ function Get-WinServiceData {
                         $PasswordClearText = $Service.PasswordTests.PasswordFilePathClearText
                     } else {
                         $PasswordClearText = ''
-                    } 
-                    if ($Service.PasswordTests.UseHashDB) {                    
+                    }
+                    if ($Service.PasswordTests.UseHashDB) {
                         $PasswordHashes = $Service.PasswordTests.PasswordFilePathHash
                     } else {
                         $PasswordHashes = ''
                     }
-                    $DataInformation = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes
+                    $DataInformation = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes -Verbose
                 }
                 'AWS' {
                     $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Credentials.AccessKey -AWSSecretKey $Credentials.SecretKey -AWSRegion $Credentials.Region
