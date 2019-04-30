@@ -1,9 +1,6 @@
-﻿Import-Module PSWriteWord
-Import-Module PSWriteExcel
-Import-Module PSWinDocumentation
-Import-Module PSWriteColor
-Import-Module PSSharedGoods
-Import-Module AWSPowerShell
+﻿Import-Module PSWinDocumentation
+Import-Module PSWinDocumentation.O365
+
 $Document = [ordered]@{
     Configuration     = [ordered] @{
         Prettify       = @{
