@@ -1,8 +1,8 @@
 <center>
 
-[![PowerShellGallery Version](https://img.shields.io/powershellgallery/v/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinReportingV2)
+[![PowerShellGallery Version](https://img.shields.io/powershellgallery/v/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinDocumentation)
 
-[![PowerShellGallery Platform](https://img.shields.io/powershellgallery/p/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinReportingV2)
+[![PowerShellGallery Platform](https://img.shields.io/powershellgallery/p/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinDocumentation)
 [![PowerShellGallery Preview Version](https://img.shields.io/powershellgallery/vpre/PSWinDocumentation.svg?label=powershell%20gallery%20preview&colorB=yellow)](https://www.powershellgallery.com/packages/PSWinDocumentation)
 
 ![Top Language](https://img.shields.io/github/languages/top/evotecit/PSWinDocumentation.svg)
