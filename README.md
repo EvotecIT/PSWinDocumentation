@@ -1,3 +1,16 @@
+<center>
+
+[![PowerShellGallery Version](https://img.shields.io/powershellgallery/v/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinReportingV2)
+
+[![PowerShellGallery Platform](https://img.shields.io/powershellgallery/p/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinReportingV2)
+[![PowerShellGallery Preview Version](https://img.shields.io/powershellgallery/vpre/PSWinDocumentation.svg?label=powershell%20gallery%20preview&colorB=yellow)](https://www.powershellgallery.com/packages/PSWinDocumentation)
+
+![Top Language](https://img.shields.io/github/languages/top/evotecit/PSWinDocumentation.svg)
+![Code](https://img.shields.io/github/languages/code-size/evotecit/PSWinDocumentation.svg)
+[![PowerShellGallery Downloads](https://img.shields.io/powershellgallery/dt/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinDocumentation)
+
+</center>
+
 # PSWinDocumentation - PowerShell Module
 
 Overview of this module is available at: https://evotec.xyz/hub/scripts/pswindocumentation-powershell-module/

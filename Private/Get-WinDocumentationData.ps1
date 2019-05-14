@@ -4,7 +4,7 @@ function Get-WinDocumentationData {
         [alias("Forest")][Object] $Object,
         [string] $Domain
     )
-    if ($DataToGet -ne $null) {
+    if ($null -ne $DataToGet) {
         $Type = Get-ObjectType -Object $DataToGet -ObjectName 'Get-WinDocumentationData' #-Verbose
         if ($Type.ObjectTypeName -eq 'ActiveDirectory') {
             #Write-Verbose "Get-WinDocumentationData - DataToGet: $DataToGet Domain: $Domain"
