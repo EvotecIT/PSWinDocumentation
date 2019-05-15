@@ -530,6 +530,7 @@ $Document = [ordered]@{
                 }
                 DomainServers                                     = [ordered] @{
                     Use             = $true
+
                     TocEnable       = $True
                     TocText         = 'General Information - Servers'
                     TocListLevel    = 2
@@ -541,6 +542,15 @@ $Document = [ordered]@{
                     ExcelExport     = $true
                     ExcelWorkSheet  = '<Domain> - DomainComputers'
                     ExcelData       = [PSWinDocumentation.ActiveDirectory]::DomainServers
+
+                    SqlExport      = $false
+                    SqlServer      = 'EVOWIN'
+                    SqlDatabase    = 'SSAE18'
+                    SqlData        = [PSWinDocumentation.ActiveDirectory]::DomainServers
+                    SqlTableCreate = $true
+                    SqlTable       = 'dbo.[DomainServers]'
+                    SqlTableAlterIfNeeded = $true
+
                 }
                 DomainServersCount                                = [ordered] @{
                     Use                   = $true
