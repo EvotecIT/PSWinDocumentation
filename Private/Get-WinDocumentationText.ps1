@@ -1,4 +1,5 @@
 function Get-WinDocumentationText {
+    [CmdletBinding()]
     param (
         [string[]] $Text,
         [hashtable] $Forest,

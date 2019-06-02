@@ -62,8 +62,8 @@ $Document = [ordered]@{
                     TocEnable       = $True
                     TocText         = 'Scope'
                     TocListLevel    = 0
-                    TocListItemType = [ListItemType]::Numbered
-                    TocHeadingType  = [HeadingType]::Heading1
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading1'
                     ### Text is added before table/list
                     Text            = "This document provides a low-level design of roles and permissions for" `
                         + " the IT infrastructure team at <CompanyName> organization. This document utilizes knowledge from" `
@@ -73,7 +73,7 @@ $Document = [ordered]@{
                         + " should not be treated as final and only solution. Most important aspect is to make sure company has full" `
                         + " usability of Active Directory and is happy with how it works. Making things harder just for the sake of" `
                         + " implementation of best practices isn't always the best way to go."
-                    TextAlignment   = [Alignment]::Both
+                    TextAlignment   = 'Both'
                     PageBreaksAfter = 1
                 }
                 SectionForestSummary          = [ordered] @{
@@ -81,10 +81,10 @@ $Document = [ordered]@{
                     TocEnable       = $True
                     TocText         = 'General Information - Forest Summary'
                     TocListLevel    = 0
-                    TocListItemType = [ListItemType]::Numbered
-                    TocHeadingType  = [HeadingType]::Heading1
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading1'
                     TableData       = [PSWinDocumentation.ActiveDirectory]::ForestInformation
-                    TableDesign     = [TableDesign]::ColorfulGridAccent5
+                    TableDesign     = 'ColorfulGridAccent5'
                     TableTitleMerge = $true
                     TableTitleText  = "Forest Summary"
                     Text            = "Active Directory at <CompanyName> has a forest name <ForestName>." `
@@ -108,7 +108,7 @@ $Document = [ordered]@{
                 SectionForestOptionalFeatures = [ordered] @{
                     Use                   = $true
                     TableData             = [PSWinDocumentation.ActiveDirectory]::ForestOptionalFeatures
-                    TableDesign           = [TableDesign]::ColorfulGridAccent5
+                    TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
                     TableTitleText        = 'Optional Features'
                     Text                  = 'Following table contains optional forest features'
@@ -125,7 +125,7 @@ $Document = [ordered]@{
                     #ListType              = 'Bulleted'
                     #ListData              = [PSWinDocumentation.ActiveDirectory]::ForestUPNSuffixes
                     TableData             = [PSWinDocumentation.ActiveDirectory]::ForestUPNSuffixes
-                    TableDesign           = [TableDesign]::ColorfulGridAccent5
+                    TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
                     TableTitleText        = 'UPN Suffixes'
                     EmptyParagraphsBefore = 1
@@ -140,7 +140,7 @@ $Document = [ordered]@{
                     #ListType              = 'Bulleted'
                     #ListData              = [PSWinDocumentation.ActiveDirectory]::ForestSPNSuffixes
                     TableData             = [PSWinDocumentation.ActiveDirectory]::ForestSPNSuffixes
-                    TableDesign           = [TableDesign]::ColorfulGridAccent5
+                    TableDesign           = 'ColorfulGridAccent5'
                     TableTitleMerge       = $true
                     TableTitleText        = 'SPN Suffixes'
                     EmptyParagraphsBefore = 1
@@ -228,20 +228,20 @@ $Document = [ordered]@{
                     TocEnable       = $True
                     TocText         = 'General Information - Domain <Domain>'
                     TocListLevel    = 0
-                    TocListItemType = [ListItemType]::Numbered
-                    TocHeadingType  = [HeadingType]::Heading1
+                    TocListItemType = 'Numbered'
+                    TocHeadingType  = 'Heading1'
                 }
                 SectionDomainIntroduction                         = [ordered] @{
                     Use                   = $true
                     TocEnable             = $True
                     TocText               = 'General Information - Domain Summary'
                     TocListLevel          = 1
-                    TocListItemType       = [ListItemType]::Numbered
-                    TocHeadingType        = [HeadingType]::Heading1
+                    TocListItemType       = 'Numbered'
+                    TocHeadingType        = 'Heading1'
                     Text                  = "Following domain exists within forest <ForestName>:"
                     ListBuilderContent    = "Domain <DomainDN>", 'Name for fully qualified domain name (FQDN): <Domain>', 'Name for NetBIOS: <DomainNetBios>'
                     ListBuilderLevel      = 0, 1, 1
-                    ListBuilderType       = [ListItemType]::Bulleted, [ListItemType]::Bulleted, [ListItemType]::Bulleted
+                    ListBuilderType       = 'Bulleted', 'Bulleted', 'Bulleted'
                     EmptyParagraphsBefore = 0
                 }
                 SectionDomainControllers                          = [ordered] @{
@@ -296,7 +296,7 @@ $Document = [ordered]@{
                     TocListItemType     = 'Numbered'
                     TocHeadingType      = 'Heading2'
                     TableData           = [PSWinDocumentation.ActiveDirectory]::DomainFineGrainedPolicies
-                    TableDesign         = [TableDesign]::ColorfulGridAccent5
+                    TableDesign         = 'ColorfulGridAccent5'
                     TableMaximumColumns = 8
                     TableTitleMerge     = $false
                     TableTitleText      = "Fine Grained Password Policy for <Domain>"
@@ -432,8 +432,8 @@ $Document = [ordered]@{
                     TocEnable        = $True
                     TocText          = 'General Information - Domain Users in <Domain>'
                     TocListLevel     = 1
-                    TocListItemType  = [ListItemType]::Numbered
-                    TocHeadingType   = [HeadingType]::Heading1
+                    TocListItemType  = 'Numbered'
+                    TocHeadingType   = 'Heading1'
                     PageBreaksBefore = 1
                     Text             = 'Following section covers users information for domain <Domain>. '
                 }
@@ -492,8 +492,8 @@ $Document = [ordered]@{
                     TocEnable        = $True
                     TocText          = 'General Information - Computer Objects in <Domain>'
                     TocListLevel     = 1
-                    TocListItemType  = [ListItemType]::Numbered
-                    TocHeadingType   = [HeadingType]::Heading1
+                    TocListItemType  = 'Numbered'
+                    TocHeadingType   = 'Heading1'
                     PageBreaksBefore = 1
                     Text             = 'Following section covers computers information for domain <Domain>. '
                 }
@@ -602,12 +602,12 @@ $Document = [ordered]@{
                     TocEnable        = $True
                     TocText          = 'Domain Password Quality'
                     TocListLevel     = 1
-                    TocListItemType  = [ListItemType]::Numbered
-                    TocHeadingType   = [HeadingType]::Heading1
+                    TocListItemType  = 'Numbered'
+                    TocHeadingType   = 'Heading1'
                     ### Text is added before table/list
                     Text             = "This section provides overview about password quality used in <Domain>. One should review if all those potentially" `
                         + " dangerous approaches to password quality should be left as is or addressed in one way or another."
-                    TextAlignment    = [Alignment]::Both
+                    TextAlignment    = 'Both'
                     PageBreaksAfter  = 0
                     PageBreaksBefore = 1
                 }

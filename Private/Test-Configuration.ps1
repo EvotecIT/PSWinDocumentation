@@ -1,7 +1,7 @@
 function Test-Configuration {
     [CmdletBinding()]
     param (
-        [System.Object] $Document
+        [System.Collections.IDictionary] $Document
     )
     [int] $ErrorCount = 0
     $Script:WriteParameters = $Document.Configuration.DisplayConsole

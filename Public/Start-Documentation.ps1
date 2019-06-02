@@ -1,7 +1,10 @@
+using namespace Xceed.Words.NET
+#using namespace Xceed.Document.NET
+
 function Start-Documentation {
     [CmdletBinding()]
     param (
-        [System.Object] $Document
+        [System.Collections.IDictionary] $Document
     )
     $TimeTotal = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     Test-Configuration -Document $Document

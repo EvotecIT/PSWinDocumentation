@@ -1,10 +1,10 @@
 function Start-DocumentationO365 {
     [CmdletBinding()]
     param(
-        [Object] $Document
+        [System.Collections.IDictionary] $Document
     )
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentOffice365.Sections
-    $DataSections = Get-ObjectKeys -Object $Document.DocumentOffice365.Sections
+    $DataSections = ($Document.DocumentOffice365.Sections).Keys
 
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
@@ -47,7 +47,7 @@ function Start-DocumentationO365 {
                 -Forest $DataInformation `
                 -Excel $ExcelDocument `
                 -SectionName $Section `
-                -Sql $Document.DocumentOffice365.ExportSQL
+                -Sql $Document.DocumentOffice365.ExportSQL -ExportWord $Document.DocumentOffice365.ExportWord
         }
         ### End Sections
 

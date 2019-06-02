@@ -1,7 +1,7 @@
 function Start-DocumentationAD {
     [CmdletBinding()]
     param(
-        $Document
+        [System.Collections.IDictionary] $Document
     )
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAD.Sections.SectionForest, $Document.DocumentAD.Sections.SectionDomain
@@ -25,29 +25,48 @@ function Start-DocumentationAD {
             $ExcelDocument = New-ExcelDocument
         }
 
-        $ADSectionsForest = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionForest
-        $ADSectionsDomain = Get-ObjectKeys -Object $Document.DocumentAD.Sections.SectionDomain
+        $ADSectionsForest = ($Document.DocumentAD.Sections.SectionForest).Keys
+        $ADSectionsDomain = ($Document.DocumentAD.Sections.SectionDomain).Keys
         ### Start Sections
         foreach ($DataInformation in $DataInformationAD) {
             foreach ($Section in $ADSectionsForest) {
-                $WordDocument = New-DataBlock `
-                    -WordDocument $WordDocument `
-                    -Section $Document.DocumentAD.Sections.SectionForest.$Section `
-                    -Object $DataInformationAD `
-                    -Excel $ExcelDocument `
-                    -SectionName $Section `
-                    -Sql $Document.DocumentAD.ExportSQL
+                if ($WordDocument) {
+                    $WordDocument = New-DataBlock `
+                        -WordDocument $WordDocument `
+                        -Section $Document.DocumentAD.Sections.SectionForest.$Section `
+                        -Object $DataInformationAD `
+                        -Excel $ExcelDocument `
+                        -SectionName $Section `
+                        -Sql $Document.DocumentAD.ExportSQL -ExportWord $Document.DocumentAD.ExportWord
+                } else {
+                    New-DataBlock `
+                        -Section $Document.DocumentAD.Sections.SectionForest.$Section `
+                        -Object $DataInformationAD `
+                        -Excel $ExcelDocument `
+                        -SectionName $Section `
+                        -Sql $Document.DocumentAD.ExportSQL -ExportWord $Document.DocumentAD.ExportWord
+                }
             }
             foreach ($Domain in $DataInformationAD.FoundDomains.Keys) {
                 foreach ($Section in $ADSectionsDomain) {
-                    $WordDocument = New-DataBlock `
-                        -WordDocument $WordDocument `
-                        -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
-                        -Object $DataInformationAD `
-                        -Domain $Domain `
-                        -Excel $ExcelDocument `
-                        -SectionName $Section `
-                        -Sql $Document.DocumentAD.ExportSQL
+                    if ($WordDocument) {
+                        $WordDocument = New-DataBlock `
+                            -WordDocument $WordDocument `
+                            -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
+                            -Object $DataInformationAD `
+                            -Domain $Domain `
+                            -Excel $ExcelDocument `
+                            -SectionName $Section `
+                            -Sql $Document.DocumentAD.ExportSQL -ExportWord $Document.DocumentAD.ExportWord
+                    } else {
+                        New-DataBlock `
+                            -Section $Document.DocumentAD.Sections.SectionDomain.$Section `
+                            -Object $DataInformationAD `
+                            -Domain $Domain `
+                            -Excel $ExcelDocument `
+                            -SectionName $Section `
+                            -Sql $Document.DocumentAD.ExportSQL -ExportWord $Document.DocumentAD.ExportWord
+                    }
                 }
             }
         }

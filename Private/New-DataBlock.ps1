@@ -1,12 +1,14 @@
 function New-DataBlock {
+    [CmdletBinding()]
     param(
-        [Xceed.Words.NET.Container]$WordDocument,
+        [Container] $WordDocument,
         [Object] $Section,
         [alias('Object')][Object] $Forest,
         [string] $Domain,
         [OfficeOpenXml.ExcelPackage] $Excel,
         [string] $SectionName,
-        [nullable[bool]] $Sql # Global Sql Enable/Disable
+        [nullable[bool]] $Sql, # Global Sql Enable/Disable
+        [bool] $ExportWord
     )
     if ($Section.Use) {
         if ($Domain) {
@@ -54,43 +56,47 @@ function New-DataBlock {
 
         #Write-Verbose "Table Data $($TableData.Count)"
 
-        if ($WordDocument -and (($null -eq $Section.WordExport -and $Section.Use -eq $true) -or ($Section.WordExport -eq $true)))  {
-            Write-Verbose "Generating WORD Section for [$SectionDetails]"
-            New-WordBlock -WordDocument $WordDocument `
-                -TocGlobalDefinition $Section.TocGlobalDefinition`
-                -TocGlobalTitle $Section.TocGlobalTitle `
-                -TocGlobalSwitches $Section.TocGlobalSwitches `
-                -TocGlobalRightTabPos $Section.TocGlobalRightTabPos `
-                -TocEnable $Section.TocEnable `
-                -TocText $TocText `
-                -TocListLevel $Section.TocListLevel `
-                -TocListItemType $Section.TocListItemType `
-                -TocHeadingType $Section.TocHeadingType `
-                -TableData $TableData `
-                -TableDesign $Section.TableDesign `
-                -TableTitleMerge $Section.TableTitleMerge `
-                -TableTitleText $TableTitleText `
-                -TableMaximumColumns $Section.TableMaximumColumns `
-                -TableColumnWidths $Section.TableColumnWidths `
-                -Text $Text `
-                -TextNoData $TextNoData `
-                -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
-                -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `
-                -PageBreaksBefore $Section.PageBreaksBefore `
-                -PageBreaksAfter $Section.PageBreaksAfter `
-                -TextAlignment $Section.TextAlignment `
-                -ListData $ListData `
-                -ListType $Section.ListType `
-                -ListTextEmpty $Section.ListTextEmpty `
-                -ChartEnable $Section.ChartEnable `
-                -ChartTitle $ChartTitle `
-                -ChartKeys $ChartKeys `
-                -ChartValues $ChartValues `
-                -ListBuilderContent $ListBuilderContent `
-                -ListBuilderType $Section.ListBuilderType `
-                -ListBuilderLevel $Section.ListBuilderLevel `
-                -TextBasedData $TextBasedData `
-                -TextBasedDataAlignment $Section.TextSpecialAlignment
+        if ($ExportWord) {
+            if ($WordDocument) {
+                if (($null -eq $Section.WordExport) -or ($Section.WordExport -eq $true)) {
+                    Write-Verbose "Generating WORD Section for [$SectionDetails]"
+                    New-WordBlock -WordDocument $WordDocument `
+                        -TocGlobalDefinition $Section.TocGlobalDefinition`
+                        -TocGlobalTitle $Section.TocGlobalTitle `
+                        -TocGlobalSwitches $Section.TocGlobalSwitches `
+                        -TocGlobalRightTabPos $Section.TocGlobalRightTabPos `
+                        -TocEnable $Section.TocEnable `
+                        -TocText $TocText `
+                        -TocListLevel $Section.TocListLevel `
+                        -TocListItemType $Section.TocListItemType `
+                        -TocHeadingType $Section.TocHeadingType `
+                        -TableData $TableData `
+                        -TableDesign $Section.TableDesign `
+                        -TableTitleMerge $Section.TableTitleMerge `
+                        -TableTitleText $TableTitleText `
+                        -TableMaximumColumns $Section.TableMaximumColumns `
+                        -TableColumnWidths $Section.TableColumnWidths `
+                        -Text $Text `
+                        -TextNoData $TextNoData `
+                        -EmptyParagraphsBefore $Section.EmptyParagraphsBefore `
+                        -EmptyParagraphsAfter $Section.EmptyParagraphsAfter `
+                        -PageBreaksBefore $Section.PageBreaksBefore `
+                        -PageBreaksAfter $Section.PageBreaksAfter `
+                        -TextAlignment $Section.TextAlignment `
+                        -ListData $ListData `
+                        -ListType $Section.ListType `
+                        -ListTextEmpty $Section.ListTextEmpty `
+                        -ChartEnable $Section.ChartEnable `
+                        -ChartTitle $ChartTitle `
+                        -ChartKeys $ChartKeys `
+                        -ChartValues $ChartValues `
+                        -ListBuilderContent $ListBuilderContent `
+                        -ListBuilderType $Section.ListBuilderType `
+                        -ListBuilderLevel $Section.ListBuilderLevel `
+                        -TextBasedData $TextBasedData `
+                        -TextBasedDataAlignment $Section.TextSpecialAlignment
+                }
+            }
         }
         if ($Excel -and $Section.ExcelExport) {
             if ($Section.ExcelWorkSheet -eq '') {

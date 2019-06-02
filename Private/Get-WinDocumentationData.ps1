@@ -1,4 +1,5 @@
 function Get-WinDocumentationData {
+    [CmdletBinding()]
     param (
         [alias("Data")][Object] $DataToGet,
         [alias("Forest")][Object] $Object,

@@ -1,9 +1,9 @@
 function Start-DocumentationExchange {
     [CmdletBinding()]
     param(
-        $Document
+        [System.Collections.IDictionary] $Document
     )
-    $DataSections = Get-ObjectKeys -Object $Document.DocumentExchange.Sections
+    $DataSections = ($Document.DocumentExchange.Sections).Keys
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentExchange.Sections
 
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
@@ -33,7 +33,7 @@ function Start-DocumentationExchange {
                 -Forest $DataInformation `
                 -Excel $ExcelDocument `
                 -SectionName $Section `
-                -Sql $Document.DocumentExchange.ExportSQL
+                -Sql $Document.DocumentExchange.ExportSQL -ExportWord $Document.DocumentExchange.ExportWord
         }
         ### End Sections
 

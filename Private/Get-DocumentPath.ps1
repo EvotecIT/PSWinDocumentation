@@ -1,7 +1,7 @@
 function Get-DocumentPath {
     [CmdletBinding()]
     param (
-        [System.Object] $Document,
+        [System.Collections.IDictionary] $Document,
         [string] $FinalDocumentLocation
     )
     if ($Document.Configuration.Prettify.UseBuiltinTemplate) {

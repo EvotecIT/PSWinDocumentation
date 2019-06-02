@@ -1,4 +1,5 @@
 function Save-WinDataToFileInChunks {
+    [CmdletBinding()]
     param(
         [nullable[bool]] $Export,
         [string] $Type,

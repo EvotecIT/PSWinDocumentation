@@ -1,11 +1,11 @@
 function Start-DocumentationAWS {
     [CmdletBinding()]
     param(
-        $Document
+        [System.Collections.IDictionary] $Document
     )
     $TimeDataOnly = [System.Diagnostics.Stopwatch]::StartNew() # Timer Start
 
-    $DataSections = Get-ObjectKeys -Object $Document.DocumentAWS.Sections
+    $DataSections = ($Document.DocumentAWS.Sections).Keys
     $TypesRequired = Get-TypesRequired -Sections $Document.DocumentAWS.Sections
 
     $DataInformation = Get-WinServiceData -Credentials $Document.DocumentAWS.Services.Amazon.Credentials `
@@ -33,7 +33,7 @@ function Start-DocumentationAWS {
                 -Forest $DataInformation `
                 -Excel $ExcelDocument `
                 -SectionName $Section `
-                -Sql $Document.DocumentAWS.ExportSQL
+                -Sql $Document.DocumentAWS.ExportSQL -ExportWord $Document.DocumentAWS.ExportWord
         }
         ### End Sections
 
