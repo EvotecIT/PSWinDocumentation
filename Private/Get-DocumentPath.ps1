@@ -22,6 +22,6 @@ function Get-DocumentPath {
             $WordDocument = New-WordDocument -FilePath $FinalDocumentLocation
         }
     }
-    if ($WordDocument -eq $null) { Write-Verbose ' Null'}
+    if ($null -eq $WordDocument) { Write-Verbose ' Null'}
     return $WordDocument
 }
