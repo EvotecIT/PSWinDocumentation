@@ -49,6 +49,12 @@ Ultimate goal of this project is to have proper documentation of following servi
 I'm heavily open for feature requests and people willing to create data sets. By data sets I mean data prepared to be included in report (usually HashTable, OrderedHashTable, Array or PSCustomobject). This module is smart enough that it can easily convert that data into Word Sections. Also don't really pay attention to percentage numbers. If you have request I will consier adding it.
 
 ## Updates
+
+- 0.5.0 / 2019.06.23
+  - Updated with support for PSWriteWord 1.0.0
+  - Updated with support for PSSharedGoods 0.0.79
+  - Updated with support for PSWriteExcel 0.7.2
+
 - 0.3.x / 2018.10.08 - [full blog post](https://evotec.xyz/pswindocumentation-audit-active-directory-passwords/)
     - Added **audit your Active Directory Passwords**
     - Expanded Active Directory data types (computer based)

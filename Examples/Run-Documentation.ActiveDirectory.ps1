@@ -1,5 +1,9 @@
-﻿Import-Module 'C:\Support\GitHub\PSWinDocumentation\PSWinDocumentation.psd1' -Force
+﻿#Import-Module 'C:\Users\przemyslaw.klys\OneDrive - Evotec\Support\GitHub\PSWriteWord\PSWriteWord.psd1' -Force
+#Import-Module 'C:\Support\GitHub\PSWinDocumentation\PSWinDocumentation.psd1' -Force
+
+Import-Module PSWinDocumentation
 Import-Module PSWinDocumentation.AD
+
 # Import-Module DbaTools # (if you require SQL export)
 
 # Those should automatically load
