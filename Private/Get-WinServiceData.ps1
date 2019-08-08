@@ -7,10 +7,18 @@ function Get-WinServiceData {
         [Object] $TypesRequired
     )
 
-    $CommandOutput = Connect-WinService -Type $Type `
-        -Credentials $Credentials `
-        -Service $Service `
-        -Verbose
+    # Temporary hack - requires rewrite
+    if ($Type -eq 'O365') {
+        $CommandOutput = @(
+            Connect-WinService -Type 'ExchangeOnline' -Credentials $Credentials -Service $Service -Verbose
+            Connect-WinService -Type 'Azure' -Credentials $Credentials -Service $Service -Verbose
+        )
+    } else {
+        $CommandOutput = Connect-WinService -Type $Type `
+            -Credentials $Credentials `
+            -Service $Service `
+            -Verbose
+    }
 
     if ($Service.Use) {
         if ($Service.OnlineMode) {
@@ -31,26 +39,17 @@ function Get-WinServiceData {
                 'AWS' {
                     $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Credentials.AccessKey -AWSSecretKey $Credentials.SecretKey -AWSRegion $Credentials.Region
                 }
-                'Azure' {
-                    $DataInformation = Get-WinO365Azure -TypesRequired $TypesRequired # -Prefix would require session
-                }
-                'AzureAD' {
-
-                }
+                #'Azure' {
+                #    $DataInformation = Get-WinO365Azure -TypesRequired $TypesRequired # -Prefix would require session
+                #}
                 'Exchange' {
                     $DataInformation = Get-WinExchangeInformation -TypesRequired $TypesRequired -Prefix $Service.Prefix
                 }
-                'ExchangeOnline' {
-                    $DataInformation = Get-WinO365Exchange -TypesRequired $TypesRequired -Prefix $Service.Prefix
-                }
-                'Teams' {
-
-                }
-                'SharePointOnline' {
-
-                }
-                'SkypeOnline' {
-
+                #'ExchangeOnline' {
+                #    $DataInformation = Get-WinO365Exchange -TypesRequired $TypesRequired -Prefix $Service.Prefix
+                #}
+                'O365' {
+                    $DataInformation = Get-WinO365 -TypesRequired $TypesRequired -Prefix $Service.Prefix
                 }
             }
             if ($Service.Export.Use) {
