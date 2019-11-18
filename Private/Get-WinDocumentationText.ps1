@@ -2,7 +2,7 @@ function Get-WinDocumentationText {
     [CmdletBinding()]
     param (
         [string[]] $Text,
-        [hashtable] $Forest,
+        [System.Collections.IDictionary] $Forest,
         [string] $Domain
     )
 

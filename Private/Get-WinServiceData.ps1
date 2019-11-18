@@ -42,9 +42,9 @@ function Get-WinServiceData {
                 #'Azure' {
                 #    $DataInformation = Get-WinO365Azure -TypesRequired $TypesRequired # -Prefix would require session
                 #}
-                'Exchange' {
-                    $DataInformation = Get-WinExchangeInformation -TypesRequired $TypesRequired -Prefix $Service.Prefix
-                }
+                #'Exchange' {
+                #    $DataInformation = Get-WinExchangeInformation -TypesRequired $TypesRequired -Prefix $Service.Prefix
+                #}
                 #'ExchangeOnline' {
                 #    $DataInformation = Get-WinO365Exchange -TypesRequired $TypesRequired -Prefix $Service.Prefix
                 #}

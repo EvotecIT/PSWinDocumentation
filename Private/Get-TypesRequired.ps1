@@ -1,7 +1,7 @@
 function Get-TypesRequired {
     [CmdletBinding()]
     param (
-        [hashtable[]] $Sections
+        [System.Collections.IDictionary[]] $Sections
     )
     $TypesRequired = New-ArrayList
     $Types = 'TableData', 'ListData', 'ChartData', 'SqlData', 'ExcelData', 'TextBasedData'

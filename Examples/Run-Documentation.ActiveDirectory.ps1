@@ -35,7 +35,7 @@ $Document = [ordered]@{
     DocumentAD    = [ordered] @{
         Enable        = $true
         ExportWord    = $true
-        ExportExcel   = $false
+        ExportExcel   = $true
         ExportSql     = $false
         FilePathWord  = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.docx"
         FilePathExcel = "$Env:USERPROFILE\Desktop\PSWinDocumentation-ADReportWithPasswords.xlsx"
@@ -533,26 +533,26 @@ $Document = [ordered]@{
                     EmptyParagraphsBefore = 1
                 }
                 DomainServers                                     = [ordered] @{
-                    Use             = $true
+                    Use                   = $true
 
-                    TocEnable       = $True
-                    TocText         = 'General Information - Servers'
-                    TocListLevel    = 2
-                    TocListItemType = 'Numbered'
-                    TocHeadingType  = 'Heading2'
-                    TableData       = [PSWinDocumentation.ActiveDirectory]::DomainServers
-                    TableDesign     = 'ColorfulGridAccent5'
-                    Text            = 'Following client computers are created in <Domain>.'
-                    ExcelExport     = $true
-                    ExcelWorkSheet  = '<Domain> - DomainComputers'
-                    ExcelData       = [PSWinDocumentation.ActiveDirectory]::DomainServers
+                    TocEnable             = $True
+                    TocText               = 'General Information - Servers'
+                    TocListLevel          = 2
+                    TocListItemType       = 'Numbered'
+                    TocHeadingType        = 'Heading2'
+                    TableData             = [PSWinDocumentation.ActiveDirectory]::DomainServers
+                    TableDesign           = 'ColorfulGridAccent5'
+                    Text                  = 'Following client computers are created in <Domain>.'
+                    ExcelExport           = $true
+                    ExcelWorkSheet        = '<Domain> - DomainComputers'
+                    ExcelData             = [PSWinDocumentation.ActiveDirectory]::DomainServers
 
-                    SqlExport      = $false
-                    SqlServer      = 'EVOWIN'
-                    SqlDatabase    = 'SSAE18'
-                    SqlData        = [PSWinDocumentation.ActiveDirectory]::DomainServers
-                    SqlTableCreate = $true
-                    SqlTable       = 'dbo.[DomainServers]'
+                    SqlExport             = $false
+                    SqlServer             = 'EVOWIN'
+                    SqlDatabase           = 'SSAE18'
+                    SqlData               = [PSWinDocumentation.ActiveDirectory]::DomainServers
+                    SqlTableCreate        = $true
+                    SqlTable              = 'dbo.[DomainServers]'
                     SqlTableAlterIfNeeded = $true
 
                 }
