@@ -1,7 +1,7 @@
 function New-DataBlock {
     [CmdletBinding()]
     param(
-        [Container] $WordDocument,
+        [Xceed.Document.NET.Container] $WordDocument,
         [Object] $Section,
         [alias('Object')][Object] $Forest,
         [string] $Domain,
