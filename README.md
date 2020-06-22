@@ -1,28 +1,37 @@
-<center>
+<p align="center">
+  <a href="https://dev.azure.com/evotecpl/PSWinDocumentation/_build/latest?definitionId=3"><img src="https://dev.azure.com/evotecpl/PSWinDocumentation/_apis/build/status/EvotecIT.PSWinDocumentation"></a>
+  <a href="https://www.powershellgallery.com/packages/PSWinDocumentation"><img src="https://img.shields.io/powershellgallery/v/PSWinDocumentation.svg"></a>
+  <a href="https://www.powershellgallery.com/packages/PSWinDocumentation"><img src="https://img.shields.io/powershellgallery/vpre/PSWinDocumentation.svg?label=powershell%20gallery%20preview&colorB=yellow"></a>
+  <a href="https://github.com/EvotecIT/PSWinDocumentation"><img src="https://img.shields.io/github/license/EvotecIT/PSWinDocumentation.svg"></a>
+</p>
 
-[![PowerShellGallery Version](https://img.shields.io/powershellgallery/v/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinDocumentation)
+<p align="center">
+  <a href="https://www.powershellgallery.com/packages/PSWinDocumentation"><img src="https://img.shields.io/powershellgallery/p/PSWinDocumentation.svg"></a>
+  <a href="https://github.com/EvotecIT/PSWinDocumentation"><img src="https://img.shields.io/github/languages/top/evotecit/PSWinDocumentation.svg"></a>
+  <a href="https://github.com/EvotecIT/PSWinDocumentation"><img src="https://img.shields.io/github/languages/code-size/evotecit/PSWinDocumentation.svg"></a>
+  <a href="https://www.powershellgallery.com/packages/PSWinDocumentation"><img src="https://img.shields.io/powershellgallery/dt/PSWinDocumentation.svg"></a>
+</p>
 
-[![PowerShellGallery Platform](https://img.shields.io/powershellgallery/p/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinDocumentation)
-[![PowerShellGallery Preview Version](https://img.shields.io/powershellgallery/vpre/PSWinDocumentation.svg?label=powershell%20gallery%20preview&colorB=yellow)](https://www.powershellgallery.com/packages/PSWinDocumentation)
-
-![Top Language](https://img.shields.io/github/languages/top/evotecit/PSWinDocumentation.svg)
-![Code](https://img.shields.io/github/languages/code-size/evotecit/PSWinDocumentation.svg)
-[![PowerShellGallery Downloads](https://img.shields.io/powershellgallery/dt/PSWinDocumentation.svg)](https://www.powershellgallery.com/packages/PSWinDocumentation)
-
-</center>
+<p align="center">
+  <a href="https://twitter.com/PrzemyslawKlys"><img src="https://img.shields.io/twitter/follow/PrzemyslawKlys.svg?label=Twitter%20%40PrzemyslawKlys&style=social"></a>
+  <a href="https://evotec.xyz/hub"><img src="https://img.shields.io/badge/Blog-evotec.xyz-2A6496.svg"></a>
+  <a href="https://www.linkedin.com/in/pklys"><img src="https://img.shields.io/badge/LinkedIn-pklys-0077B5.svg?logo=LinkedIn"></a>
+</p>
 
 # PSWinDocumentation - PowerShell Module
 
-Overview of this module is available at: https://evotec.xyz/hub/scripts/pswindocumentation-powershell-module/
+Overview of this module is available at: <https://evotec.xyz/hub/scripts/pswindocumentation-powershell-module/>
 
-## This module utilizes three projects of mine:
+## This module utilizes three projects of mine
+
 - [PSWriteWord](https://evotec.xyz/hub/scripts/pswriteword-powershell-module/) - creating **Microsoft Wor**d without Word installed from PowerShell
 - [PSWriteExcel](https://evotec.xyz/hub/scripts/pswriteexcel-powershell-module/) - creating **Microsoft Excel** without Excel installed from PowerShell
 - [PSSharedGoods](https://github.com/EvotecIT/PSSharedGoods) - bunch of useful functions that I share among all of my projects
 
 All 3 modules above are under active development.
 
-## For additional functionality it utilizes:
+## For additional functionality it utilizes
+
 - [AWSPowershell](https://www.powershellgallery.com/packages/AWSPowerShell/) - allows connecting to AWS and creating AWS dataset
 - [ActiveDirectory RSAT](https://www.microsoft.com/en-us/download/details.aspx?id=45520) - allows connecting to AD and creating Active Directory dataset
 - [DBATools](https://www.powershellgallery.com/packages/dbatools/) - allows connecting to SQL and sending data to SQL (create table, alter table, inserts)
@@ -34,11 +43,11 @@ You have to install those modules **yourself**. I don't bundle them but it's as 
 
 Ultimate goal of this project is to have proper documentation of following services:
 
-- Active Directory - **80% done** (more or less)
-- AWS - **50% done** (more or less)
-- Microsoft Exchange - **20% done** (mostly Excel / SQL export oriented)
-- Office 365 Exchange Online - **20% done** (mostly Excel / SQL export oriented)
-- Office 365 Azure AD - **20% don**e (mostly Excel / SQL export oriented)
+- Active Directory
+- AWS
+- Microsoft Exchange (mostly Excel / SQL export oriented)
+- Office 365 Exchange Online (mostly Excel / SQL export oriented)
+- Office 365 Azure AD (mostly Excel / SQL export oriented)
 - Office 365 Teams (not started)
 - Office 365 Skype for Business (not started)
 - Office 365 Intune (not started)
@@ -50,38 +59,40 @@ I'm heavily open for feature requests and people willing to create data sets. By
 
 ## Updates
 
+- 0.5.3 / 2020.06.22
+  - Updated modules to newest versions
 - 0.5.0 / 2019.06.23
   - Updated with support for PSWriteWord 1.0.0
   - Updated with support for PSSharedGoods 0.0.79
   - Updated with support for PSWriteExcel 0.7.2
 
 - 0.3.x / 2018.10.08 - [full blog post](https://evotec.xyz/pswindocumentation-audit-active-directory-passwords/)
-    - Added **audit your Active Directory Passwords**
-    - Expanded Active Directory data types (computer based)
-    - Expanded Active Directory data types (fine grained policies)
-    - Couple of fixes here and there
+  - Added **audit your Active Directory Passwords**
+  - Expanded Active Directory data types (computer based)
+  - Expanded Active Directory data types (fine grained policies)
+  - Couple of fixes here and there
 - 0.2.x / 2018.09.23 - [full blog post](https://evotec.xyz/pswindocumentation-export-to-word-excel-sql-of-ad-aws-exchange-o365-exchange-o365-azure-ad/)
-    - Allows Exporting to Microsoft SQL (that's right – export data directly to SQL – complete with create table, alter table and inserts)
-    - Basic data set AWS
-    - Advanced data set Active Directory
-    - Basic data set Microsoft Exchange
-    - Basic data set Office 365 – Exchange Online
-    - Basic data set Office 365 – Azure AD
-    - Prescanning of data headers for exports (unravel hidden data)
-    - Ability to define TableColumnWidths in sections
+  - Allows Exporting to Microsoft SQL (that's right – export data directly to SQL – complete with create table, alter table and inserts)
+  - Basic data set AWS
+  - Advanced data set Active Directory
+  - Basic data set Microsoft Exchange
+  - Basic data set Office 365 – Exchange Online
+  - Basic data set Office 365 – Azure AD
+  - Prescanning of data headers for exports (unravel hidden data)
+  - Ability to define TableColumnWidths in sections
 
 - 0.1 / 2018.08.23
-    - Large release
-    - You can read about it in separate [blog post](https://evotec.xyz/pswindocumentation-version-0-1-with-word-excel-export/)
-    - Watch about it on [YouTube](https://youtu.be/6Vr3hEo2510) and [YouTube](https://youtu.be/c2kD_duHgTw)
+  - Large release
+  - You can read about it in separate [blog post](https://evotec.xyz/pswindocumentation-version-0-1-with-word-excel-export/)
+  - Watch about it on [YouTube](https://youtu.be/6Vr3hEo2510) and [YouTube](https://youtu.be/c2kD_duHgTw)
 - 0.0.5 / 2018.07.30
-    -  fix for DefaultPassWordPolicy MinPasswordLength (was reporting wrong value)
+  - fix for DefaultPassWordPolicy MinPasswordLength (was reporting wrong value)
 - 0.0.4 / 2018.07.30
-    -  added domain controllers section
-    -  added few verbose messages with -Verbose switch for easier debugging
-    -  commented out some unused code for now (to speed up work)
+  - added domain controllers section
+  - added few verbose messages with -Verbose switch for easier debugging
+  - commented out some unused code for now (to speed up work)
 - 0.0.3 / 2018.07.29
-    - first "good" release
+  - first "good" release
 
 ## Progress on Documentation
 
@@ -96,31 +107,31 @@ Following is **very incomplete list** of things that are done or are planned in 
 - [x] Forest SPN List
 - [x] Domain Summary
 - [ ] Domain Controllers
-    - [X] Basic information
-    - [ ] Basic hardware information
+  - [X] Basic information
+  - [ ] Basic hardware information
 - [x] Domain FSMO Roles
 - [x] Domain Password Policies
 - [x] Domain Group Policies
 - [ ] Domain Organizational Units
-    - [ ] Requires work. Currently a bit useless
+  - [ ] Requires work. Currently a bit useless
 - [x] Domain Privileged Members (Groups)
 - [x] Domain Administrators (All users)
 - [x] Domain User Count
-    - [X] Users Count Incl. System
-    - [X] Users Count
-    - [X] Users Expired
-    - [X] Users Expired Incl. Disabled
-    - [X] Users Never Expiring
-    - [X] Users Never Expiring Incl. Disabled
-    - [X] Users System Accounts
+  - [X] Users Count Incl. System
+  - [X] Users Count
+  - [X] Users Expired
+  - [X] Users Expired Incl. Disabled
+  - [X] Users Never Expiring
+  - [X] Users Never Expiring Incl. Disabled
+  - [X] Users System Accounts
 - [ ] Domain User List (deciding if needed)
-    - [ ] Users Count Incl. System
-    - [ ] Users Count
-    - [ ] Users Expired
-    - [ ] Users Expired Incl. Disabled
-    - [ ] Users Never Expiring
-    - [ ] Users Never Expiring Incl. Disabled
-    - [ ] Users System Accounts
+  - [ ] Users Count Incl. System
+  - [ ] Users Count
+  - [ ] Users Expired
+  - [ ] Users Expired Incl. Disabled
+  - [ ] Users Never Expiring
+  - [ ] Users Never Expiring Incl. Disabled
+  - [ ] Users System Accounts
 
 ### Active Directory Data Sources - to use with new version
 
@@ -232,23 +243,23 @@ public enum ActiveDirectory {
 }
 ```
 
-
-
 More suggestions are welcome.
 
 ### Microsoft Exchange
+
 - [ ] Currently not defined. Feel free to make feature requests
 
 ### Microsoft Office 365
+
 - [ ] Currently not defined. Feel free to make feature requests
 
 ### Windows Server doc
+
 - [ ] Currently not defined. Feel free to make feature requests
 
 ### Windows Workstation doc
+
 - [ ] Currently not defined. Feel free to make feature requests
-
-
 
 ### Statistics
 
