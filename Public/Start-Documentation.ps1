@@ -1,6 +1,3 @@
-#using namespace Xceed.Words.NET
-#using namespace Xceed.Document.NET
-
 function Start-Documentation {
     [CmdletBinding()]
     param (
