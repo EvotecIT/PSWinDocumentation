@@ -1,9 +1,9 @@
-﻿Import-Module PSWinDocumentation
-Import-Module PSWinDocumentation.AD
+﻿Import-Module $PSScriptRoot\..\PSWinDocumentation.psd1 -Force
 
 # Import-Module DbaTools # (if you require SQL export)
 
 # Those should automatically load
+#Import-Module PSWinDocumentation.AD
 #Import-Module PSWriteWord
 #Import-Module PSWriteExcel
 #Import-Module ActiveDirectory
@@ -42,8 +42,8 @@ $Document = [ordered]@{
                 # Using '' will still process some usefull output
                 PasswordFilePathClearText = '' #"$PSScriptRoot\Passwords\Passwords.txt"
                 # Fair warning it will take ages if you use HaveIBeenPwned DB :-)
-                UseHashDB                 = $false
-                PasswordFilePathHash      = 'C:\Users\pklys\Downloads\pwned-passwords-ntlm-ordered-by-count\pwned-passwords-ntlm-ordered-by-count.txt'
+                UseHashDB                 = $true
+                PasswordFilePathHash      = 'C:\Users\przemyslaw.klys\Downloads\pwned-passwords-ntlm-ordered-by-hash-v6\pwned-passwords-ntlm-ordered-by-hash-v6.txt'
             }
         }
         Sections      = [ordered] @{
@@ -810,7 +810,7 @@ $Document = [ordered]@{
                     ExcelData           = [PSWinDocumentation.ActiveDirectory]::DomainPasswordDuplicatePasswordGroups
                 }
                 DomainPasswordHashesWeakPassword                  = [ordered] @{
-                    Use                 = $false
+                    Use                 = $true
                     TocEnable           = $True
                     TocText             = 'Password Quality - Leaked Passwords'
                     TocListLevel        = 2
@@ -977,4 +977,4 @@ $Document = [ordered]@{
         }
     }
 }
-Start-Documentation -Document $Document -Verbose
+Start-Documentation -Document $Document
