@@ -34,7 +34,12 @@ function Get-WinServiceData {
                     } else {
                         $PasswordHashes = ''
                     }
-                    $DataInformation = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes -Verbose
+                    if ($PasswordClearText -or $PasswordHashes) {
+                        $PasswordQuality = $true
+                    } else {
+                        $PasswordQuality = $false
+                    }
+                    $DataInformation = Get-WinADForestInformation -TypesRequired $TypesRequired -PathToPasswords $PasswordClearText -PathToPasswordsHashes $PasswordHashes -PasswordQuality:$PasswordQuality -Verbose
                 }
                 'AWS' {
                     $DataInformation = Get-WinAWSInformation -TypesRequired $TypesRequired -AWSAccessKey $Credentials.AccessKey -AWSSecretKey $Credentials.SecretKey -AWSRegion $Credentials.Region
