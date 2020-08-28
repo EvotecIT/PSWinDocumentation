@@ -59,6 +59,9 @@ I'm heavily open for feature requests and people willing to create data sets. By
 
 ## Updates
 
+- 0.5.4 / Unreleased
+  - [x] Added `Invoke-Documentation` for oneliner fun
+
 - 0.5.3 / 2020.06.22
   - Updated modules to newest versions
 - 0.5.0 / 2019.06.23
