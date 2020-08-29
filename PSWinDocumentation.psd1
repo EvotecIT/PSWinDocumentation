@@ -4,7 +4,7 @@
     CompanyName       = 'Evotec'
     Copyright         = '(c) 2011 - 2020 Przemyslaw Klys @ Evotec. All rights reserved.'
     Description       = 'Simple project generating Active Directory, AWS, Office 365 (Exchange, Azure AD) documentation to Microsoft Word, Microsoft Excel and Microsoft SQL. More things to follow...'
-    FunctionsToExport = 'Invoke-ADExcel', 'Invoke-ADHTML', 'Invoke-ADWord', 'Invoke-Documentation', 'Start-Documentation'
+    FunctionsToExport = 'Invoke-ADExcel', 'Invoke-ADHTML', 'Invoke-ADWord', 'Invoke-Documentation', 'Show-GroupMember', 'Start-Documentation'
     GUID              = '6bd80c20-e606-4e31-9f88-9ad305256f23'
     ModuleVersion     = '0.5.4'
     PowerShellVersion = '5.1'
@@ -17,7 +17,7 @@
         }
     }
     RequiredModules   = @{
-        ModuleVersion = '0.0.95'
+        ModuleVersion = '0.0.97'
         ModuleName    = 'PSWriteHTML'
         Guid          = 'a7bdf640-f5cb-4acf-9de0-365b322d245c'
     }, @{
@@ -44,6 +44,14 @@
         ModuleVersion = '0.0.7'
         ModuleName    = 'PSWinDocumentation.O365'
         Guid          = '71ea1419-d950-444b-83c9-c579de74962a'
+    }, @{
+        ModuleVersion = '0.0.70'
+        ModuleName    = 'ADEssentials'
+        Guid          = '9fc9fd61-7f11-4f4b-a527-084086f1905f'
+    }, @{
+        ModuleVersion = '0.0.60'
+        ModuleName    = 'GPOZaurr'
+        Guid          = 'f7d4c9e4-0298-4f51-ad77-e8e3febebbde'
     }, 'ActiveDirectory', 'GroupPolicy'
     RootModule        = 'PSWinDocumentation.psm1'
 }
