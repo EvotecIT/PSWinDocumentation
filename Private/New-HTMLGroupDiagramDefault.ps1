@@ -5,9 +5,14 @@
         [ValidateSet('Default', 'Hierarchical', 'Both')][string] $RemoveAppliesTo = 'Both',
         [switch] $RemoveComputers,
         [switch] $RemoveUsers,
-        [switch] $RemoveOther
+        [switch] $RemoveOther,
+        [string] $DataTableID,
+        [int] $ColumnID
     )
-    New-HTMLDiagram -Height 'calc(100vh - 400px)' {
+    New-HTMLDiagram -Height 'calc(100vh - 200px)' {
+        #if ($DataTableID) {
+        #    New-DiagramEvent -ID $DataTableID -ColumnID $ColumnID
+        #}
         #New-DiagramOptionsLayout -HierarchicalEnabled $true -HierarchicalDirection FromLeftToRight #-HierarchicalSortMethod directed
         #New-DiagramOptionsPhysics -Enabled $true -HierarchicalRepulsionAvoidOverlap 1 -HierarchicalRepulsionNodeDistance 50
         New-DiagramOptionsPhysics -RepulsionNodeDistance 150 -Solver repulsion
@@ -44,7 +49,7 @@
                 } else {
                     if (-not $RemoveOther -or $RemoveAppliesTo -notin 'Both', 'Default') {
                         $Label = $ADObject.Name + [System.Environment]::NewLine + $ADObject.DomainName
-                        New-DiagramNode -Id $ID -Label $Label -To $IDParent -Image 'https://image.flaticon.com/icons/svg/3003/3003040.svg'
+                        New-DiagramNode -Id $ID -Label $Label -To $IDParent -Image 'https://image.flaticon.com/icons/svg/3347/3347551.svg'
                     }
                 }
             }

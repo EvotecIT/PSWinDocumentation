@@ -7,9 +7,9 @@
         [switch] $RemoveUsers,
         [switch] $RemoveOther
     )
-    New-HTMLDiagram -Height 'calc(100vh - 400px)' {
+    New-HTMLDiagram -Height 'calc(100vh - 200px)' {
         New-DiagramOptionsLayout -HierarchicalEnabled $true #-HierarchicalDirection FromLeftToRight #-HierarchicalSortMethod directed
-        New-DiagramOptionsPhysics -Enabled $true -HierarchicalRepulsionAvoidOverlap 1 -HierarchicalRepulsionNodeDistance 150
+        New-DiagramOptionsPhysics -Enabled $true -HierarchicalRepulsionAvoidOverlap 1 -HierarchicalRepulsionNodeDistance 200
         #New-DiagramOptionsPhysics -RepulsionNodeDistance 150 -Solver repulsion
         if ($ADGroup) {
             # Add it's members to diagram
@@ -45,7 +45,7 @@
                 } else {
                     if (-not $RemoveOther -or $RemoveAppliesTo -notin 'Both', 'Hierarchical') {
                         $Label = $ADObject.Name + [System.Environment]::NewLine + $ADObject.DomainName
-                        New-DiagramNode -Id $ID -Label $Label -To $IDParent -Image 'https://image.flaticon.com/icons/svg/3003/3003040.svg' -Level $Level
+                        New-DiagramNode -Id $ID -Label $Label -To $IDParent -Image 'https://image.flaticon.com/icons/svg/3347/3347551.svg' -Level $Level
                     }
                 }
             }
