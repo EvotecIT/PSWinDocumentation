@@ -17,7 +17,7 @@
         }
     }
     RequiredModules   = @{
-        ModuleVersion = '0.0.97'
+        ModuleVersion = '0.0.98'
         ModuleName    = 'PSWriteHTML'
         Guid          = 'a7bdf640-f5cb-4acf-9de0-365b322d245c'
     }, @{
