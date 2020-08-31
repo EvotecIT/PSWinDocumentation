@@ -1,10 +1,10 @@
 ﻿@{
-    AliasesToExport   = 'Show-WinADGroupMember'
+    AliasesToExport   = ''
     Author            = 'Przemyslaw Klys'
     CompanyName       = 'Evotec'
     Copyright         = '(c) 2011 - 2020 Przemyslaw Klys @ Evotec. All rights reserved.'
     Description       = 'Simple project generating Active Directory, AWS, Office 365 (Exchange, Azure AD) documentation to Microsoft Word, Microsoft Excel and Microsoft SQL. More things to follow...'
-    FunctionsToExport = 'Invoke-Documentation', 'Show-ADGroupMember', 'Start-Documentation'
+    FunctionsToExport = 'Invoke-Documentation', 'Start-Documentation'
     GUID              = '6bd80c20-e606-4e31-9f88-9ad305256f23'
     ModuleVersion     = '0.5.4'
     PowerShellVersion = '5.1'
@@ -49,7 +49,7 @@
         ModuleName    = 'ADEssentials'
         Guid          = '9fc9fd61-7f11-4f4b-a527-084086f1905f'
     }, @{
-        ModuleVersion = '0.0.60'
+        ModuleVersion = '0.0.61'
         ModuleName    = 'GPOZaurr'
         Guid          = 'f7d4c9e4-0298-4f51-ad77-e8e3febebbde'
     }, 'ActiveDirectory', 'GroupPolicy'
