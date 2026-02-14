@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://dev.azure.com/evotecpl/PSWinDocumentation/_build/latest?definitionId=3"><img src="https://dev.azure.com/evotecpl/PSWinDocumentation/_apis/build/status/EvotecIT.PSWinDocumentation"></a>
   <a href="https://www.powershellgallery.com/packages/PSWinDocumentation"><img src="https://img.shields.io/powershellgallery/v/PSWinDocumentation.svg"></a>
-  <a href="https://www.powershellgallery.com/packages/PSWinDocumentation"><img src="https://img.shields.io/powershellgallery/vpre/PSWinDocumentation.svg?label=powershell%20gallery%20preview&colorB=yellow"></a>
+  <a href="https://www.powershellgallery.com/packages/PSWinDocumentation"><img src="https://img.shields.io/powershellgallery/v/PSWinDocumentation.svg?label=powershell%20gallery%20preview&colorB=yellow&include_prereleases"></a>
   <a href="https://github.com/EvotecIT/PSWinDocumentation"><img src="https://img.shields.io/github/license/EvotecIT/PSWinDocumentation.svg"></a>
 </p>
 
